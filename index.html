@@ -6,12 +6,15 @@
   Everything lives in this one file (HTML + CSS together) so it is easy to edit.
   Search this file for "TODO" to find every spot to customize before launch.
   The full launch checklist is in README.md.
+
+  Theme: black & white, with one accent color — #015CB5, sampled directly from
+  the board's blue solder mask. All text/background pairs pass WCAG AA contrast.
 -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ESP32-S3 Dev Board — Documentation · HW Designs</title>
-  <meta name="description" content="Official documentation for the HW Designs ESP32-S3 development board: getting started guide, schematic, user guide, pinout, and example projects.">
+  <meta name="description" content="Official documentation for the HW Designs ESP32-S3 development board: getting started guide, board tour, schematic, user guide, pinout, 3D model, and example projects.">
   <meta property="og:title" content="ESP32-S3 Dev Board — Documentation">
   <meta property="og:description" content="Getting started guide, downloads, and example projects for the HW Designs ESP32-S3 development board.">
   <meta property="og:url" content="https://docs.hwdesigns.us">
@@ -21,135 +24,153 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* Palette drawn from the board itself: solder mask, silkscreen, copper. */
-      --mask:#0F3D2E;          /* solder-mask green */
-      --mask-deep:#0A2B20;
-      --silk:#F2F5F1;          /* silkscreen white  */
-      --silk-dim:rgba(242,245,241,.72);
-      --bg:#EFF2EE;
-      --card:#FFFFFF;
-      --ink:#16211B;
-      --ink-soft:#48544C;
-      --copper:#B4713B;        /* decorative copper */
-      --copper-ink:#8C5527;    /* copper for small text (higher contrast) */
-      --copper-lt:#DCA96B;     /* copper on dark surfaces */
-      --line:#D9E0D9;
-      --line-dark:rgba(242,245,241,.25);
+      /* Black & white core */
+      --paper:#FAFAFA;        /* page background            */
+      --card:#FFFFFF;         /* cards & tables             */
+      --ink:#111114;          /* headings & body text       */
+      --soft:#3F3F46;         /* secondary text (10.4:1)    */
+      --label:#52525B;        /* small labels (7.7:1)       */
+      --line:#E4E4E7;         /* borders                    */
+      --black:#000000;        /* hero, frames, buttons      */
+      --bright:#F5F5F5;       /* text on black              */
+      --dim:#C4C4C4;          /* secondary text on black (12:1) */
+      --faint:#A3A3A3;        /* tertiary text on black (8.3:1) */
+      /* The one accent: your board's solder-mask blue */
+      --accent:#015CB5;       /* on light backgrounds (6.6:1 on white) */
+      --accent-lt:#85B8F0;    /* on dark backgrounds (~9:1 on black)   */
       --radius:10px;
       --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
       --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--bg)}
-    ::selection{background:var(--mask);color:var(--silk)}
-    :focus-visible{outline:2px solid var(--copper);outline-offset:2px;border-radius:4px}
+    body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
+    ::selection{background:var(--black);color:#fff}
+    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
     .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
-    a{color:var(--mask)}
+    a{color:var(--accent)}
 
-    .skip{position:absolute;left:-999px;top:0;background:var(--mask);color:var(--silk);padding:10px 16px;z-index:99}
+    .skip{position:absolute;left:-999px;top:0;background:var(--black);color:#fff;padding:10px 16px;z-index:99}
     .skip:focus{left:12px;top:12px}
 
     /* Header */
-    .site-header{position:sticky;top:0;z-index:20;background:rgba(239,242,238,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
     .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:1060px;margin:0 auto}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
     .logo{height:26px;width:auto;display:block}
     .brand-fallback{font-weight:700;letter-spacing:.06em;color:var(--ink)}
-    .brand-docs{font-family:var(--mono);font-size:12px;color:var(--copper-ink);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+    .brand-docs{font-family:var(--mono);font-size:12px;color:var(--label);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
     .site-nav{display:flex;flex-wrap:wrap;gap:4px 18px}
     .site-nav a{font-size:14.5px;font-weight:500;color:var(--ink);text-decoration:none}
-    .site-nav a:hover{color:var(--copper-ink);text-decoration:underline;text-underline-offset:4px}
+    .site-nav a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
 
-    /* Hero — the page opens on the board's own solder mask */
-    .hero{background:var(--mask);color:var(--silk);padding:64px 0 56px}
-    .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--copper-lt);margin:0}
-    .hero h1{font-size:clamp(38px,6vw,62px);line-height:1.04;letter-spacing:-.015em;font-weight:700;margin:14px 0 16px;max-width:16ch}
-    .lede{font-size:clamp(17px,2vw,19.5px);color:var(--silk-dim);max-width:58ch;margin:0 0 26px}
+    /* Hero — black, so the render's black background disappears and the board floats */
+    .hero{background:var(--black);color:var(--bright);padding:64px 0 60px}
+    .hero-grid{display:grid;grid-template-columns:1fr 240px;gap:48px;align-items:center}
+    .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-lt);margin:0;display:flex;align-items:center;gap:9px}
+    .rgb-dot{width:9px;height:9px;border-radius:50%;background:#6FE08A;animation:ledcycle 6s ease-in-out infinite;flex:none}
+    @keyframes ledcycle{0%,100%{background:#FF6A5A}33%{background:#6FE08A}66%{background:#6FB2FF}}
+    .hero h1{font-size:clamp(38px,6vw,62px);line-height:1.04;letter-spacing:-.015em;font-weight:700;margin:16px 0 16px;max-width:16ch;color:#FFFFFF}
+    .lede{font-size:clamp(17px,2vw,19.5px);color:var(--dim);max-width:58ch;margin:0 0 26px}
     .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px}
     .btn{display:inline-block;padding:12px 22px;border-radius:8px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid transparent}
-    .btn-light{background:var(--silk);color:var(--mask)}
-    .btn-light:hover{background:#fff}
-    .btn-ghost{border-color:var(--line-dark);color:var(--silk)}
-    .btn-ghost:hover{border-color:var(--silk-dim)}
-    .quickfacts{font-family:var(--mono);font-size:13px;color:var(--silk-dim);margin:0}
-
-    /* Board line art — silkscreen drawing at the board's true 3:1 proportions.
-       TODO: when you have a product photo, you can replace this <figure> with:
-       <figure class="board-fig"><img src="assets/board.jpg" alt="ESP32-S3 Dev Board" style="width:100%;border-radius:12px"></figure> */
-    .board-fig{margin:48px 0 0}
-    .board-fig svg{width:100%;height:auto;display:block}
-    .led{animation:ledcycle 6s ease-in-out infinite}
-    @keyframes ledcycle{0%,100%{fill:#FF6A5A}33%{fill:#6FE08A}66%{fill:#6FB2FF}}
+    .btn-light{background:#FFFFFF;color:var(--black)}
+    .btn-light:hover{background:var(--dim)}
+    .btn-ghost{border-color:rgba(255,255,255,.45);color:var(--bright)}
+    .btn-ghost:hover{border-color:#fff}
+    .quickfacts{font-family:var(--mono);font-size:13px;color:var(--faint);margin:0}
+    .hero-shot{position:relative;margin:0;justify-self:center}
+    .hero-shot::before{content:"";position:absolute;inset:-14%;background:radial-gradient(closest-side,rgba(1,92,181,.35),transparent 72%);pointer-events:none}
+    .hero-shot img{position:relative;display:block;height:470px;width:auto;max-width:100%}
+    /* (image backgrounds are pure black, matching the hero, so no frame is needed there) */
 
     /* Sections */
     .section{padding:72px 0}
     section{scroll-margin-top:84px}
-    .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--copper-ink);margin:0}
+    .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0}
     .section h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.01em;margin:10px 0 10px}
-    .section-intro{color:var(--ink-soft);max-width:62ch;margin:0}
+    .section-intro{color:var(--soft);max-width:62ch;margin:0}
 
     /* Getting started steps */
     .steps{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px}
     .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;display:grid;grid-template-columns:44px 1fr;gap:20px}
-    .step-no{font-family:var(--mono);font-size:16px;color:var(--silk);background:var(--mask);width:40px;height:40px;border-radius:8px;display:grid;place-items:center}
+    .step-no{font-family:var(--mono);font-size:16px;color:#fff;background:var(--black);width:40px;height:40px;border-radius:8px;display:grid;place-items:center}
     .step h3{margin:7px 0 8px;font-size:19px}
-    .step p{margin:0 0 10px;color:var(--ink-soft)}
+    .step p{margin:0 0 10px;color:var(--soft)}
     .step p:last-child{margin-bottom:0}
-    pre{background:#0C231A;color:#E7F1E9;border-radius:8px;padding:15px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;margin:12px 0}
+    pre{background:#0A0A0A;color:#E8E8E8;border-radius:8px;padding:15px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;margin:12px 0}
     code{font-family:var(--mono)}
-    p code,li code,td code{background:#E3E9E2;border-radius:5px;padding:2px 6px;font-size:.88em}
+    p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font-size:.88em}
     .settings{border-collapse:collapse;margin:12px 0 4px;font-size:14.5px}
     .settings th,.settings td{text-align:left;padding:8px 22px 8px 0;border-bottom:1px solid var(--line)}
     .settings th{font-weight:600;color:var(--ink)}
-    .settings td{font-family:var(--mono);font-size:13.5px;color:var(--ink-soft)}
-    .hint{font-size:14px;color:var(--ink-soft)}
+    .settings td{font-family:var(--mono);font-size:13.5px;color:var(--soft)}
+    .hint{font-size:14px;color:var(--label)}
+
+    /* Board tour */
+    .tour-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:36px 0 0}
+    .tour-col h3{margin:0 0 12px;font-size:19px}
+    .render-frame{background:var(--black);border-radius:14px;padding:22px;display:flex;justify-content:center}
+    .render-frame img{display:block;height:520px;width:auto;max-width:100%}
+    .feat{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:9px}
+    .feat li{position:relative;padding-left:20px;color:var(--soft);font-size:15.5px}
+    .feat li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--black)}
+    .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 0}
+    .note{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+    .note h4{margin:0 0 8px;font-size:16px}
+    .note p{margin:0;color:var(--soft);font-size:14.5px}
+    .dims{font-family:var(--mono);font-size:13.5px;color:var(--label);margin:26px 0 0}
 
     /* Specs grid */
     .grid-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:36px 0 0}
     .spec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
-    .spec .label{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--copper-ink)}
+    .spec .label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label)}
     .spec .val{margin-top:8px;font-weight:600;font-size:15px;line-height:1.5}
 
     /* Downloads */
     .dl-table{width:100%;border-collapse:collapse;margin:32px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-    .dl-table thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--copper-ink);text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:500}
+    .dl-table thead th{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label);text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:500}
     .dl-table td{padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:top}
     .dl-table tbody tr:last-child td{border-bottom:none}
-    .dl-table tbody tr:hover{background:#F7FAF6}
+    .dl-table tbody tr:hover{background:#F4F4F5}
     .dl-name{font-weight:600}
-    .dl-desc{color:var(--ink-soft);font-size:15px}
+    .dl-desc{color:var(--soft);font-size:15px}
     .dl-file a{font-family:var(--mono);font-size:13.5px;text-underline-offset:3px}
-    .table-note{font-size:14px;color:var(--ink-soft);margin:14px 0 0}
+    .table-note{font-size:14px;color:var(--label);margin:14px 0 0}
 
     /* Examples */
     .grid-ex{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:36px 0 0}
     .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:10px}
     .card h3{margin:0;font-size:18px}
-    .card p{margin:0;color:var(--ink-soft);font-size:15px;flex:1}
-    .btn-sm{align-self:flex-start;font-size:14px;font-weight:600;color:var(--mask);border:1px solid var(--mask);border-radius:7px;padding:8px 14px;text-decoration:none}
-    .btn-sm:hover{background:var(--mask);color:var(--silk)}
+    .card p{margin:0;color:var(--soft);font-size:15px;flex:1}
+    .btn-sm{align-self:flex-start;font-size:14px;font-weight:600;color:var(--ink);border:1.5px solid var(--ink);border-radius:7px;padding:8px 14px;text-decoration:none}
+    .btn-sm:hover{background:var(--black);border-color:var(--black);color:#fff}
 
     /* Support */
     .grid-support{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin:36px 0 0}
-    .contact{background:var(--mask);color:var(--silk);border-radius:var(--radius);padding:26px 28px}
-    .contact h3{margin:0 0 8px;font-size:19px}
-    .contact p{margin:0 0 14px;color:var(--silk-dim);font-size:15px}
-    .contact a{color:var(--silk);font-family:var(--mono);font-size:15px}
+    .contact{background:var(--black);color:var(--bright);border-radius:var(--radius);padding:26px 28px}
+    .contact h3{margin:0 0 8px;font-size:19px;color:#fff}
+    .contact p{margin:0 0 14px;color:var(--dim);font-size:15px}
+    .contact a{color:var(--accent-lt);font-family:var(--mono);font-size:15px}
     .faq{display:grid;gap:10px;align-content:start}
     details{background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
     summary{list-style:none;cursor:pointer;padding:16px 20px;font-weight:600;display:flex;justify-content:space-between;gap:12px}
     summary::-webkit-details-marker{display:none}
-    summary::after{content:"+";font-family:var(--mono);color:var(--copper-ink)}
+    summary::after{content:"+";font-family:var(--mono);color:var(--accent)}
     details[open] summary::after{content:"–"}
-    details p{margin:0;padding:0 20px 16px;color:var(--ink-soft);font-size:15px}
+    details p{margin:0;padding:0 20px 16px;color:var(--soft);font-size:15px}
 
     /* Footer */
     .site-footer{border-top:1px solid var(--line);padding:26px 0 42px}
-    .footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink-soft)}
-    .site-footer a{color:var(--ink-soft)}
+    .footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:14px;color:var(--label)}
+    .site-footer a{color:var(--label)}
 
     @media (max-width:900px){
+      .hero-grid{grid-template-columns:1fr;gap:36px}
+      .hero-shot img{height:400px}
+      .tour-grid{grid-template-columns:1fr}
+      .render-frame img{height:440px}
+      .notes{grid-template-columns:1fr}
       .grid-specs{grid-template-columns:repeat(2,1fr)}
       .grid-ex{grid-template-columns:1fr}
       .grid-support{grid-template-columns:1fr}
@@ -161,7 +182,7 @@
     }
     @media (prefers-reduced-motion:reduce){
       html{scroll-behavior:auto}
-      .led{animation:none;fill:#6FE08A}
+      .rgb-dot{animation:none;background:var(--accent-lt)}
     }
   </style>
 </head>
@@ -178,6 +199,7 @@
       </a>
       <nav class="site-nav" aria-label="Sections">
         <a href="#start">Get started</a>
+        <a href="#board">Board tour</a>
         <a href="#specs">Specs</a>
         <a href="#downloads">Downloads</a>
         <a href="#examples">Examples</a>
@@ -187,64 +209,21 @@
   </header>
 
   <section class="hero">
-    <div class="wrap">
-      <p class="eyebrow">Official documentation</p>
-      <!-- TODO: replace with your final product name everywhere it appears on this page -->
-      <h1>ESP32&#8209;S3 Dev Board</h1>
-      <p class="lede">A Wi&#8209;Fi + Bluetooth&nbsp;LE development board with a built&#8209;in 0.96&Prime; OLED display, USB&#8209;C, LiPo battery charging, and a Qwiic connector &mdash; running a live weather clock straight out of the box.</p>
-      <div class="cta-row">
-        <a class="btn btn-light" href="#start">Get started</a>
-        <a class="btn btn-ghost" href="#downloads">Downloads</a>
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Official documentation</p>
+        <!-- TODO: replace with your final product name everywhere it appears on this page -->
+        <h1>ESP32&#8209;S3 Dev Board</h1>
+        <p class="lede">A Wi&#8209;Fi + Bluetooth&nbsp;LE development board with a built&#8209;in 0.96&Prime; OLED display, USB&#8209;C, LiPo battery charging, and a Qwiic connector &mdash; running a live weather clock straight out of the box.</p>
+        <div class="cta-row">
+          <a class="btn btn-light" href="#start">Get started</a>
+          <a class="btn btn-ghost" href="#downloads">Downloads</a>
+        </div>
+        <p class="quickfacts">ESP32-S3-WROOM-1 &middot; 8 MB flash &middot; 76.2 &times; 25.4 mm</p>
       </div>
-      <p class="quickfacts">ESP32-S3-WROOM-1 &middot; 8 MB flash &middot; 76.2 &times; 25.4 mm</p>
-
-      <figure class="board-fig">
-        <svg viewBox="0 0 640 320" role="img" aria-label="Line drawing of the board: OLED display on the left, ESP32-S3 module with antenna on the right, USB-C on the left edge, and two rows of header pins." xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L8,4 L0,8 z" fill="rgba(242,245,241,.55)"/>
-            </marker>
-          </defs>
-          <!-- board outline (true 3:1 proportions) -->
-          <rect x="40" y="60" width="560" height="186" rx="10" fill="rgba(255,255,255,.035)" stroke="#F2F5F1" stroke-width="1.5"/>
-          <!-- USB-C on the left edge -->
-          <rect x="30" y="138" width="20" height="30" rx="7" fill="#0F3D2E" stroke="#F2F5F1" stroke-width="1.4"/>
-          <!-- header pins -->
-          <g fill="none" stroke="rgba(242,245,241,.8)" stroke-width="1.3">
-            <g id="row-top">
-              <circle cx="78" cy="77" r="4.2"/><circle cx="100" cy="77" r="4.2"/><circle cx="122" cy="77" r="4.2"/><circle cx="144" cy="77" r="4.2"/><circle cx="166" cy="77" r="4.2"/><circle cx="188" cy="77" r="4.2"/><circle cx="210" cy="77" r="4.2"/><circle cx="232" cy="77" r="4.2"/><circle cx="254" cy="77" r="4.2"/><circle cx="276" cy="77" r="4.2"/><circle cx="298" cy="77" r="4.2"/><circle cx="320" cy="77" r="4.2"/>
-            </g>
-            <g id="row-bottom">
-              <circle cx="78" cy="229" r="4.2"/><circle cx="100" cy="229" r="4.2"/><circle cx="122" cy="229" r="4.2"/><circle cx="144" cy="229" r="4.2"/><circle cx="166" cy="229" r="4.2"/><circle cx="188" cy="229" r="4.2"/><circle cx="210" cy="229" r="4.2"/><circle cx="232" cy="229" r="4.2"/><circle cx="254" cy="229" r="4.2"/><circle cx="276" cy="229" r="4.2"/><circle cx="298" cy="229" r="4.2"/><circle cx="320" cy="229" r="4.2"/>
-            </g>
-          </g>
-          <text x="60" y="81" font-family="Spline Sans Mono, monospace" font-size="10" fill="rgba(242,245,241,.6)">J4</text>
-          <text x="60" y="233" font-family="Spline Sans Mono, monospace" font-size="10" fill="rgba(242,245,241,.6)">J5</text>
-          <!-- OLED with the demo on screen -->
-          <rect x="96" y="98" width="176" height="112" rx="5" fill="#081511" stroke="rgba(242,245,241,.5)" stroke-width="1.2"/>
-          <text x="184" y="150" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="30" fill="#F4FFF8">12:47</text>
-          <text x="184" y="178" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="12" fill="rgba(244,255,248,.75)">78&#176;F &middot; SUNNY</text>
-          <!-- RGB status LED -->
-          <circle class="led" cx="322" cy="120" r="5.5" fill="#6FE08A"/>
-          <text x="322" y="140" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="9" fill="rgba(242,245,241,.6)">RGB</text>
-          <!-- Qwiic connector near the bottom edge -->
-          <rect x="306" y="222" width="34" height="15" rx="4" fill="none" stroke="rgba(242,245,241,.7)" stroke-width="1.2"/>
-          <text x="323" y="215" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="9" fill="rgba(242,245,241,.6)">QWIIC</text>
-          <!-- ESP32-S3 module with meander antenna -->
-          <rect x="376" y="88" width="204" height="130" rx="6" fill="rgba(255,255,255,.05)" stroke="rgba(242,245,241,.8)" stroke-width="1.3"/>
-          <path d="M542,100 v18 h16 v-18 h14 v18 M542,136 v18 h16 v-18 h14 v18 M542,172 v18 h16 v-18 h14 v18" fill="none" stroke="rgba(242,245,241,.55)" stroke-width="1.3"/>
-          <text x="466" y="148" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="11" fill="rgba(242,245,241,.6)">U1</text>
-          <text x="466" y="166" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="12" fill="#F2F5F1">ESP32-S3-WROOM-1</text>
-          <!-- dimension callouts -->
-          <g stroke="rgba(242,245,241,.45)" stroke-width="1">
-            <line x1="40" y1="258" x2="40" y2="278"/><line x1="600" y1="258" x2="600" y2="278"/>
-            <line x1="46" y1="270" x2="594" y2="270" marker-start="url(#arr)" marker-end="url(#arr)"/>
-            <line x1="612" y1="60" x2="632" y2="60"/><line x1="612" y1="246" x2="632" y2="246"/>
-            <line x1="624" y1="66" x2="624" y2="240" marker-start="url(#arr)" marker-end="url(#arr)"/>
-          </g>
-          <text x="320" y="296" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="12" fill="rgba(242,245,241,.6)">76.2 mm</text>
-          <text x="638" y="153" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="12" fill="rgba(242,245,241,.6)" transform="rotate(90 634 153)">25.4 mm</text>
-        </svg>
+      <figure class="hero-shot">
+        <!-- Front render. The JPG's pure-black background matches the hero, so the board appears to float. -->
+        <img src="assets/top_view.jpg" alt="Front of the ESP32-S3 dev board, showing the Wi-Fi module, EN and BOOT buttons, RGB LED, and USB-C port">
       </figure>
     </div>
   </section>
@@ -312,10 +291,68 @@ void loop() {
             <span class="step-no" aria-hidden="true">5</span>
             <div>
               <h3>Keep going</h3>
-              <p>Grab the <a href="#downloads">pinout diagram and user guide</a>, then build something from the <a href="#examples">example projects</a> below &mdash; including the full source of the Weather Clock your board shipped with.</p>
+              <p>Take the <a href="#board">board tour</a> below, grab the <a href="#downloads">pinout diagram and user guide</a>, then build something from the <a href="#examples">example projects</a> &mdash; including the full source of the Weather Clock your board shipped with.</p>
             </div>
           </li>
         </ol>
+      </div>
+    </section>
+
+    <section id="board" class="section">
+      <div class="wrap">
+        <p class="kicker">Board tour</p>
+        <h2>Know your board</h2>
+        <p class="section-intro">Both sides, and what everything on them does. Renders show the bare board &mdash; the OLED display mounts on the front.</p>
+
+        <div class="tour-grid">
+          <div class="tour-col">
+            <h3>Front</h3>
+            <div class="render-frame">
+              <!-- TODO: these filenames must match what you uploaded to the assets folder -->
+              <img src="assets/top_view.jpg" alt="Front of the board: ESP32-S3 module with antenna at top, EN and BOOT buttons with RGB LED between them, display ribbon slot in the middle, USB-C at the bottom" loading="lazy">
+            </div>
+            <ul class="feat">
+              <li>ESP32&#8209;S3 module up top &mdash; the green area is the Wi&#8209;Fi antenna; keep it clear of metal.</li>
+              <li><strong>EN</strong> (reset) and <strong>BOOT</strong> buttons, with the RGB status LED between them.</li>
+              <li>USB&#8209;C for power, charging, and programming.</li>
+              <li><strong>CHG</strong> and <strong>SYS&nbsp;ON</strong> indicator LEDs by the USB port.</li>
+              <!-- TODO: confirm the Qwiic connector's position wording matches the physical board -->
+              <li>Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT connector for solder-free I&sup2;C sensors.</li>
+            </ul>
+          </div>
+          <div class="tour-col">
+            <h3>Back</h3>
+            <div class="render-frame">
+              <img src="assets/bottom_view.jpg" alt="Back of the board: silkscreen labels for every header pin, 30-pin display ribbon connector in the middle, battery connector with polarity marks at the bottom" loading="lazy">
+            </div>
+            <ul class="feat">
+              <li>Every header pin labeled on the silkscreen &mdash; power (3V3, GND, 5V_IN), GPIO numbers, and TX/RX.</li>
+              <li>30&#8209;pin ribbon connector for the OLED display.</li>
+              <!-- TODO: add the battery connector type here (e.g. JST-PH 2.0 mm) once confirmed -->
+              <li>Battery connector with polarity marked <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong>.</li>
+              <!-- TODO: confirm the code silkscreened on the board edge is your revision code -->
+              <li>Board code printed along the edge &mdash; include it when you contact support.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="notes">
+          <div class="note">
+            <h4>Where&rsquo;s the screen?</h4>
+            <!-- TODO: confirm this matches how the display actually mounts -->
+            <p>These renders show the bare board. The 0.96&Prime; OLED sits on the front; its ribbon cable passes through the center slot to the connector on the back.</p>
+          </div>
+          <div class="note">
+            <h4>Best Wi&#8209;Fi range</h4>
+            <p>Let the antenna end hang over the edge of your breadboard or enclosure. Metal, batteries, and hands near the green area reduce range.</p>
+          </div>
+          <div class="note">
+            <h4>Before you plug in a battery</h4>
+            <p>Use a single-cell 3.7&nbsp;V LiPo and match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks on the board. Battery lead polarity is not standardized between vendors &mdash; check every new battery.</p>
+          </div>
+        </div>
+
+        <p class="dims">76.2 &times; 25.4 mm (3.00&Prime; &times; 1.00&Prime;) &middot; 0.1&Prime; header pitch, breadboard friendly &middot; Designing an enclosure? <a href="docs/3D.step">Download the 3D model (STEP)</a></p>
       </div>
     </section>
 
@@ -345,7 +382,7 @@ void loop() {
             <tr><th>Document</th><th class="dl-desc-col">What it covers</th><th>File</th></tr>
           </thead>
           <tbody>
-            <!-- These three links point at PDFs inside this site's docs/ folder.
+            <!-- The first four links point at files inside this site's docs/ folder.
                  Upload your files there with these exact names (see docs/README.txt). -->
             <tr>
               <td class="dl-name">Schematic</td>
@@ -361,6 +398,11 @@ void loop() {
               <td class="dl-name">Pinout diagram</td>
               <td class="dl-desc dl-desc-col">Printable pin reference</td>
               <td class="dl-file"><a href="docs/pinout.pdf" target="_blank" rel="noopener">pinout.pdf</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">3D model</td>
+              <td class="dl-desc dl-desc-col">Exact board geometry for enclosures &amp; mounts</td>
+              <td class="dl-file"><a href="docs/3D.step">3D.step</a></td>
             </tr>
             <tr>
               <td class="dl-name">ESP32&#8209;S3&#8209;WROOM&#8209;1 datasheet</td>
@@ -413,7 +455,7 @@ void loop() {
         <div class="grid-support">
           <div class="contact">
             <h3>Talk to us</h3>
-            <p>Tell us what you tried and what happened &mdash; a photo of your setup helps. We read every message.</p>
+            <p>Tell us what you tried and what happened &mdash; a photo of your setup helps, and the code printed on the back of the board tells us your exact revision. We read every message.</p>
             <!-- TODO: make sure this mailbox exists (or change it) before printing the QR code -->
             <p><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></p>
           </div>
@@ -424,8 +466,8 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <!-- TODO: add your battery connector type (e.g. JST-PH 2.0 mm) and polarity note -->
-              <p>A single-cell 3.7&nbsp;V LiPo. It charges automatically from USB&#8209;C, and on-board protection guards against over-discharge. Double-check your battery&rsquo;s connector polarity against the user guide before plugging it in.</p>
+              <!-- TODO: add your battery connector type (e.g. JST-PH 2.0 mm) and confirm the polarity note -->
+              <p>A single-cell 3.7&nbsp;V LiPo. It charges automatically from USB&#8209;C, and on-board protection guards against over-discharge. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
             </details>
             <details>
               <summary>Can I use something other than Arduino?</summary>
