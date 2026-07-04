@@ -41,8 +41,10 @@ marking the exact spot.
       buttons at your public firmware repository (it will live under
       `https://github.com/HW-DESIGNS-LLC/...`)
 - [ ] Make sure `support@hwdesigns.us` exists (or change the address)
-- [ ] Optional: replace the hero line drawing with a real product photo
-      (instructions are in a comment above the `<figure>` in `index.html`)
+- [ ] Confirm the render filenames in `index.html` match your uploads
+      (`assets/top_view.jpg` and `assets/bottom_view.jpg`)
+- [ ] Verify the board-tour details: Qwiic connector location, battery
+      connector type, display-ribbon note, and the board code on the back
 - [ ] Test-scan the packaging QR code on a phone **after** HTTPS is live
 
 ## How publishing works
