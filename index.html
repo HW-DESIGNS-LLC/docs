@@ -20,82 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      color-scheme: light;
-      --paper:#FAFAFA; --card:#FFFFFF;
-      --ink:#111114; --soft:#3F3F46; --label:#52525B; --line:#E4E4E7;
-      --black:#000000; --bright:#F5F5F5; --dim:#C4C4C4; --faint:#A3A3A3;
-      --accent:#015CB5; --accent-lt:#85B8F0;
-      --radius:10px;
-      --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
-      --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
-    ::selection{background:var(--black);color:#fff}
-    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-    .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
-    a{color:var(--accent)}
-
-    .skip{position:absolute;left:-999px;top:0;background:var(--black);color:#fff;padding:10px 16px;z-index:99}
-    .skip:focus{left:12px;top:12px}
-
-    .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:1060px;margin:0 auto}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .logo{height:30px;width:auto;display:block}
-    .brand-fallback{font-weight:700;letter-spacing:.06em;color:var(--ink)}
-    .brand-docs{font-family:var(--mono);font-size:12px;color:var(--label);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
-    .site-nav a{font-size:14.5px;font-weight:500;color:var(--ink);text-decoration:none}
-    .site-nav a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
-
-    .hero{background:var(--black);color:var(--bright);padding:56px 0 52px}
-    .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-lt);margin:0;display:flex;align-items:center;gap:9px}
-    .rgb-dot{width:9px;height:9px;border-radius:50%;background:#6FE08A;animation:ledcycle 6s ease-in-out infinite;flex:none}
-    @keyframes ledcycle{0%,100%{background:#FF6A5A}33%{background:#6FE08A}66%{background:#6FB2FF}}
-    .hero h1{font-size:clamp(34px,5vw,52px);line-height:1.06;letter-spacing:-.015em;font-weight:700;margin:16px 0 14px;color:#fff}
-    .lede{font-size:clamp(17px,2vw,19px);color:var(--dim);max-width:58ch;margin:0}
-
-    .section{padding:64px 0}
-    section{scroll-margin-top:84px}
-    .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0}
-    .section h2{font-size:clamp(24px,3.2vw,32px);letter-spacing:-.01em;margin:10px 0 26px}
-
-    /* Board cards */
-    .grid-boards{display:grid;gap:16px}
-    .board-card{display:grid;grid-template-columns:200px 1fr;gap:26px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;transition:border-color .15s ease}
-    .board-card:hover{border-color:var(--accent)}
-    .thumb{background:var(--black);border-radius:10px;padding:16px 10px;display:flex;justify-content:center}
-    .thumb img{display:block;height:230px;width:auto;max-width:100%}
-    .b-name{display:block;font-size:21px;font-weight:700;color:var(--ink);margin:0 0 6px}
-    .b-desc{display:block;color:var(--soft);font-size:15.5px;margin:0 0 12px}
-    .b-tags{display:block;font-family:var(--mono);font-size:12.5px;color:var(--label);margin:0 0 14px}
-    .b-go{display:inline-block;font-weight:600;font-size:15px;color:var(--accent)}
-    .board-card:hover .b-go{text-decoration:underline;text-underline-offset:4px}
-    .more-note{font-size:14.5px;color:var(--label);margin:20px 0 0}
-
-    /* Support strip */
-    .contact{background:var(--black);color:var(--bright);border-radius:var(--radius);padding:26px 28px}
-    .contact h3{margin:0 0 8px;font-size:19px;color:#fff}
-    .contact p{margin:0 0 14px;color:var(--dim);font-size:15px;max-width:64ch}
-    .contact p:last-child{margin:0}
-    .contact a{color:var(--accent-lt);font-family:var(--mono);font-size:15px}
-
-    .site-footer{border-top:1px solid var(--line);padding:26px 0 42px}
-    .footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:14px;color:var(--label)}
-    .site-footer a{color:var(--label)}
-
-    @media (max-width:720px){
-      .board-card{grid-template-columns:1fr}
-      .thumb img{height:200px}
-    }
-    @media (prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-      .rgb-dot{animation:none;background:var(--accent-lt)}
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css">
 </head>
 <body id="top">
   <a class="skip" href="#boards">Skip to boards</a>
@@ -132,7 +57,8 @@
                image path, name, description, and tags. -->
           <a class="board-card" href="esp32-s3/">
             <span class="thumb">
-              <img src="esp32-s3/assets/top_view.jpg" alt="ESP32-S3 Dev Board" loading="lazy">
+              <!-- Keep this in sync with IMG_VERSION in esp32-s3/index.html when you post new photos -->
+              <img src="esp32-s3/assets/top_view_V2.jpg" alt="ESP32-S3 Dev Board" loading="lazy">
             </span>
             <span class="info">
               <span class="b-name">ESP32&#8209;S3 Dev Board</span>

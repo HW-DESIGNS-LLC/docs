@@ -7,8 +7,9 @@
   Search this file for "TODO" to find every spot to customize before launch.
   The full launch checklist is in README.md.
 
-  Theme: black & white, with one accent color — #015CB5, sampled directly from
-  the board's blue solder mask. All text/background pairs pass WCAG AA contrast.
+  Theme: "circuit copper & cobalt" — shared stylesheet at ../assets/site.css
+  (ink-navy, cobalt primary, copper secondary; all pairs pass WCAG AA).
+  Edit colors once in site.css and every page follows.
 -->
 <head>
   <meta charset="UTF-8">
@@ -41,170 +42,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      color-scheme: light;
-      /* Black & white core */
-      --paper:#FAFAFA;        /* page background            */
-      --card:#FFFFFF;         /* cards & tables             */
-      --ink:#111114;          /* headings & body text       */
-      --soft:#3F3F46;         /* secondary text (10.4:1)    */
-      --label:#52525B;        /* small labels (7.7:1)       */
-      --line:#E4E4E7;         /* borders                    */
-      --black:#000000;        /* hero, frames, buttons      */
-      --bright:#F5F5F5;       /* text on black              */
-      --dim:#C4C4C4;          /* secondary text on black (12:1) */
-      --faint:#A3A3A3;        /* tertiary text on black (8.3:1) */
-      /* The one accent: your board's solder-mask blue */
-      --accent:#015CB5;       /* on light backgrounds (6.6:1 on white) */
-      --accent-lt:#85B8F0;    /* on dark backgrounds (~9:1 on black)   */
-      --radius:10px;
-      --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
-      --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
-    ::selection{background:var(--black);color:#fff}
-    :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-    .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
-    a{color:var(--accent)}
-
-    .skip{position:absolute;left:-999px;top:0;background:var(--black);color:#fff;padding:10px 16px;z-index:99}
-    .skip:focus{left:12px;top:12px}
-
-    /* Header */
-    .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;max-width:1060px;margin:0 auto}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .logo{height:30px;width:auto;display:block}
-    .brand-fallback{font-weight:700;letter-spacing:.06em;color:var(--ink)}
-    .brand-docs{font-family:var(--mono);font-size:12px;color:var(--label);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
-    .site-nav{display:flex;flex-wrap:wrap;gap:4px 18px}
-    .site-nav a{font-size:14.5px;font-weight:500;color:var(--ink);text-decoration:none}
-    .site-nav a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
-
-    /* Hero — black, so the render's black background disappears and the board floats */
-    .hero{background:var(--black);color:var(--bright);padding:64px 0 60px}
-    .hero-grid{display:grid;grid-template-columns:1fr 240px;gap:48px;align-items:center}
-    .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-lt);margin:0;display:flex;align-items:center;gap:9px}
-    .rgb-dot{width:9px;height:9px;border-radius:50%;background:#6FE08A;animation:ledcycle 6s ease-in-out infinite;flex:none}
-    @keyframes ledcycle{0%,100%{background:#FF6A5A}33%{background:#6FE08A}66%{background:#6FB2FF}}
-    .hero h1{font-size:clamp(38px,6vw,62px);line-height:1.04;letter-spacing:-.015em;font-weight:700;margin:16px 0 16px;max-width:16ch;color:#FFFFFF}
-    .lede{font-size:clamp(17px,2vw,19.5px);color:var(--dim);max-width:58ch;margin:0 0 26px}
-    .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px}
-    .btn{display:inline-block;padding:12px 22px;border-radius:8px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid transparent}
-    .btn-light{background:#FFFFFF;color:var(--black)}
-    .btn-light:hover{background:var(--dim)}
-    .btn-ghost{border-color:rgba(255,255,255,.45);color:var(--bright)}
-    .btn-ghost:hover{border-color:#fff}
-    .quickfacts{font-family:var(--mono);font-size:13px;color:var(--faint);margin:0}
-    .hero-shot{position:relative;margin:0;justify-self:center}
-    .hero-shot::before{content:"";position:absolute;inset:-14%;background:radial-gradient(closest-side,rgba(1,92,181,.35),transparent 72%);pointer-events:none}
-    .hero-shot img{position:relative;display:block;height:470px;width:auto;max-width:100%}
-    /* (image backgrounds are pure black, matching the hero, so no frame is needed there) */
-
-    /* Sections */
-    .section{padding:72px 0}
-    section{scroll-margin-top:84px}
-    .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0}
-    .section h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.01em;margin:10px 0 10px}
-    .section-intro{color:var(--soft);max-width:62ch;margin:0}
-
-    /* Getting started steps */
-    .steps{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px}
-    .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;display:grid;grid-template-columns:44px 1fr;gap:20px}
-    .step-no{font-family:var(--mono);font-size:16px;color:#fff;background:var(--black);width:40px;height:40px;border-radius:8px;display:grid;place-items:center}
-    .step h3{margin:7px 0 8px;font-size:19px}
-    .step p{margin:0 0 10px;color:var(--soft)}
-    .step p:last-child{margin-bottom:0}
-    pre{background:#F4F4F5;color:#18181B;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:14px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;margin:12px 0}
-    code{font-family:var(--mono)}
-    p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font-size:.88em}
-    .settings{border-collapse:collapse;margin:12px 0 4px;font-size:14.5px}
-    .settings th,.settings td{text-align:left;padding:8px 22px 8px 0;border-bottom:1px solid var(--line)}
-    .settings th{font-weight:600;color:var(--ink)}
-    .settings td{font-family:var(--mono);font-size:13.5px;color:var(--soft)}
-    .hint{font-size:14px;color:var(--label)}
-
-    /* Board tour */
-    .tour-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:36px 0 0}
-    .tour-col h3{margin:0 0 12px;font-size:19px}
-    .render-frame{background:var(--black);border-radius:14px;padding:22px;display:flex;justify-content:center}
-    .render-frame img{display:block;height:520px;width:auto;max-width:100%}
-    .feat{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:9px}
-    .feat li{position:relative;padding-left:20px;color:var(--soft);font-size:15.5px}
-    .feat li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--black)}
-    .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 0}
-    .note{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
-    .note h4{margin:0 0 8px;font-size:16px}
-    .note p{margin:0;color:var(--soft);font-size:14.5px}
-    .dims{font-family:var(--mono);font-size:13.5px;color:var(--label);margin:26px 0 0}
-
-    /* Specs grid */
-    .grid-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:36px 0 0}
-    .spec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
-    .spec .label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label)}
-    .spec .val{margin-top:8px;font-weight:600;font-size:15px;line-height:1.5}
-
-    /* Downloads */
-    .dl-table{width:100%;border-collapse:collapse;margin:32px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-    .dl-table thead th{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label);text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:500}
-    .dl-table td{padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:top}
-    .dl-table tbody tr:last-child td{border-bottom:none}
-    .dl-table tbody tr:hover{background:#F4F4F5}
-    .dl-name{font-weight:600}
-    .dl-desc{color:var(--soft);font-size:15px}
-    .dl-file a{font-family:var(--mono);font-size:13.5px;text-underline-offset:3px}
-    .table-note{font-size:14px;color:var(--label);margin:14px 0 0}
-
-    /* Examples */
-    .grid-ex{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:36px 0 0}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:10px}
-    .card h3{margin:0;font-size:18px}
-    .card p{margin:0;color:var(--soft);font-size:15px;flex:1}
-    .btn-sm{align-self:flex-start;font-size:14px;font-weight:600;color:var(--ink);border:1.5px solid var(--ink);border-radius:7px;padding:8px 14px;text-decoration:none}
-    .btn-sm:hover{background:var(--black);border-color:var(--black);color:#fff}
-
-    /* Support */
-    .grid-support{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin:36px 0 0}
-    .contact{background:var(--black);color:var(--bright);border-radius:var(--radius);padding:26px 28px}
-    .contact h3{margin:0 0 8px;font-size:19px;color:#fff}
-    .contact p{margin:0 0 14px;color:var(--dim);font-size:15px}
-    .contact a{color:var(--accent-lt);font-family:var(--mono);font-size:15px}
-    .faq{display:grid;gap:10px;align-content:start}
-    details{background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
-    summary{list-style:none;cursor:pointer;padding:16px 20px;font-weight:600;display:flex;justify-content:space-between;gap:12px}
-    summary::-webkit-details-marker{display:none}
-    summary::after{content:"+";font-family:var(--mono);color:var(--accent)}
-    details[open] summary::after{content:"–"}
-    details p{margin:0;padding:0 20px 16px;color:var(--soft);font-size:15px}
-
-    /* Footer */
-    .site-footer{border-top:1px solid var(--line);padding:26px 0 42px}
-    .footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:14px;color:var(--label)}
-    .site-footer a{color:var(--label)}
-
-    @media (max-width:900px){
-      .hero-grid{grid-template-columns:1fr;gap:36px}
-      .hero-shot img{height:400px}
-      .tour-grid{grid-template-columns:1fr}
-      .render-frame img{height:440px}
-      .notes{grid-template-columns:1fr}
-      .grid-specs{grid-template-columns:repeat(2,1fr)}
-      .grid-ex{grid-template-columns:1fr}
-      .grid-support{grid-template-columns:1fr}
-    }
-    @media (max-width:560px){
-      .grid-specs{grid-template-columns:1fr}
-      .step{grid-template-columns:1fr;gap:10px}
-      .dl-desc-col{display:none}
-    }
-    @media (prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-      .rgb-dot{animation:none;background:var(--accent-lt)}
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/site.css">
 </head>
 <body id="top">
   <a class="skip" href="#start">Skip to getting started</a>
@@ -238,7 +76,7 @@
         <div class="cta-row">
           <a class="btn btn-light" href="#start">Get started</a>
           <a class="btn btn-ghost" href="#downloads">Downloads</a>
-          <a class="btn btn-ghost" href="power-profile.html">DVT report: power &amp; charging</a>
+          <a class="btn btn-ghost" href="dvt/">Full DVT report</a>
         </div>
         <p class="quickfacts">ESP32-S3-WROOM-1 &middot; 8 MB flash &middot; 76.2 &times; 25.4 mm</p>
       </div>
@@ -426,6 +264,11 @@ void loop() {
               <td class="dl-file"><a href="docs/3D.step">3D.step</a></td>
             </tr>
             <tr>
+              <td class="dl-name">DVT report</td>
+              <td class="dl-desc dl-desc-col">Rev A design-verification results &mdash; 128 tests, power deep-dive, known issues</td>
+              <td class="dl-file"><a href="dvt/">open report&nbsp;&#8599;</a></td>
+            </tr>
+            <tr>
               <td class="dl-name">ESP32&#8209;S3&#8209;WROOM&#8209;1 datasheet</td>
               <td class="dl-desc dl-desc-col">Official module specifications from Espressif</td>
               <td class="dl-file"><a href="https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf" target="_blank" rel="noopener">espressif.com&nbsp;&#8599;</a></td>
@@ -528,5 +371,6 @@ void loop() {
       });
     })();
   </script>
+  <script src="../assets/site.js" defer></script>
 </body>
 </html>

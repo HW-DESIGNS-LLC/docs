@@ -1,0 +1,3467 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  HW Designs — DVT report (generated from the DVT tracker + DVT plan + PWR-02 capture)
+  Rebuilt July 21, 2026. Styling: ../../assets/site.css. Page-specific styles below.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DVT Report — ESP32-S3 Dev Board Rev A · HW Designs</title>
+  <meta name="description" content="Design-verification report for the HW Designs ESP32-S3 development board Rev A: 128 tests across 16 subsystems, full power characterization, known issues, and the complete test plan.">
+  <meta property="og:title" content="DVT Report — ESP32-S3 Dev Board Rev A">
+  <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/dvt/">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="../../assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <style>
+    /* ── DVT-report page styles ── */
+    .crumb{font-size:13.5px;margin:0 0 18px;color:var(--faint)}
+    .crumb a{color:var(--dim);text-decoration:none}
+    .crumb a:hover{color:#fff;text-decoration:underline}
+    .hero .meta-row{margin-top:22px}
+    .hero h1{max-width:none}
+    .sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px 0 0}
+    .sum-card{display:grid;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;text-decoration:none;color:var(--ink)}
+    .sum-card:hover{border-color:var(--cobalt)}
+    .sum-ok{border-top:3px solid var(--cobalt)}
+    .sum-bad{border-top:3px solid var(--red-ink)}
+    .sum-wip{border-top:3px solid var(--copper)}
+    .sum-code{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--label)}
+    .sum-name{font-weight:600;font-size:14.5px;line-height:1.3}
+    .sum-nums{font-family:var(--mono);font-size:11.5px;color:var(--soft)}
+    .stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:34px 0 0}
+    .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+    .stat b{display:block;font-size:26px;letter-spacing:-.01em}
+    .stat span{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--label)}
+    .overall{margin:18px 0 0;display:flex;align-items:center;gap:14px}
+    .overall .progress{flex:1}
+    .overall span.lbl{font-family:var(--mono);font-size:12.5px;color:var(--label);white-space:nowrap}
+    .subsys{margin:44px 0 0}
+    .subsys-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;justify-content:space-between}
+    .subsys-head h3{margin:0;font-size:20px}
+    .subsys-chips{display:flex;gap:6px;flex-wrap:wrap}
+    .subsys-index{font-family:var(--mono);font-size:12.5px;margin:26px 0 0;display:flex;flex-wrap:wrap;gap:6px 14px}
+    .subsys-index a{text-decoration:none;color:var(--cobalt-ink)}
+    .subsys-index a:hover{text-decoration:underline}
+    .t-table{margin:14px 0 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+    .t-row{border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--card)}
+    .t-row:last-of-type{border-bottom:0}
+    .t-row summary{display:grid;grid-template-columns:86px 1fr auto auto;align-items:center;gap:14px;padding:11px 16px;font-weight:400;font-size:14.5px}
+    .t-row summary:hover{background:#F3F6FD}
+    .t-row summary::after{display:none}
+    .t-id{font-family:var(--mono);font-size:12.5px;color:var(--label)}
+    .t-desc{color:var(--ink)}
+    .t-act{font-family:var(--mono);font-size:12.5px;color:var(--soft);text-align:right}
+    .t-body{padding:4px 16px 14px 116px;font-size:14.5px;color:var(--soft)}
+    .t-body p{margin:0 0 7px}
+    .t-spec,.t-ref{font-family:var(--mono);font-size:12.5px;color:var(--label)}
+    .plan-detail{margin:12px 0 0;background:var(--card)}
+    .plan-detail > summary{font-size:14.5px;color:var(--cobalt-ink)}
+    .plan-body{padding:0 20px 18px;font-size:14.5px;color:var(--soft);overflow-x:auto}
+    .plan-body h4,.plan-body h5{color:var(--ink);margin:18px 0 6px}
+    .plan-body table{border-collapse:collapse;margin:10px 0;font-size:13px;min-width:520px}
+    .plan-body th,.plan-body td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+    .plan-body th{background:var(--tint);font-family:var(--mono);font-size:11.5px;letter-spacing:.06em}
+    .plan-body pre{border-left-color:var(--copper)}
+    .iss{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 24px;margin:14px 0 0}
+    .iss-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+    .iss h3{margin:0;font-size:17px}
+    .iss-tag{font-family:var(--mono);font-size:12px;color:var(--label);margin:2px 0 8px}
+    .iss p{margin:0;color:var(--soft);font-size:15px}
+    .ref-block{margin:26px 0 0}
+    .ref-block > details > summary{font-size:16px}
+    .disclaimer{font-size:13.5px;color:var(--label);border-top:1px solid var(--line);margin:56px 0 0;padding:18px 0 0}
+    .pwr-chapter .section{padding:34px 0 0;background:transparent}
+    .pwr-chapter .kicker{color:var(--copper-ink)}
+    @media (max-width:900px){.sum-grid{grid-template-columns:repeat(2,1fr)}.stat-row{grid-template-columns:repeat(2,1fr)}.t-row summary{grid-template-columns:70px 1fr auto}.t-act{display:none}.t-body{padding-left:16px}}
+    /* ── ported from the original power-profile page (recolored) ── */
+:root{
+      color-scheme: light;
+      --paper:var(--paper); --card:#FFFFFF; --ink:var(--ink); --soft:var(--soft);
+      --label:var(--label); --line:var(--line); --black:var(--navy); --bright:var(--bright);
+      --dim:var(--dim); --faint:var(--faint); --accent:var(--cobalt); --accent-lt:var(--cobalt-lt);
+      --amber:#C77800; --red:#B0342A; --green:#2E7D32;
+      --radius:10px;
+      --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+      --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    }
+*{box-sizing:border-box}
+::selection{background:var(--black);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+/* Header (mirrors hub) */
+    .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+/* Report hero */
+    .rpt-hero{background:var(--black);color:var(--bright);padding:52px 0 46px}
+33%{background:#6FE08A}
+66%{background:#6FB2FF}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px 10px;margin:24px 0 0}
+.chip{font-family:var(--mono);font-size:12.5px;color:var(--bright);border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:5px 11px}
+.chip b{color:var(--accent-lt);font-weight:500}
+/* Sections */
+    .section{padding:56px 0}
+section{scroll-margin-top:84px}
+/* Verdict banner */
+    .verdict{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:var(--radius);padding:22px 26px;margin:34px 0 0}
+.verdict .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:600}
+.verdict p{margin:8px 0 0;color:var(--ink)}
+/* Result cards (headline numbers) */
+    .grid-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:34px 0 0}
+/* Figures */
+    figure{margin:34px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 8px;overflow:hidden}
+figure img{display:block;width:100%;height:auto;border-radius:6px}
+figcaption{font-size:14px;color:var(--label);margin:12px 4px 8px;line-height:1.55}
+figcaption b{color:var(--soft);font-weight:600}
+/* Data tables */
+    .tbl{width:100%;border-collapse:collapse;margin:22px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;font-size:14.5px}
+.tbl thead th{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--label);text-align:left;padding:13px 18px;border-bottom:1px solid var(--line);font-weight:500}
+.tbl td{padding:13px 18px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--soft)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover{background:var(--tint)}
+.tbl td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+.tbl .mono{font-family:var(--mono);font-size:13.5px;color:var(--ink);white-space:nowrap}
+.tbl .pct{font-family:var(--mono);font-size:13.5px;color:var(--soft)}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:middle}
+/* Narrative event blocks */
+    .events{display:grid;gap:14px;margin:30px 0 0}
+.event{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;display:grid;grid-template-columns:150px 1fr;gap:22px}
+.event .when{border-right:1px solid var(--line);padding-right:20px}
+.event .when .t{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
+.event .when h3{margin:6px 0 0;font-size:17px;line-height:1.25}
+.event .body{margin:0}
+.event .body p{margin:0;color:var(--soft);font-size:15.5px;max-width:none}
+.event .body p+p{margin-top:10px}
+.tagline{display:inline-block;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:5px;margin-bottom:10px}
+.tag-spike{background:#F7E7E5;color:var(--red)}
+.tag-sag{background:#FBF0DC;color:var(--amber)}
+.tag-dwell{background:#E4EEF9;color:var(--accent)}
+.tag-ripple{background:#E6F1E7;color:var(--green)}
+/* Method + findings lists */
+    .feat{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:9px;max-width:78ch}
+code{font-family:var(--mono)}
+p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font-size:.86em}
+/* Callout */
+    .callout{background:#F4F7FB;border:1px solid #D6E3F2;border-radius:var(--radius);padding:20px 24px;margin:26px 0 0}
+.callout h4{margin:0 0 8px;font-size:15px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.callout p{margin:0;color:var(--soft);font-size:15px;max-width:none}
+.callout p+p{margin-top:10px}
+/* Actions */
+    .actions{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:10px;counter-reset:a}
+.actions li{counter-increment:a;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px 16px 54px;position:relative;color:var(--soft);font-size:15.5px}
+.actions li::before{content:counter(a);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:6px;background:var(--black);color:#fff;font-family:var(--mono);font-size:13px;display:grid;place-items:center}
+.actions li b{color:var(--ink);font-weight:600}
+.footnote{font-size:13.5px;color:var(--label);margin:22px 0 0;max-width:78ch}
+/* Footer */
+    .site-footer{border-top:1px solid var(--line);padding:26px 0 42px;margin-top:24px}
+.event{grid-template-columns:1fr;gap:14px}
+.event .when{border-right:none;border-bottom:1px solid var(--line);padding:0 0 14px}
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#summary">Skip to summary</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" title="All HW Designs boards">
+        <img src="../../assets/logo.svg" alt="HW Designs" class="logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <span class="brand-fallback" hidden>HW&nbsp;Designs</span>
+        <span class="brand-docs">DVT</span>
+      </a>
+      <nav class="site-nav" aria-label="Report sections">
+        <a href="#summary">Summary</a>
+        <a href="#power">Power deep-dive</a>
+        <a href="#results">Results</a>
+        <a href="#issues">Issues &amp; fixes</a>
+        <a href="#reference">Plan &amp; reference</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="crumb"><a href="../../">Docs</a> &rsaquo; <a href="../">ESP32-S3 Dev Board</a> &rsaquo; DVT Report</p>
+      <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Design Verification Testing</p>
+      <h1>DVT Report &mdash; Rev A</h1>
+      <p class="lede">The complete design-verification record for the ESP32&#8209;S3 development board: 128 tests across 16 subsystems, from incoming inspection through RF, plus a full bench power characterization of the shipping firmware. Published so you can see exactly how this board was proven out.</p>
+      <div class="meta-row">
+        <span class="chip"><b>Board</b> ESP32-S3-WROOM-1-N8 &middot; Rev A</span>
+        <span class="chip"><b>Fab rev</b> 2026-06-28</span>
+        <span class="chip"><b>Tests</b> 128</span>
+        <span class="chip"><b>Pass</b> 116</span>
+        <span class="chip"><b>Fail</b> 3</span>
+        <span class="chip"><b>Pending</b> 9 (RF in progress)</span>
+        <span class="chip"><b>Updated</b> July 21, 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="summary" class="section">
+      <div class="wrap">
+        <p class="kicker">Summary</p>
+        <h2>116 of 119 executed tests pass</h2>
+        <p class="section-intro">Every subsystem has been exercised except the final RF range and coexistence set, which is in progress. The three failures are understood, dispositioned, and detailed under <a href="#issues">Issues &amp; fixes</a>.</p>
+        <div class="stat-row">
+          <div class="stat"><b>128</b><span>Total tests</span></div>
+          <div class="stat"><b>116</b><span>Pass</span></div>
+          <div class="stat"><b>3</b><span>Fail</span></div>
+          <div class="stat"><b>9</b><span>Pending (RF)</span></div>
+          <div class="stat"><b>97.5%</b><span>Pass rate, executed</span></div>
+        </div>
+        <div class="overall"><span class="lbl">Campaign completion</span><span class="progress"><span style="width:93%"></span></span><span class="lbl">93%</span></div>
+        <div class="sum-grid">
+          <a class="sum-card sum-bad" href="#sub-vis">
+  <span class="sum-code">VIS</span>
+  <span class="sum-name">Visual &amp; mechanical inspection</span>
+  <span class="sum-nums">10/11 pass &middot; 1 fail</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-pre">
+  <span class="sum-code">PRE</span>
+  <span class="sum-name">Unpowered electrical checks</span>
+  <span class="sum-nums">12/12 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-pwr">
+  <span class="sum-code">PWR</span>
+  <span class="sum-name">Power-up &amp; power rails</span>
+  <span class="sum-nums">27/27 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-chg">
+  <span class="sum-code">CHG</span>
+  <span class="sum-name">Battery charger</span>
+  <span class="sum-nums">8/8 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-bat">
+  <span class="sum-code">BAT</span>
+  <span class="sum-name">Battery protection &amp; power path</span>
+  <span class="sum-nums">6/6 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-bad" href="#sub-mcu">
+  <span class="sum-code">MCU</span>
+  <span class="sum-name">Processor bring-up</span>
+  <span class="sum-nums">6/7 pass &middot; 1 fail</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-gpio">
+  <span class="sum-code">GPIO</span>
+  <span class="sum-name">I/O verification</span>
+  <span class="sum-nums">6/6 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-i2c">
+  <span class="sum-code">I2C</span>
+  <span class="sum-name">Qwiic port</span>
+  <span class="sum-nums">8/8 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-oled">
+  <span class="sum-code">OLED</span>
+  <span class="sum-name">Display subsystem</span>
+  <span class="sum-nums">7/7 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-rgb">
+  <span class="sum-code">RGB</span>
+  <span class="sum-name">RGB status LED</span>
+  <span class="sum-nums">3/3 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-adc">
+  <span class="sum-code">ADC</span>
+  <span class="sum-name">Sense channels</span>
+  <span class="sum-nums">5/5 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-btn">
+  <span class="sum-code">BTN</span>
+  <span class="sum-name">Buttons</span>
+  <span class="sum-nums">2/2 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-ok" href="#sub-led">
+  <span class="sum-code">LED</span>
+  <span class="sum-name">Indicator LEDs</span>
+  <span class="sum-nums">2/2 pass</span>
+  <span class="progress"><span style="width:100%"></span></span>
+</a><a class="sum-card sum-bad" href="#sub-rfw">
+  <span class="sum-code">RFW</span>
+  <span class="sum-name">Wi-Fi RF</span>
+  <span class="sum-nums">4/10 pass &middot; 1 fail &middot; 5 pending</span>
+  <span class="progress"><span style="width:50%"></span></span>
+</a><a class="sum-card sum-wip" href="#sub-rfb">
+  <span class="sum-code">RFB</span>
+  <span class="sum-name">Bluetooth LE RF</span>
+  <span class="sum-nums">1/4 pass &middot; 3 pending</span>
+  <span class="progress"><span style="width:25%"></span></span>
+</a><a class="sum-card sum-wip" href="#sub-sys">
+  <span class="sum-code">SYS</span>
+  <span class="sum-name">System-level</span>
+  <span class="sum-nums">9/10 pass &middot; 1 pending</span>
+  <span class="progress"><span style="width:90%"></span></span>
+</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="power" class="section">
+      <div class="wrap">
+        <p class="kicker">Featured measurement &middot; PWR</p>
+        <h2>Power &amp; charging deep-dive</h2>
+        <p class="section-intro">Bench current-consumption capture of the shipped Wi&#8209;Fi weather clock demo &mdash; a 43-minute steady-state run for the true average, plus a 10-second high-rate trace that decodes every spike, sag, and dwell &mdash; and a full USB charge cycle validating the MCP73831 charging path end to end.</p>
+        <div class="meta-row">
+        <span class="chip"><b>Board</b> ESP32-S3-WROOM-1-N8</span>
+        <span class="chip"><b>Fab rev</b> 2026-06-28</span>
+        <span class="chip"><b>Test</b> PWR-02</span>
+        <span class="chip"><b>Instrument</b> Nordic PPK2 · source-meter mode</span>
+        <span class="chip"><b>Steady-state</b> 1 Sa/s · 43 min</span>
+        <span class="chip"><b>Event detail</b> 100 kSa/s · 10.5 s</span>
+        <span class="chip"><b>Charge cycle</b> 1 Sa/s · 117 min</span>
+      </div>
+      </div>
+      <div class="pwr-chapter">
+<section class="section" id="pwr-summary">
+      <div class="wrap">
+        <p class="kicker">Summary</p>
+        <h3>What we measured</h3>
+        <p>The board ran its factory firmware &mdash; fetch the local forecast over Wi&#8209;Fi (Open&#8209;Meteo, plain HTTP), read the on&#8209;board SHT4x temperature/humidity sensor, and redraw the 0.96&#8221; SSD1306 OLED &mdash; while the PPK2 sourced the board and logged supply current. It was captured twice, at two rates that answer two different questions. A <b>43-minute run at 1&nbsp;Sa/s</b> gives the honest long-run average, because the PPK2 averages every underlying sample into each 1&nbsp;s point. A <b>10-second run at 100&nbsp;kSa/s</b> (10&nbsp;&micro;s resolution) resolves the shape of individual events &mdash; the baseline, the periodic tick, one network exchange, and the moments the radio sleeps. A third run captured the <b>USB charging path</b>: a complete MCP73831 charge cycle from constant-current plateau to termination.</p>
+
+        <div class="verdict">
+          <span class="tag">Result &mdash; Pass, as expected</span>
+          <p>Every current level resolves cleanly into a known, additive load. No unexplained draw, no runaway consumption, and the transient peaks stay within the LDO/power-path budget. The headline average is the steady-state <b>68.9&nbsp;mA</b>; the 112&nbsp;mA seen in the short trace is the <em>active-phase</em> draw, when sustained Wi&#8209;Fi traffic held the radio awake. The one actionable finding is a power-optimisation opportunity, not a defect: in steady state the radio still spends roughly a third of its time awake, and dominates the average. The charge cycle additionally validates the charging path &mdash; and functionally clears the earlier suspect R5 PROG reading as an in-circuit measurement artifact.</p>
+        </div>
+
+        <div class="grid-specs">
+          <div class="spec"><div class="label">Mean current · steady state</div><div class="val"><span class="big">68.9</span> mA<br><span style="font-size:13px;color:var(--label)">43-min average</span></div></div>
+          <div class="spec"><div class="label">Mean current · active phase</div><div class="val"><span class="big">112.0</span> mA<br><span style="font-size:13px;color:var(--label)">Wi-Fi held awake</span></div></div>
+          <div class="spec"><div class="label">Peak (TX)</div><div class="val"><span class="big">401</span> mA<br><span style="font-size:13px;color:var(--label)">150 &micro;s frame</span></div></div>
+          <div class="spec"><div class="label">Idle floor</div><div class="val"><span class="big">29</span> mA<br><span style="font-size:13px;color:var(--label)">radio asleep, CPU idle</span></div></div>
+        </div>
+        <p class="footnote">The PPK2 logs current only. Multiply by your source voltage for power &mdash; at 3.7&nbsp;V the steady-state draw is ~255&nbsp;mW (active phase ~415&nbsp;mW). All figures below use the raw current channel.</p>
+      </div>
+    </section>
+
+    <!-- STEADY STATE (long run) --------------------------------------------->
+    <section class="section" id="pwr-steady-state" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Steady state</p>
+        <h3>The real average: 68.9 mA over 43 minutes</h3>
+        <p>A short capture can mislead. The 10-second trace below happened to land in a sustained-active phase &mdash; Wi&#8209;Fi pinned awake at ~113&nbsp;mA the whole window &mdash; and read 112&nbsp;mA. Over 43&nbsp;minutes the board reveals its true duty cycle: it modem-sleeps between beacons most of the time and only briefly wakes, so the long-run average settles to <b>68.9&nbsp;mA</b>. Each point in Fig.&nbsp;1 is a faithful 1-second average (the values are smooth intermediates, not snapped to the discrete levels a subsample would show), so the lower number is real, not an artifact of the slower rate &mdash; re-binning the 100&nbsp;kSa/s trace to 1&nbsp;Sa/s still returns 112&nbsp;mA for that window.</p>
+        <figure>
+          <img src="../assets/dvt_pwr_longrun.png" alt="43-minute current trace at 1 sample per second. The one-second averaged current sits mostly in a 60-75 mA band around a 68.9 mA mean line, well below a dashed 112 mA line marking the short active-phase capture, with occasional spikes toward 130 mA during network fetches and a 48 mA modem-sleep reference near the bottom.">
+          <figcaption><b>Fig. 1 &mdash;</b> Long-run capture. The solid line is the 43-min mean (68.9&nbsp;mA, true steady state); the dashed line is the 112&nbsp;mA active-phase average from the short trace. Per-second values sit mostly in a 60&ndash;75&nbsp;mA band &mdash; a modem-sleep base with periodic display ticks &mdash; and only 1.4% of seconds exceed 85&nbsp;mA (the actual fetch/full-awake moments, irregularly spaced 6&ndash;100&nbsp;s apart).</figcaption>
+        </figure>
+        <div class="callout">
+          <h4>Two rates, two questions</h4>
+          <p>Use the low rate for <b>averages</b> and the high rate for <b>shapes</b>. At 1&nbsp;Sa/s the PPK2 integrates every underlying sample into each second, so a multi-minute run gives the true duty-cycled average &mdash; the number battery life should be based on. At 100&nbsp;kSa/s you can dissect a single 150&nbsp;&micro;s TX frame, but a 10-second window is too short to be representative of the average.</p>
+          <p>Takeaway for the test plan: characterise average power over a window spanning many fetch cycles (tens of minutes, low rate), and reserve high-rate captures for event dissection. Figures 2 and 3 are that high-rate capture &mdash; and, as Fig.&nbsp;1 shows, they sit in an unusually active stretch.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OVERVIEW FIGURE ----------------------------------------------------->
+    <section class="section" id="pwr-overview" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Event detail · the trace</p>
+        <h3>Ten seconds, annotated</h3>
+        <p>This and the next figure are the 100&nbsp;kSa/s capture &mdash; the active-phase window from Fig.&nbsp;1, expanded to microsecond resolution. The blue line is the 1&nbsp;ms median current; the shaded band is the 1&nbsp;ms min&ndash;max envelope, so sub&#8209;millisecond transients still show as height. Amber bands mark the windows where Wi&#8209;Fi modem sleep engaged.</p>
+        <figure>
+          <img src="../assets/dvt_pwr_overview.png" alt="Annotated 10-second PPK2 current trace of the weather clock. A steady ~113 mA Wi-Fi RX baseline is punctuated every 254 ms by 54 ms display/sensor ticks rising to ~135 mA, with six amber sleep windows dropping to ~48 mA and a single TX volley near 3.2 seconds reaching 401 mA.">
+          <figcaption><b>Fig. 2 &mdash;</b> Full capture. Dotted lines mark the four recurring current levels. The clipped red marker at 3.19&nbsp;s is the Wi&#8209;Fi transmit volley (shown in full in Fig.&nbsp;3c). Note how the sleep windows cluster <em>after</em> the network fetch, once traffic quietens.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- THE CURRENT LADDER -------------------------------------------------->
+    <section class="section" id="pwr-ladder" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Decoding the levels</p>
+        <h3>The current ladder</h3>
+        <p>Every feature in the trace is a stack of four independent loads. The measurement separates them cleanly &mdash; the proof is in the ticks that happened to fire <em>while the radio was already asleep</em>: they plateau ~25&nbsp;mA lower than ticks during RX, i.e. the same render cost added to a lower base. That additivity is what lets us attribute each level below.</p>
+        <table class="tbl">
+          <thead><tr><th>Level</th><th>State</th><th>Time share</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">~29 mA</td><td>Radio asleep, CPU idle &mdash; the true floor (brief dips only)</td><td class="pct">&lt;1%</td></tr>
+            <tr><td class="mono">~48&ndash;50 mA</td><td>Radio asleep, CPU active/busy-waiting</td><td class="pct">9.5%</td></tr>
+            <tr><td class="mono">~73 mA</td><td>Radio asleep <b>+ display tick</b> (render on a sleeping-radio base)</td><td class="pct">&mdash;</td></tr>
+            <tr><td class="mono" style="color:var(--accent)"><span class="swatch" style="background:#015CB5"></span>~113 mA</td><td><b>Wi-Fi RX awake</b>, application quiet &mdash; the dominant dwell</td><td class="pct">70.6%</td></tr>
+            <tr><td class="mono">~135 mA</td><td>RX awake + display/sensor tick</td><td class="pct">19.9%</td></tr>
+            <tr><td class="mono">160&ndash;175 mA</td><td>Sub-ms peaks inside ticks (CPU + flash + SPI stacking)</td><td class="pct">rare</td></tr>
+            <tr><td class="mono" style="color:var(--red)"><span class="swatch" style="background:#B0342A"></span>355&ndash;401 mA</td><td>Wi-Fi <b>TX frames</b> at full RF power (7 events, all at t&nbsp;&asymp;&nbsp;3.19&nbsp;s)</td><td class="pct">&mdash;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- THE STORY: SPIKE / SAG / DWELL -------------------------------------->
+    <section class="section" id="pwr-story" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">The full story</p>
+        <h3>Spike, sag, and dwell</h3>
+        <p>Read chronologically, the trace tells one coherent story: a device that stays connected, ticks a display on a metronome, briefly transmits to fetch data, and grabs sleep wherever the network lets it.</p>
+
+        <div class="events">
+
+          <div class="event">
+            <div class="when"><div class="t">every 254.1 ms</div><h4>The dwell at 135&nbsp;mA</h4></div>
+            <div class="body">
+              <span class="tagline tag-dwell">Dwell &mdash; the heartbeat</span>
+              <p>Metronomically for the entire capture &mdash; 38 ticks, period 254.1&nbsp;ms, only 2.9&nbsp;ms RMS jitter &mdash; the firmware wakes and does 54&nbsp;ms of work: render the frame, push the buffer to the SSD1306 over SPI, poll the SHT4x. Cost: <b>+22&nbsp;mA for 54&nbsp;ms</b> on top of whatever the radio is doing.</p>
+              <p>This heartbeat is cheap: it averages only ~4.7&nbsp;mA of the 112&nbsp;mA active-phase total. The 254&nbsp;ms period is worth a glance in firmware &mdash; it looks like <code>delay(200)</code> plus ~54&nbsp;ms of work, so if you intended a 250&nbsp;ms cadence the delay wants to be 196&nbsp;ms.</p>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="when"><div class="t">t = 3.185 s</div><h4>The spike to 401&nbsp;mA</h4></div>
+            <div class="body">
+              <span class="tagline tag-spike">Spike &mdash; the network exchange</span>
+              <p>Six Wi&#8209;Fi transmit frames of 40&ndash;150&nbsp;&micro;s each, peaking <b>355&ndash;401&nbsp;mA</b>, fired within 3.6&nbsp;ms &mdash; then a seventh lone frame 50&nbsp;ms later, followed immediately by a 40&nbsp;ms doze once the socket went quiet. This lands <em>inside</em> a display tick, so the application initiated it: a short request/response exchange (handshake, GET, ACKs, close) at full RF power is exactly what the weather fetch looks like from the supply rail.</p>
+              <p>The matching RX &mdash; the forecast coming back &mdash; is invisible here because it hides inside the 113&nbsp;mA RX dwell. These peaks are brief enough that the entire volley moved only ~0.01&nbsp;mC; they matter for the LDO/decoupling transient budget, not the energy budget.</p>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="when"><div class="t">6 windows, 40&ndash;390 ms</div><h4>The sags to 48&nbsp;mA</h4></div>
+            <div class="body">
+              <span class="tagline tag-sag">Sag &mdash; modem sleep</span>
+              <p>Six windows (at 0.43, 1.15, 3.24, 5.15, 5.75 and 8.30&nbsp;s) drop to ~48&nbsp;mA as Wi&#8209;Fi <b>modem sleep</b> engages &mdash; the arduino&#8209;esp32 default <code>WIFI_PS_MIN_MODEM</code> working as designed. Inside the longest doze you can see 6&ndash;12&nbsp;ms beacon check&#8209;ins spaced ~102&nbsp;ms apart: that is your AP&rsquo;s standard 102.4&nbsp;ms beacon interval, and the radio listening every 1&ndash;2 beacons.</p>
+              <p>Note the sags cluster after the 3.19&nbsp;s fetch &mdash; once your own traffic stopped, the radio finally got chances to sleep. They&rsquo;re <em>rare</em> (9.5% of the time) because ordinary LAN chatter (ARP/mDNS broadcasts) keeps yanking the radio awake. Separately, brief micro&#8209;sags to ~29&nbsp;mA show the CPU reaching true idle; between ticks it mostly sits at ~50&nbsp;mA rather than the floor, hinting at busy&#8209;waiting somewhere in the loop.</p>
+            </div>
+          </div>
+
+          <div class="event">
+            <div class="when"><div class="t">continuous</div><h4>The ~912&nbsp;Hz ripple</h4></div>
+            <div class="body">
+              <span class="tagline tag-ripple">Baseline &mdash; steady ripple</span>
+              <p>The quiet baseline carries a constant &plusmn;4&nbsp;mA sawtooth at ~912&nbsp;Hz plus harmonics, present in every region whether the radio is on or off. The frequency and its constancy point at the <b>SK6812 RGB LED&rsquo;s internal PWM</b> holding a steady colour &mdash; easy to confirm by setting the LED to <code>(0,0,0)</code> and watching the ripple vanish. A separate ~170&nbsp;Hz component appears only when the radio is awake, so that one is RF front-end housekeeping, not the display.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ZOOM FIGURE --------------------------------------------------------->
+    <section class="section" id="pwr-detail" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Event detail</p>
+        <h3>The four events up close</h3>
+        <figure>
+          <img src="../assets/dvt_pwr_zooms.png" alt="Four zoomed panels: (a) a single 54 ms display tick raising current from 113 to 135 mA; (b) the longest sleep window showing a radio-asleep tick at 73 mA, a 6 ms beacon check, and a 29 mA idle floor; (c) the full transmit volley reaching 401 mA at 3.185 s followed by a 40 ms doze; (d) the 912 Hz baseline ripple of about 4 mA amplitude.">
+          <figcaption><b>Fig. 3 &mdash;</b> <b>(a)</b> one application tick; <b>(b)</b> the longest doze, showing a tick running with the radio asleep at only ~73&nbsp;mA; <b>(c)</b> the full TX volley the overview clips; <b>(d)</b> the constant baseline ripple. Each panel is drawn from the raw 100&nbsp;kSa/s samples.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- CHARGING ------------------------------------------------------------>
+    <section class="section" id="pwr-charging" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Charging path</p>
+        <h3>USB charge cycle: CC &rarr; CV &rarr; termination</h3>
+        <p>A separate run captured the battery-charging side: the PPK2 sourcing the USB VBUS rail at 1&nbsp;Sa/s while the MCP73831 topped off the LiPo from a near-full state &mdash; 117&nbsp;minutes from constant-current plateau through the full constant-voltage taper to end of charge, delivering <b>152.5&nbsp;mAh</b> at the USB side.</p>
+        <figure>
+          <img src="../assets/dvt_chg_taper.png" alt="117-minute USB charge current curve. A flat constant-current plateau at 200.6 mA holds for about ten minutes, then tapers smoothly through the constant-voltage phase. An amber marker at 68.4 minutes flags a 31.6 mA downward step attributed to a system-side load switching off. The curve continues its slow taper and ends at 14.2 mA at 117 minutes, just below a dashed green line at 15.0 mA marking 7.5 percent of the programmed current; an inset zooms the final collapse to zero.">
+          <figcaption><b>Fig. 4 &mdash;</b> Full charge cycle at 1&nbsp;Sa/s. The CC plateau pins the programmed fast-charge current at 200.6&nbsp;mA; the green dashed line is the MCP73831&#8209;2ACI&rsquo;s typical termination threshold (7.5% of I<sub>reg</sub>); the inset shows the clean end-of-charge collapse at 117&nbsp;min. The amber step at 68.4&nbsp;min is a load event, not a charger event &mdash; see below.</figcaption>
+        </figure>
+
+        <h4>The charger checks out &mdash; and clears R5</h4>
+        <ul class="feat">
+          <li><b>Programmed current confirms the 5.1&nbsp;k&Omega; PROG resistor.</b> The CC plateau sits at 200.6&nbsp;mA, dead flat (&plusmn;0.1&nbsp;mA) &mdash; an effective R<sub>PROG</sub> of 4.99&nbsp;k&Omega;, i.e. <b>+2.3%</b> against the 196&nbsp;mA the BOM&rsquo;s 5.1&nbsp;k&Omega; programs, comfortably inside the resistor-plus-charger tolerance stack. The suspect in-circuit DMM reading of ~4.12&nbsp;k&Omega; would have programmed 243&nbsp;mA (&minus;17% off &mdash; plainly absent from the data); that reading is an in-circuit artifact, the PROG pin&rsquo;s internal network sitting in parallel with R5. <b>The R5 concern is closed</b> &mdash; the populated part behaves as a 5.1&nbsp;k&Omega; (confirm out-of-circuit only if the site is ever reworked).</li>
+          <li><b>Termination lands in the &#8209;2ACI band.</b> The taper runs its full course and charging ends at <b>14.2&nbsp;mA = 7.1% of I<sub>reg</sub></b>, against the part&rsquo;s 7.5%-typical termination threshold &mdash; a textbook end of charge, with the final collapse to zero shown in the inset.</li>
+          <li><b>Profile shape is textbook CC/CV.</b> ~10&nbsp;min of flat CC (the cell started near full), then a smooth ~57&#8209;min taper as the cell approaches 4.20&nbsp;V, then the long shallow tail. No oscillation, no restart cycling, no thermal fold-back signature at this rate.</li>
+        </ul>
+
+        <div class="callout">
+          <h4>One open item: the 31.6 mA step at 68.4 min</h4>
+          <p>Mid-taper, the USB current steps down by 31.6&nbsp;mA and settles over ~5&nbsp;s &mdash; then the remaining current continues the cell&rsquo;s own slow taper to termination. Two fingerprints say this was <em>not</em> the charger: the settle is a control-loop relaxation rather than a termination edge, and the second-to-second noise <em>after</em> the step (&plusmn;0.03&nbsp;mA) is the quietest in the whole run &mdash; purely analog charging, no MCU activity. The pre-step current therefore included a ~32&nbsp;mA system-side load that switched off at 68.4&nbsp;min. Attribution is pending a bench note or a re-run logging VBAT and STAT alongside; it does not affect the charger conclusions above, but it should be identified before this test is marked fully closed.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT IT MEANS ------------------------------------------------------->
+    <section class="section" id="pwr-implications" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Interpretation</p>
+        <h3>What this means for the product</h3>
+        <ul class="feat">
+          <li><b>The radio is the budget.</b> Time spent associated and awake is what sets the average; when awake, RX alone is ~65&nbsp;mA over the sleep base. Rendering, the sensor, and even the 400&nbsp;mA TX peaks are rounding errors against it.</li>
+          <li><b>Size the battery from 68.9&nbsp;mA, not 112.</b> At the true steady-state average a 1000&nbsp;mAh cell lasts ~14.5&nbsp;hours (the 112&nbsp;mA active-phase number would have implied a pessimistic ~9&nbsp;hours). This firmware keeps Wi&#8209;Fi associated; it is a demo, not a low-power reference.</li>
+          <li><b>The headroom is in sleep, not in the peaks.</b> Getting the radio to sleep more &mdash; a quieter network segment, or a longer DTIM interval on the AP &mdash; drops the average further. Trimming per-tick work does almost nothing.</li>
+          <li><b>Deep sleep remains the only route to multi-day life.</b> The board&rsquo;s characterised deep-sleep draw (~0.88&nbsp;mA) between fetches is where a battery product would live; this always-on profile is the upper bound.</li>
+          <li><b>Transient integrity looks healthy.</b> 400&nbsp;mA, 150&nbsp;&micro;s TX frames rode the rail without the baseline collapsing, so LDO output and local decoupling near the module are coping with the RF load.</li>
+          <li><b>The charging path ships as designed.</b> Fast-charge current, CV taper, and termination all land on the MCP73831&#8209;2ACI datasheet &mdash; and the measured 200.6&nbsp;mA plateau retires the R5 concern: the part behaves as the specified 5.1&nbsp;k&Omega;, so the ~4.12&nbsp;k&Omega; DMM reading was an in-circuit artifact, not a wrong part.</li>
+        </ul>
+
+        <div class="callout">
+          <h4>Follow-ups worth a bench session</h4>
+          <p>None are blockers &mdash; they either confirm an attribution or chase the optimisation:</p>
+          <ol class="actions">
+            <li><b>Confirm the ripple source:</b> set the SK6812 to off and re-capture the baseline. Ripple should disappear; if it doesn&rsquo;t, look at the LDO or OLED charge pump.</li>
+            <li><b>Chase the ~50&nbsp;mA idle:</b> find why the CPU sits at ~50&nbsp;mA rather than the ~29&nbsp;mA floor between ticks &mdash; likely a busy-wait or a peripheral left clocked.</li>
+            <li><b>Audit the 254&nbsp;ms period:</b> confirm whether the loop delay was meant to be 250&nbsp;ms, and whether the display need refresh that often at all.</li>
+            <li><b>Attribute the 68.4-min load-shed:</b> repeat the charge run logging VBAT and STAT alongside VBUS current (and keep a bench log); identify the ~32&nbsp;mA system-side load that switched off mid-taper before closing the charge test.</li>
+            <li><b>Quantify the sleep opportunity:</b> re-run the 43-min capture on an isolated AP/VLAN to see how much of the steady-state awake time (~a third) is your own traffic vs. LAN broadcast chatter.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHOD -------------------------------------------------------------->
+    <section class="section" id="pwr-method" style="padding-top:0">
+      <div class="wrap">
+        <p class="kicker">Method &amp; provenance</p>
+        <h3>How this was captured</h3>
+        <ul class="feat">
+          <li><b>Instrument:</b> Nordic Semiconductor PPK2 in source-meter mode, supplying the board and logging supply current.</li>
+          <li><b>Steady-state capture:</b> 1&nbsp;Sa/s over 43.3&nbsp;min (2,597 points). At this rate the PPK2 averages every underlying 100&nbsp;kSa/s sample into each 1&nbsp;s point, so the mean is a faithful long-run average &mdash; verified by re-binning the high-rate trace to 1&nbsp;Sa/s, which reproduces its 112&nbsp;mA window mean.</li>
+          <li><b>Event-detail capture:</b> 100&nbsp;kSa/s (10&nbsp;&micro;s/sample) &mdash; the PPK2&rsquo;s native maximum; 1,048,575 samples over 10.486&nbsp;s. This window sits in an active-phase stretch (see Fig.&nbsp;1).</li>
+          <li><b>Charge-cycle capture:</b> 1&nbsp;Sa/s over 117&nbsp;min, PPK2 sourcing the USB VBUS rail while the MCP73831T&#8209;2ACI/OT (U5) topped off the LiPo from a near-full state; 152.5&nbsp;mAh delivered.</li>
+          <li><b>DUT firmware:</b> factory Weather Clock demo &mdash; Open-Meteo forecast over plain HTTP, SHT4x indoor sensor on the Qwiic I&sup2;C bus, SSD1306 OLED over 4-wire SPI.</li>
+          <li><b>Board:</b> ESP32-S3-WROOM-1-N8, fab rev 2026-06-28.</li>
+          <li><b>Analysis:</b> levels attributed by cross-referencing envelope structure against known subsystem loads; periodicities and the ~912&nbsp;Hz ripple confirmed by FFT and autocorrelation; heartbeat period and jitter from burst-edge fitting.</li>
+        </ul>
+        <p class="footnote">Raw exports: <code>ppk-20260719T182301.csv</code> (steady state, 1&nbsp;Sa/s), <code>ppk-20260719T144636.csv</code> (event detail, 100&nbsp;kSa/s), and <code>USB_charge_current.csv</code> (charge cycle, 1&nbsp;Sa/s) &mdash; columns: timestamp&nbsp;ms, current&nbsp;&micro;A, digital&nbsp;D0&ndash;D7. Digital channels were idle for all runs. Figures generated from the raw current channel; no smoothing beyond the stated 1&nbsp;ms median used for the Fig.&nbsp;2 overview line only.</p>
+      </div>
+    </section>
+
+  
+      </div>
+    </section>
+
+    <section id="results" class="section">
+      <div class="wrap">
+        <p class="kicker">Results</p>
+        <h2>Every test, by subsystem</h2>
+        <p class="section-intro">Click any row for the expected outcome, limits, measurement, and notes from the tracker. Each section ends with its full procedure from the DVT plan document.</p>
+        <p class="subsys-index"><a href="#sub-vis">VIS</a> <a href="#sub-pre">PRE</a> <a href="#sub-pwr">PWR</a> <a href="#sub-chg">CHG</a> <a href="#sub-bat">BAT</a> <a href="#sub-mcu">MCU</a> <a href="#sub-gpio">GPIO</a> <a href="#sub-i2c">I2C</a> <a href="#sub-oled">OLED</a> <a href="#sub-rgb">RGB</a> <a href="#sub-adc">ADC</a> <a href="#sub-btn">BTN</a> <a href="#sub-led">LED</a> <a href="#sub-rfw">RFW</a> <a href="#sub-rfb">RFB</a> <a href="#sub-sys">SYS</a></p>
+        <div class="subsys" id="sub-vis">
+  <div class="subsys-head">
+    <h3>VIS &middot; Visual &amp; mechanical inspection</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">10 pass</span><span class="pill pill-fail">1 fail</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">VIS-001</span><span class="t-desc">Overall solder quality: tombstones, missing parts, obvious bridges</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> None</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-001 &middot; Plan &sect;VIS-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-002</span><span class="t-desc">D2, D3 polarity: cathode band toward V_SYS side</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Bands correct on both</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-002 &middot; Plan &sect;VIS-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-003</span><span class="t-desc">Pin-1 orientation vs silk: U1, U5, U6, D1, Q1, Q2, Q3</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> All correct</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-003 &middot; Plan &sect;VIS-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-004</span><span class="t-desc">ESP32 module: aligned, castellations wetted, antenna clean</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Clean</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-004 &middot; Plan &sect;VIS-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-005</span><span class="t-desc">USB-C J1: all 16 pins wetted, no bridges, anchors soldered</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Clean</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-005 &middot; Plan &sect;VIS-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-006</span><span class="t-desc">FPC1: 0.5 mm pins no bridges, actuator latch intact</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Clean</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-006 &middot; Plan &sect;VIS-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-007</span><span class="t-desc">J2 battery conn: seated flat; J4/J5 headers straight</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Clean</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-007 &middot; Plan &sect;VIS-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-008</span><span class="t-desc">SW1/SW4 buttons click mechanically</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Both click</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-008 &middot; Plan &sect;VIS-08</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-009</span><span class="t-desc">Board: no deep scratches, mousebite quality acceptable</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> OK</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-009 &middot; Plan &sect;VIS-09</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-010</span><span class="t-desc">Connect the OLED screen and frame, check the fit</span><span class="t-act">pass</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> OK</p><p><b>Measured:</b> pass</p><p class="t-ref">Tracker VIS-010 &middot; Plan &sect;VIS-10</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">VIS-011</span><span class="t-desc">Plug the board in breadboard, check the fit</span><span class="t-act">Fail</span><span class="pill pill-fail">Fail</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Fail</p><p><b>Measured:</b> Fail</p><p><b>Notes:</b> The header spacing is a little off, which makes it hard to push the board in the breadboard.</p><p class="t-ref">Tracker VIS-011 &middot; Plan &sect;VIS-11</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Per board, under magnification. JLCPCB AOI catches most of this; you are double-checking the failure-prone spots.</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VIS-01</td>
+<td>Overall solder quality: tombstones, missing parts, obvious bridges</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-02</td>
+<td>D2, D3 polarity: cathode band toward V_SYS side (D2 cathode pad at x=48.3; D3 cathode toward board interior)</td>
+<td>Bands correct on both</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-03</td>
+<td>Pin-1 orientation vs silk: U1, U5, U6, D1, Q1, Q2, Q3</td>
+<td>All correct</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-04</td>
+<td>ESP32 module: aligned, castellations wetted, antenna area overhangs board edge cleanly — no solder, labels, or debris under/over antenna</td>
+<td>Clean</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-05</td>
+<td>USB-C J1: all 16 pins wetted, no bridges, shell anchors soldered</td>
+<td>Clean</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-06</td>
+<td>FPC1: 0.5 mm pins no bridges, actuator latch intact and opens/closes</td>
+<td>Clean</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-07</td>
+<td>J2 battery conn: seated flat, through-hole joints filled; J4/J5 headers straight</td>
+<td>Clean</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-08</td>
+<td>SW1/SW4 buttons click mechanically</td>
+<td>Both click</td>
+<td></td>
+</tr>
+<tr>
+<td>VIS-09</td>
+<td>Board: no deep scratches over traces, mousebite/edge quality acceptable for product</td>
+<td>OK</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-pre">
+  <div class="subsys-head">
+    <h3>PRE &middot; Unpowered electrical checks</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">12 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">PRE-001</span><span class="t-desc">V_USB → GND resistance (probe D3.2)</span><span class="t-act">5.8k Ω</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 9–10 kΩ, not &lt; 1 kΩ</p><p class="t-spec">limits 1000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 5.8k Ω</p><p class="t-ref">Tracker PRE-001 &middot; Plan &sect;PRE-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-002</span><span class="t-desc">V_SYS → GND (probe D2.1)</span><span class="t-act">224k Ω</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> High / climbing (&gt; 50 kΩ)</p><p class="t-spec">limits 50000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 224k Ω</p><p class="t-ref">Tracker PRE-002 &middot; Plan &sect;PRE-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-003</span><span class="t-desc">3V3 → GND (probe J4.2)</span><span class="t-act">42k Ω</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &gt; 5 kΩ and climbing (no short)</p><p class="t-spec">limits 5000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 42k Ω</p><p class="t-ref">Tracker PRE-003 &middot; Plan &sect;PRE-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-005</span><span class="t-desc">+5V pin (J5.12) → GND</span><span class="t-act">258k Ω</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &gt; 10 kΩ</p><p class="t-spec">limits 10000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 258k Ω</p><p class="t-ref">Tracker PRE-005 &middot; Plan &sect;PRE-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-006</span><span class="t-desc">Diode mode: red on D3.2 (V_USB), black on D2.1 (V_SYS)</span><span class="t-act">0.2 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 0.15–0.40 V (SS34 forward)</p><p class="t-spec">limits 0.15 &ndash; 0.4 V</p><p><b>Measured:</b> 0.2 V</p><p class="t-ref">Tracker PRE-006 &middot; Plan &sect;PRE-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-007</span><span class="t-desc">Diode mode reversed: red on V_SYS, black on V_USB</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> OL</p><p class="t-ref">Tracker PRE-007 &middot; Plan &sect;PRE-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-008</span><span class="t-desc">Diode mode: red on J5.12, black on V_SYS</span><span class="t-act">0.2 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 0.15–0.45 V (F1 + D2 forward)</p><p class="t-spec">limits 0.15 &ndash; 0.45 V</p><p><b>Measured:</b> 0.2 V</p><p class="t-ref">Tracker PRE-008 &middot; Plan &sect;PRE-08</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-009</span><span class="t-desc">USB D+ ↔ D− (D1.1 ↔ D1.3)</span><span class="t-act">100000000 Ω</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> OL / &gt; 1 MΩ (no short)</p><p class="t-spec">limits 1000000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 100000000 Ω</p><p class="t-ref">Tracker PRE-009 &middot; Plan &sect;PRE-09</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-010</span><span class="t-desc">USB VBUS ↔ D+ and VBUS ↔ D−</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No short</p><p class="t-ref">Tracker PRE-010 &middot; Plan &sect;PRE-10</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-011</span><span class="t-desc">J2.1 ↔ J2.2 (battery pins)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No short (&gt; 100 kΩ)</p><p class="t-spec">limits 100000 &ndash; +&infin; Ω</p><p class="t-ref">Tracker PRE-011 &middot; Plan &sect;PRE-11</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-012</span><span class="t-desc">Diode mode: red on C3.2 (BATT+), black on J2.1</span><span class="t-act">0.35 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 0.4–0.7 V (Q3 body diode)</p><p class="t-spec">target 0.55000000000000004 &middot; limits 0.3 &ndash; 0.7 V</p><p><b>Measured:</b> 0.35 V</p><p class="t-ref">Tracker PRE-012 &middot; Plan &sect;PRE-12</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PRE-013</span><span class="t-desc">EN → GND / IO0 → GND</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No short</p><p class="t-ref">Tracker PRE-013 &middot; Plan &sect;PRE-13</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>No power, no battery, no OLED attached. In resistance mode, capacitor charging makes readings climb — note the settled trend, not the first flash.</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Measurement</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PRE-01</td>
+<td>V_USB → GND resistance (probe D3.2)</td>
+<td>≈ 9–10 kΩ (R7 ∥ R15+R16), not &lt; 1 kΩ</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-02</td>
+<td>V_SYS → GND (probe D2.1)</td>
+<td>High / climbing (&gt; 50 kΩ settled)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-03</td>
+<td>3V3 → GND (probe J4.2)</td>
+<td>&gt; 5 kΩ and climbing, no short</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-04</td>
+<td>BATT+ → GND (probe C3.2)</td>
+<td>≈ 200 kΩ (R10+R11)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-05</td>
+<td>+5V pin (J5.12) → GND</td>
+<td>&gt; 10 kΩ (via F1+D2 into V_SYS network)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-06</td>
+<td>Diode mode: red on D3.2 (V_USB), black on D2.1 (V_SYS)</td>
+<td>0.15–0.40 V (SS34 forward)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-07</td>
+<td>Diode mode reversed: red on V_SYS, black on V_USB</td>
+<td>OL</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-08</td>
+<td>Diode mode: red on J5.12, black on V_SYS</td>
+<td>0.15–0.45 V (F1 + D2 forward)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-09</td>
+<td>USB D+ ↔ D− (D1.1 ↔ D1.3)</td>
+<td>OL / &gt; 1 MΩ, no short</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-10</td>
+<td>USB VBUS ↔ D+ and VBUS ↔ D−</td>
+<td>No short</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-11</td>
+<td>J2.1 ↔ J2.2 (battery pins)</td>
+<td>No short (&gt; 100 kΩ)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-12</td>
+<td>Diode mode: red on C3.2 (BATT+), black on J2.1</td>
+<td>≈ 0.4–0.7 V (Q3 body diode)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE-13</td>
+<td>EN → GND, IO0 → GND</td>
+<td>No short</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-pwr">
+  <div class="subsys-head">
+    <h3>PWR &middot; Power-up &amp; power rails</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">27 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">PWR-001</span><span class="t-desc">Smoke test: Supply current after 5 s (5V 100mA limit)</span><span class="t-act">20 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 30–90 mA, stable</p><p class="t-spec">limits 15 &ndash; 90 mA</p><p><b>Measured:</b> 20 mA</p><p class="t-ref">Tracker PWR-001 &middot; Plan &sect;PWR-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-002</span><span class="t-desc">Smoke test: Current limit NOT hit</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No CC indication</p><p class="t-ref">Tracker PWR-002 &middot; Plan &sect;PWR-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-003</span><span class="t-desc">Smoke test: Components temperature after 60s</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; warm</p><p class="t-ref">Tracker PWR-003 &middot; Plan &sect;PWR-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-004</span><span class="t-desc">Smoke test: Green LED2</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ON</p><p class="t-ref">Tracker PWR-004 &middot; Plan &sect;PWR-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-005</span><span class="t-desc">Rail voltages: V_SYS (D2.1)</span><span class="t-act">4.7 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 4.5–4.8 V</p><p class="t-spec">limits 4.5 &ndash; 4.8 V</p><p><b>Measured:</b> 4.7 V</p><p class="t-ref">Tracker PWR-005 &middot; Plan &sect;PWR-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-006</span><span class="t-desc">Rail voltages: 3V3 (J4.2)</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 3.25–3.35 V</p><p class="t-spec">target 3.3 &middot; limits 3.25 &ndash; 3.35 V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker PWR-006 &middot; Plan &sect;PWR-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-007</span><span class="t-desc">Rail voltages: EN (U2.3)</span><span class="t-act">3.28 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 3V3</p><p class="t-spec">target 3.3 &middot; limits 3.25 &ndash; 3.35 V</p><p><b>Measured:</b> 3.28 V</p><p class="t-ref">Tracker PWR-007 &middot; Plan &sect;PWR-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-008</span><span class="t-desc">Rail voltages: BATT+ (C3.2) without battery</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ~0 V or drifting</p><p class="t-ref">Tracker PWR-008 &middot; Plan &sect;PWR-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-009</span><span class="t-desc">USB power path: V_USB (D3.2)</span><span class="t-act">5.2 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 4.75–5.25 V</p><p class="t-spec">target 5 &middot; limits 4.75 &ndash; 5.25 V</p><p><b>Measured:</b> 5.2 V</p><p class="t-ref">Tracker PWR-009 &middot; Plan &sect;PWR-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-010</span><span class="t-desc">USB power path: V_SYS</span><span class="t-act">4.9000000000000004 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> V_USB − 0.2…0.45 V</p><p><b>Measured:</b> 4.9000000000000004 V</p><p class="t-ref">Tracker PWR-010 &middot; Plan &sect;PWR-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-011</span><span class="t-desc">USB power path: 3V3</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 3.25–3.35 V</p><p class="t-spec">target 3.3 &middot; limits 3.25 &ndash; 3.35 V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker PWR-011 &middot; Plan &sect;PWR-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-012</span><span class="t-desc">USB power path: Input current idle</span><span class="t-act">20 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 30–90 mA</p><p class="t-spec">limits 15 &ndash; 90 mA</p><p><b>Measured:</b> 20 mA</p><p class="t-ref">Tracker PWR-012 &middot; Plan &sect;PWR-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-013</span><span class="t-desc">USB power path: VUSB_SENSE (U2.38)</span><span class="t-act">2.58 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> V_USB ÷ 2 ± 3 %</p><p class="t-spec">target 2.5 &middot; limits 2.42 &ndash; 2.58 V</p><p><b>Measured:</b> 2.58 V</p><p><b>Notes:</b> Limits assume V_USB = 5.00 V; recompute ±3 % band if V_USB differs</p><p class="t-ref">Tracker PWR-013 &middot; Plan &sect;PWR-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-014</span><span class="t-desc">USB-C orientation: A-to-C cable plug 1</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Powers on</p><p class="t-ref">Tracker PWR-014 &middot; Plan &sect;PWR-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-015</span><span class="t-desc">USB-C orientation: A-to-C cable flipped</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Powers on</p><p class="t-ref">Tracker PWR-015 &middot; Plan &sect;PWR-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-016</span><span class="t-desc">USB-C orientation: C-to-C cable plug 1</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Powers on</p><p class="t-ref">Tracker PWR-016 &middot; Plan &sect;PWR-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-017</span><span class="t-desc">USB-C orientation: C-to-C cable flipped</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Powers on</p><p class="t-ref">Tracker PWR-017 &middot; Plan &sect;PWR-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-018</span><span class="t-desc">3V3 static load: 150 mA across 3V3 and GND</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≥ 3.25 V</p><p class="t-spec">limits 3.25 &ndash; +&infin; V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker PWR-018 &middot; Plan &sect;PWR-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-019</span><span class="t-desc">3V3 static load: 300 mA across 3V3 and GND</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≥ 3.20 V</p><p class="t-spec">limits 3.2 &ndash; +&infin; V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker PWR-019 &middot; Plan &sect;PWR-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-021</span><span class="t-desc">3V3 dynamic droop: TX bursts (scope)</span><span class="t-act">50 mVpp</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 150 mVpp; min &gt; 3.0 V</p><p><b>Measured:</b> 50 mVpp</p><p class="t-ref">Tracker PWR-021 &middot; Plan &sect;PWR-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-022</span><span class="t-desc">3V3 dynamic droop: minimum voltage during TX burst (scope)</span><span class="t-act">3.27 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> min &gt; 3.0 V</p><p class="t-spec">limits 3 &ndash; +&infin; V</p><p><b>Measured:</b> 3.27 V</p><p class="t-ref">Tracker PWR-022 &middot; Plan &sect;PWR-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-023</span><span class="t-desc">3V3 dynamic droop: No brownout resets over 5 min</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> None</p><p class="t-ref">Tracker PWR-023 &middot; Plan &sect;PWR-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-024</span><span class="t-desc">Min battery: Lowest supply voltage w/ no brownout</span><span class="t-act">2.8 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≤ 3.3 V</p><p class="t-spec">limits &minus;&infin; &ndash; 3.3 V</p><p><b>Measured:</b> 2.8 V</p><p class="t-ref">Tracker PWR-024 &middot; Plan &sect;PWR-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-025</span><span class="t-desc">Min battery: Voltage where board browns out</span><span class="t-act">2.4500000000000002 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> 2.4500000000000002 V</p><p class="t-ref">Tracker PWR-025 &middot; Plan &sect;PWR-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-026</span><span class="t-desc">Sleep current: @ 3.8 V</span><span class="t-act">0.88400000000000001 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 0.6–0.9 mA</p><p class="t-spec">limits 0.6 &ndash; 0.9 mA</p><p><b>Measured:</b> 0.88400000000000001 mA</p><p class="t-ref">Tracker PWR-026 &middot; Plan &sect;PWR-08</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-027</span><span class="t-desc">Sleep current: Same with LED2 lifted</span><span class="t-act">115 µA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 120 µA</p><p class="t-spec">limits &minus;&infin; &ndash; 120 µA</p><p><b>Measured:</b> 115 µA</p><p class="t-ref">Tracker PWR-027 &middot; Plan &sect;PWR-08</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">PWR-028</span><span class="t-desc">+5V pin is input-only: Voltage at J5.12</span><span class="t-act">0 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 0 V / floating</p><p class="t-spec">target 0 &middot; limits &minus;&infin; &ndash; 0.5 V</p><p><b>Measured:</b> 0 V</p><p class="t-ref">Tracker PWR-028 &middot; Plan &sect;PWR-09</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><h4><strong>PWR-01 · Smoke test (bench supply, current-limited)</strong></h4>
+<p>No battery, no OLED. Bench PSU set to <strong>5.00 V, current limit 100 mA</strong>, + to J5.12, − to J5.11 (this path is protected by F1 and D2 — the safest entry point).</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supply current after 5 s</td>
+<td>30–90 mA, stable (module boots, may idle in download mode on blank flash)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Current limit NOT hit</td>
+<td>No CC indication</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Nothing warm to touch after 60 s (U6, U5, module)</td>
+<td>&lt; warm</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Green LED2</td>
+<td>ON</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>PWR-02 · Rail voltages (still on bench 5 V input)</strong></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Rail</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V_SYS (D2.1)</td>
+<td>5.0 − (F1+D2 drop) ≈ 4.5–4.8 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3V3 (J4.2)</td>
+<td>3.25–3.35 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>EN (U2.3)</td>
+<td>≈ 3V3</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BATT+ (C3.2)</td>
+<td>~0 V or drifting (no battery — charger unpowered on this path, OK)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>PWR-03 · USB power path</strong></h4>
+<p>Disconnect bench supply. Plug USB-C from a 5 V/≥1 A source through the USB power meter.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V_USB (D3.2)</td>
+<td>4.75–5.25 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>V_SYS</td>
+<td>V_USB − 0.2…0.45 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3V3</td>
+<td>3.25–3.35 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Input current, idle (blank flash)</td>
+<td>30–90 mA</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>VUSB_SENSE (U2.38)</td>
+<td>V_USB ÷ 2 ± 3 %</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>PWR-04 · USB-C orientation / cable matrix</strong></h4>
+<p>Validates CC pull-downs R3/R4 (5.1 k). Board must power in <strong>all four</strong> cases:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Case</strong></th>
+<th><strong>Powers?</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-to-C cable, plug orientation 1</td>
+<td></td>
+</tr>
+<tr>
+<td>A-to-C cable, plug flipped</td>
+<td></td>
+</tr>
+<tr>
+<td>C-to-C cable, orientation 1</td>
+<td></td>
+</tr>
+<tr>
+<td>C-to-C cable, flipped</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>C-to-C failing in both orientations while A-to-C works would indicate a CC resistor fault.</p>
+<h4><strong>PWR-05 · 3V3 static load regulation</strong></h4>
+<p>USB powered. Apply load across 3V3 (J4.2) and GND (J4.1): 22 Ω/2 W resistor ≈ 150 mA, then 11 Ω/2 W ≈ 300 mA.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Load</strong></th>
+<th><strong>3V3 expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>U6 temp after 2 min</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>150 mA</td>
+<td>≥ 3.25 V</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>300 mA</td>
+<td>≥ 3.20 V</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>500 mA (optional, brief)</td>
+<td>≥ 3.15 V</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> from USB, U6 drops ≈1.4 V. At 300 mA that is ~0.42 W in a SOT-25 — expect it hot (can exceed 60–80 °C). Sustained &gt;300 mA average from USB is a thermal watch item; from battery (drop ≈0.4 V) it is a non-issue. Record temps; decide if a product-doc note is needed.</p>
+<h4><strong>PWR-06 · 3V3 dynamic droop during WiFi TX (scope)</strong></h4>
+<p>Flash any WiFi sketch that transmits continuously (ping flood). Scope on 3V3 at C12, AC-coupled.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Droop during TX bursts</td>
+<td>&lt; 150 mVpp; absolute min &gt; 3.0 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>No brownout resets in serial log over 5 min</td>
+<td>None</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>PWR-07 · Minimum battery voltage / brownout sweep</strong></h4>
+<p>Bench PSU <strong>as battery</strong> on J2 (correct polarity!), current limit 800 mA, USB disconnected. Run the WiFi TX sketch. Step supply 4.2 → 3.0 V in 0.1 V steps, 30 s each.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lowest supply voltage with no reset/brownout</td>
+<td>≤ 3.3 V (target: WiFi stable at 3.3 V)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Voltage where board browns out</td>
+<td>record</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>This defines the usable battery range → firmware low-battery cutoff should sit ~0.1–0.2 V above the measured brownout point.</p>
+<h4><strong>PWR-08 · Quiescent / deep-sleep current (battery)</strong></h4>
+<p>Flash a deep-sleep sketch (sleep 60 s). Battery or bench-as-battery on J2, µA meter in series in the + lead. Wait for sleep entry.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sleep current @ 3.8 V</td>
+<td>≈ 0.6–0.8 mA — dominated by green LED2 (~0.6 mA); remainder: AP2112 Iq ~55 µA + R10/R11 divider ~19 µA + DW01A ~3 µA + ESP ~10 µA + SS34 reverse leakage</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>(optional) Same with LED2 lifted</td>
+<td>&lt; 120 µA</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>If sub-100 µA standby ever becomes a product goal, LED2 and the always-connected sense divider are the items to revisit — record the baseline now.</p>
+<h4><strong>PWR-09 · +5V pin is input-only</strong></h4>
+<p>USB powered, nothing on J5.12.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voltage at J5.12</td>
+<td>≈ 0 V / floating (D2 blocks reverse; small leakage OK)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Document in the product manual: pin 12 is a 5 V <strong>input</strong> (fused 0.5 A), not a 5 V output.</p></div>
+  </details>
+</div><div class="subsys" id="sub-chg">
+  <div class="subsys-head">
+    <h3>CHG &middot; Battery charger</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">8 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">CHG-001</span><span class="t-desc">Fast-charge current into battery</span><span class="t-act">198 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 170–250 mA</p><p class="t-spec">target 196 &middot; limits 170 &ndash; 240 mA</p><p><b>Measured:</b> 198 mA</p><p class="t-ref">Tracker CHG-001 &middot; Plan &sect;CHG-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-002</span><span class="t-desc">PROG pin (U5.5) voltage during fast charge</span><span class="t-act">0.998 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 1.0 V</p><p class="t-spec">target 1 &middot; limits 0.9 &ndash; 1.1000000000000001 V</p><p><b>Measured:</b> 0.998 V</p><p class="t-ref">Tracker CHG-002 &middot; Plan &sect;CHG-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-003</span><span class="t-desc">Yellow LED1 during charge</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ON</p><p class="t-ref">Tracker CHG-003 &middot; Plan &sect;CHG-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-004</span><span class="t-desc">BATT+ plateau near end of charge</span><span class="t-act">4.18 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 4.168–4.232 V</p><p class="t-spec">target 4.2 &middot; limits 4.1680000000000001 &ndash; 4.2320000000000002 V</p><p><b>Measured:</b> 4.18 V</p><p class="t-ref">Tracker CHG-004 &middot; Plan &sect;CHG-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-005</span><span class="t-desc">Termination: charge current at end</span><span class="t-act">15 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 20 mA then LED1 OFF</p><p class="t-spec">limits &minus;&infin; &ndash; 20 mA</p><p><b>Measured:</b> 15 mA</p><p class="t-ref">Tracker CHG-005 &middot; Plan &sect;CHG-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-006</span><span class="t-desc">No battery connected (USB in)</span><span class="t-act">blink</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> LED1 off or faint blink</p><p><b>Measured:</b> blink</p><p class="t-ref">Tracker CHG-006 &middot; Plan &sect;CHG-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-007</span><span class="t-desc">Charge + system running (WiFi demo): USB current</span><span class="t-act">442 mA</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> 442 mA</p><p class="t-ref">Tracker CHG-007 &middot; Plan &sect;CHG-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">CHG-008</span><span class="t-desc">U5 temperature during fast charge at VBAT ≈ 3.6 V</span><span class="t-act">44 °C</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record temp</p><p><b>Measured:</b> 44 °C</p><p class="t-ref">Tracker CHG-008 &middot; Plan &sect;CHG-08</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Use a partially discharged Li-Po (3.6–3.9 V). USB powered. Measure battery current with the meter in series at J2 + lead, or as (USB input current delta).</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHG-01</td>
+<td>Fast-charge current into battery</td>
+<td>1000 V ÷ 5.1 kΩ ≈ 196 mA, accept 170–220 mA</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-02</td>
+<td>PROG pin (U5.5) voltage during fast charge</td>
+<td>≈ 1.0 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-03</td>
+<td>Yellow LED1 during charge</td>
+<td>ON</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-04</td>
+<td>BATT+ plateau near end of charge</td>
+<td>4.168–4.232 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-05</td>
+<td>Termination: charge current at end</td>
+<td>&lt; ~20 mA, then LED1 OFF</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-06</td>
+<td>No battery connected, USB in</td>
+<td>LED1 off or faint blink (charger cycling) — record behavior; BATT+ shows ~4.2 V pulses</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-07</td>
+<td>Charge + system running (WiFi demo): total USB input current</td>
+<td>Record; note it can exceed 500 mA → product docs should specify a ≥1 A USB source</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG-08</td>
+<td>U5 temperature during fast charge at VBAT ≈ 3.6 V</td>
+<td>Warm is normal (~0.3 W); internal thermal regulation may taper current — record temp</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-bat">
+  <div class="subsys-head">
+    <h3>BAT &middot; Battery protection &amp; power path</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">6 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">BAT-001</span><span class="t-desc">Reverse polarity: bench supply on J2 REVERSED 4V</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Current ≈ 0, board dead</p><p class="t-ref">Tracker BAT-001 &middot; Plan &sect;BAT-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BAT-002</span><span class="t-desc">Under-voltage cutoff: lower slowly to 2.3 V</span><span class="t-act">2.4500000000000002 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> DW01A cuts discharge at 2.4 ± 0.1 V</p><p class="t-spec">target 2.4 &middot; limits 2.2999999999999998 &ndash; 2.5 V</p><p><b>Measured:</b> 2.4500000000000002 V</p><p class="t-ref">Tracker BAT-002 &middot; Plan &sect;BAT-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BAT-003</span><span class="t-desc">UV recovery: raise supply back to ≈ 3.0 V</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Board recovers and reboots</p><p class="t-ref">Tracker BAT-003 &middot; Plan &sect;BAT-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BAT-006</span><span class="t-desc">Switchover battery → USB: run demo on battery, plug USB</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No reset; Q1 off, D3 takes over; V_SYS steps up to ≈ 4.6 V</p><p class="t-ref">Tracker BAT-006 &middot; Plan &sect;BAT-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BAT-007</span><span class="t-desc">Switchover USB → battery: unplug USB while running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No reset; V_SYS drops to VBAT</p><p class="t-ref">Tracker BAT-007 &middot; Plan &sect;BAT-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BAT-009</span><span class="t-desc">Backfeed check: USB in, no battery — voltage at J2.1</span><span class="t-act">4.12 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Charger voltage ≈ 4.2 V region (may cycle); confirm NOT 5 V</p><p class="t-spec">limits &minus;&infin; &ndash; 4.4000000000000004 V</p><p><b>Measured:</b> 4.12 V</p><p class="t-ref">Tracker BAT-009 &middot; Plan &sect;BAT-07</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Bench PSU emulates the battery for threshold tests (current limit 500 mA unless noted).</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Procedure</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BAT-01</td>
+<td>Reverse polarity: bench supply on J2 REVERSED, 4 V, limit 100 mA</td>
+<td>Current ≈ 0, board dead, nothing heats; normal function after reconnecting correctly (Q3 blocks)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-02</td>
+<td>Under-voltage cutoff: supply as battery, board running (no USB). Lower slowly to 2.3 V</td>
+<td>DW01A cuts discharge at 2.4 ± 0.1 V → board powers off; recovers when raised to ≥ 3.0 V (may need USB blip to re-enable)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-03</td>
+<td>Over-voltage inhibit (optional): raise "battery" to 4.35 V while USB charging</td>
+<td>Charging stops (DW01A OV at 4.30 ± 0.05 V)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-04</td>
+<td>Overcurrent trip (optional, first article only): load BATT+ hard</td>
+<td>DW01A/FS8205A trips ~2.5–3 A; auto-recovers on load removal</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-05</td>
+<td>Switchover, battery → USB: run demo on battery, plug USB. Watch serial log / uptime</td>
+<td>No reset. Q1 turns off, D3 takes over; V_SYS steps up ~4.6 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-06</td>
+<td>Switchover, USB → battery: unplug USB while running</td>
+<td>No reset; V_SYS drops to VBAT. Scope V_SYS (optional): dip stays &gt; 3.0 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-07</td>
+<td>Backfeed check: USB in, no battery</td>
+<td>J2.1 shows charger voltage (~4.2 V region, may cycle) — normal; confirm not 5 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT-08</td>
+<td>Runtime baseline: full battery, weather-clock demo, screen on</td>
+<td>Record hours to shutdown (e.g., 500 mAh ÷ ~65 mA avg ≈ 7–8 h)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-mcu">
+  <div class="subsys-head">
+    <h3>MCU &middot; Processor bring-up</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">6 pass</span><span class="pill pill-fail">1 fail</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">MCU-001</span><span class="t-desc">Plug USB to PC, blank flash</span><span class="t-act"></span><span class="pill pill-fail">Fail</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Enumerates as Espressif USB JTAG/serial debug unit (VID 303A, PID 1001)</p><p><b>Notes:</b> Wrong part was populated at D1 (an SRV05-4 instead of the specified USBLC6-2SC6). After rework with the correct part, USB enumerates correctly. Corrected part is locked in for the next build.</p><p class="t-ref">Tracker MCU-001 &middot; Plan &sect;MCU-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-002</span><span class="t-desc">Manual download mode: hold BOOT (SW4), tap RESET (SW1), release BOOT</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Re-enumerates in download mode</p><p class="t-ref">Tracker MCU-002 &middot; Plan &sect;MCU-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-004</span><span class="t-desc">Flash DVT helper firmware @ 921600 over native USB</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Flash + verify OK</p><p class="t-ref">Tracker MCU-004 &middot; Plan &sect;MCU-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-005</span><span class="t-desc">Serial monitor over native USB CDC</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Boot log + helper menu visible</p><p class="t-ref">Tracker MCU-005 &middot; Plan &sect;MCU-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-006</span><span class="t-desc">UART0 via header: 3.3 V adapter, GND→J4.1, boot log on J4.10</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Boot log readable; record silk orientation in Notes</p><p class="t-ref">Tracker MCU-006 &middot; Plan &sect;MCU-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-007</span><span class="t-desc">RESET (SW1) while running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Clean reset, boot log, no hang (EN RC ≈ 11 ms)</p><p class="t-ref">Tracker MCU-007 &middot; Plan &sect;MCU-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">MCU-008</span><span class="t-desc">Timekeeping: helper mode t, 10 min vs stopwatch — drift</span><span class="t-act">0.16 %</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 0.5 %</p><p class="t-spec">limits &minus;&infin; &ndash; 0.5 %</p><p><b>Measured:</b> 0.16 %</p><p class="t-ref">Tracker MCU-008 &middot; Plan &sect;MCU-08</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Procedure</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MCU-01</td>
+<td>Plug USB to PC, blank flash</td>
+<td>Enumerates as Espressif USB JTAG/serial debug unit (VID 303A, PID 1001) — blank flash drops the ROM into download mode automatically</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-02</td>
+<td>Manual download mode: hold BOOT (SW4), tap RESET (SW1), release BOOT</td>
+<td>Re-enumerates in download mode</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-03</td>
+<td>esptool.py flash_id / chip info</td>
+<td>ESP32-S3, flash size 8 MB (N8), record MAC address → write on board label as S/N</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-04</td>
+<td>Flash DVT helper firmware @ 921600 over native USB</td>
+<td>Flash + verify OK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-05</td>
+<td>Serial monitor over native USB CDC (USB CDC On Boot: Enabled)</td>
+<td>Boot log + sketch output visible</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-06</td>
+<td>UART0 via header: 3.3 V USB-UART adapter, GND→J4.1. Boot log expected on J4.10 ("RX" net = ESP U0TXD) at 115200; adapter TX → J4.9</td>
+<td>Boot log readable; note which silk label sits on which pin and record for the product manual</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-07</td>
+<td>RESET (SW1) while running</td>
+<td>Clean reset, boot log; no hang (EN RC ≈ 11 ms from R12·C11)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU-08</td>
+<td>Timekeeping sanity: log millis() for 10 min vs wall clock</td>
+<td>Drift &lt; 0.5 % (crystal gross check; NTP covers accuracy in product)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-gpio">
+  <div class="subsys-head">
+    <h3>GPIO &middot; I/O verification</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">6 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">GPIO-001</span><span class="t-desc">Walking output (helper 1): LOWEST V_high across all 12 header pins</span><span class="t-act">3.2759999999999998 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Every pin ≥ 3.1 V driven HIGH</p><p class="t-spec">limits 3.1 &ndash; +&infin; V</p><p><b>Measured:</b> 3.2759999999999998 V</p><p><b>Notes:</b> Record worst pin in Notes</p><p class="t-ref">Tracker GPIO-001 &middot; Plan &sect;GPIO-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">GPIO-002</span><span class="t-desc">Walking output: HIGHEST V_low across all 12 header pins</span><span class="t-act">2E-3 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Every pin ≤ 0.1 V driven LOW</p><p class="t-spec">limits &minus;&infin; &ndash; 0.1 V</p><p><b>Measured:</b> 2E-3 V</p><p><b>Notes:</b> Record worst pin in Notes</p><p class="t-ref">Tracker GPIO-002 &middot; Plan &sect;GPIO-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">GPIO-003</span><span class="t-desc">Input test (helper 2): pins reading 1 idle / 0 grounded</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 12/12</p><p class="t-spec">limits 12 &ndash; 12 pins</p><p class="t-ref">Tracker GPIO-003 &middot; Plan &sect;GPIO-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">GPIO-004</span><span class="t-desc">Auto adjacent-bridge test (helper 3): pairs passing</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 9/9 pairs</p><p class="t-spec">limits 9 &ndash; 9 pairs</p><p class="t-ref">Tracker GPIO-004 &middot; Plan &sect;GPIO-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">GPIO-005</span><span class="t-desc">IO0 idle voltage (internal pull-up only)</span><span class="t-act">3.2890000000000001 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≥ 3.0 V</p><p class="t-spec">limits 3 &ndash; +&infin; V</p><p><b>Measured:</b> 3.2890000000000001 V</p><p class="t-ref">Tracker GPIO-005 &middot; Plan &sect;GPIO-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">GPIO-006</span><span class="t-desc">Cold boots to app with no buttons touched</span><span class="t-act">10 boots</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 10/10</p><p class="t-spec">limits 10 &ndash; 10 boots</p><p><b>Measured:</b> 10 boots</p><p class="t-ref">Tracker GPIO-006 &middot; Plan &sect;GPIO-04</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Header GPIOs on the fabbed board: <strong>J4:</strong> IO5, IO6, IO7, IO15, IO16 · <strong>J5:</strong> IO1, IO13, IO39, IO37, IO36, IO35, IO21.</p>
+<h4><strong>GPIO-01 · Output walking test</strong></h4>
+<p>DVT firmware drives each pin high 1 s / low 1 s in sequence (serial announces which). Measure at the <strong>header pin</strong>, which also proves the module-pad → trace → header path.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Pin (header)</strong></th>
+<th><strong>GPIO</strong></th>
+<th><strong>V_high (≥ 3.1 V)</strong></th>
+<th><strong>V_low (≤ 0.1 V)</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J4.3</td>
+<td>IO5</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J4.4</td>
+<td>IO6</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J4.5</td>
+<td>IO7</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J4.6</td>
+<td>IO15</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J4.7</td>
+<td>IO16</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.3</td>
+<td>IO1</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.4</td>
+<td>IO13</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.5</td>
+<td>IO39</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.7</td>
+<td>IO37</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.8</td>
+<td>IO36</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.9</td>
+<td>IO35</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>J5.10</td>
+<td>IO21</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>GPIO-02 · Input test</strong></h4>
+<p>Firmware enables internal pull-ups and reports pin states. Jumper each header GPIO to GND through 1 k: reported state flips 1→0; remove: returns to 1.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All 12 header GPIOs read 1 (pull-up), 0 when grounded</td>
+<td>12/12</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>GPIO-03 · Adjacent-bridge test</strong></h4>
+<p>Firmware drives alternating pattern (odd pins high, even low, then inverted) and reads back. Catches solder bridges between neighboring header pins.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read-back matches driven pattern in both phases</td>
+<td>Match</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4><strong>GPIO-04 · Strapping sanity</strong></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IO0 idles ≈ 3.3 V (internal pull-up only — no external resistor on this board)</td>
+<td>≥ 3.0 V</td>
+<td></td>
+</tr>
+<tr>
+<td>Board cold-boots to app 10/10 times with no buttons touched (confirms floating IO3/IO45/IO46 defaults are fine)</td>
+<td>10/10</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-i2c">
+  <div class="subsys-head">
+    <h3>I2C &middot; Qwiic port</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">8 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">I2C-001</span><span class="t-desc">SDA idle level (J3.3)</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 3.3 V (R9 4.7 k pull-up)</p><p class="t-spec">target 3.3 &middot; limits 3.2 &ndash; 3.4 V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker I2C-001 &middot; Plan &sect;I2C-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-002</span><span class="t-desc">SCL idle level (J3.4)</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≈ 3.3 V (R13 4.7 k pull-up)</p><p class="t-spec">target 3.3 &middot; limits 3.2 &ndash; 3.4 V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker I2C-002 &middot; Plan &sect;I2C-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-003</span><span class="t-desc">3V3 at J3.2</span><span class="t-act">3.29 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 3.25–3.35 V</p><p class="t-spec">target 3.3 &middot; limits 3.25 &ndash; 3.35 V</p><p><b>Measured:</b> 3.29 V</p><p class="t-ref">Tracker I2C-003 &middot; Plan &sect;I2C-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-004</span><span class="t-desc">Bus scan with SHT4x on Qwiic cable (helper 4)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Device found at 0x44</p><p class="t-ref">Tracker I2C-004 &middot; Plan &sect;I2C-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-005</span><span class="t-desc">SHT4x temperature read</span><span class="t-act">26.27 °C</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Plausible indoor temp</p><p class="t-spec">limits 10 &ndash; 40 °C</p><p><b>Measured:</b> 26.27 °C</p><p class="t-ref">Tracker I2C-005 &middot; Plan &sect;I2C-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-006</span><span class="t-desc">SHT4x humidity read</span><span class="t-act">46.6 %</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Plausible indoor RH</p><p class="t-spec">limits 10 &ndash; 90 %</p><p><b>Measured:</b> 46.6 %</p><p class="t-ref">Tracker I2C-006 &middot; Plan &sect;I2C-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-007</span><span class="t-desc">Bus at 400 kHz: scan + read (helper 4 second pass)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Still OK</p><p class="t-ref">Tracker I2C-007 &middot; Plan &sect;I2C-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">I2C-008</span><span class="t-desc">Hot-plug sensor while running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Recovers on next poll, no crash</p><p class="t-ref">Tracker I2C-008 &middot; Plan &sect;I2C-06</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I2C-01</td>
+<td>Idle levels SDA (J3.3), SCL (J3.4)</td>
+<td>≈ 3.3 V (R9/R13 4.7 k pull-ups)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C-02</td>
+<td>3V3 at J3.2</td>
+<td>3.25–3.35 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C-03</td>
+<td>Bus scan with SHT4x on a Qwiic cable</td>
+<td>Device at 0x44 found (SDA=IO8, SCL=IO18)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C-04</td>
+<td>Sensor read (existing sensorRead() code)</td>
+<td>Plausible temp/RH (e.g., 18–30 °C indoors)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C-05</td>
+<td>Bus at 400 kHz (Wire.setClock(400000))</td>
+<td>Scan + read still OK</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C-06</td>
+<td>Hot-plug sensor while running</td>
+<td>Recovers on next poll, no crash</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-oled">
+  <div class="subsys-head">
+    <h3>OLED &middot; Display subsystem</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">7 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">OLED-001</span><span class="t-desc">3V3 current delta on panel attach, before init</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> +0–3 mA (pump off)</p><p class="t-spec">limits 0 &ndash; 3 mA</p><p><b>Notes:</b> Jump of tens of mA = miswired panel — stop</p><p class="t-ref">Tracker OLED-001 &middot; Plan &sect;OLED-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-002</span><span class="t-desc">U8g2 init (CS=10, DC=9, RST=14, SCLK=12, MOSI=11) + text</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Renders, correct orientation</p><p class="t-ref">Tracker OLED-002 &middot; Plan &sect;OLED-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-003</span><span class="t-desc">All-pixels-ON pattern</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Uniform, no missing rows/columns</p><p class="t-ref">Tracker OLED-003 &middot; Plan &sect;OLED-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-004</span><span class="t-desc">Border + crosshair 1-px pattern</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Crisp lines, all edges present</p><p class="t-ref">Tracker OLED-004 &middot; Plan &sect;OLED-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-005</span><span class="t-desc">Contrast sweep 0→255</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Smooth ramp, no flicker</p><p class="t-ref">Tracker OLED-005 &middot; Plan &sect;OLED-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-009</span><span class="t-desc">10 min at SPI speed (helper 5 info screen)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Stable, no artifacts</p><p class="t-ref">Tracker OLED-009 &middot; Plan &sect;OLED-09</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">OLED-010</span><span class="t-desc">Cold boot straight to demo screen</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 5/5</p><p class="t-spec">limits 5 &ndash; 5 boots</p><p class="t-ref">Tracker OLED-010 &middot; Plan &sect;OLED-10</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Power off before seating the flex. Insert fully, square, close latch. First power-up with OLED: bench/USB source with ability to observe current.</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OLED-01</td>
+<td>Current delta at power-on with panel attached, before init</td>
+<td>+0–3 mA (panel idle, pump off) — a jump of tens of mA before init suggests a mis-seated/reversed flex → power off</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-02</td>
+<td>U8g2 init (SSD1306 128×64, 4W HW SPI: CS=10, DC=9, RST=14, SCLK=12, MOSI=11) + "Hello"</td>
+<td>Text renders, correct orientation</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-03</td>
+<td>All-pixels-ON pattern</td>
+<td>Uniform, no missing rows/columns (proves all COM/SEG through FPC)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-04</td>
+<td>Border + crosshair 1-px pattern</td>
+<td>Crisp single-pixel lines, edges present</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-05</td>
+<td>Contrast sweep 0→255</td>
+<td>Smooth brightness ramp, no flicker</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-06</td>
+<td>VCC at C21 with all-on display</td>
+<td>6.0–7.7 V (internal charge pump running) — record</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-07</td>
+<td>VCOMH at C20</td>
+<td>0.6–0.9 × VCC</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-08</td>
+<td>Current delta, all-on full contrast</td>
+<td>≈ +10–25 mA</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-09</td>
+<td>SPI clock at target speed (U8g2 default; SSD1306 max 10 MHz)</td>
+<td>Stable rendering 10 min, no artifacts</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED-10</td>
+<td>Cold boot straight into demo screen ×5</td>
+<td>Renders every time (init reliability)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-rgb">
+  <div class="subsys-head">
+    <h3>RGB &middot; RGB status LED</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">3 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">RGB-001</span><span class="t-desc">R / G / B at brightness 64 (helper 6)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Correct pure colors, correct order</p><p class="t-ref">Tracker RGB-001 &middot; Plan &sect;RGB-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RGB-002</span><span class="t-desc">Full white (255,255,255) briefly</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> White, no tint/flicker</p><p class="t-ref">Tracker RGB-002 &middot; Plan &sect;RGB-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RGB-004</span><span class="t-desc">Temperature-map colors from demo (cold→blue … hot→red)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Match spec</p><p class="t-ref">Tracker RGB-004 &middot; Plan &sect;RGB-04</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>Use core 3.x built-in neopixelWrite() / rgbLedWrite() (Adafruit_NeoPixel link issue noted previously).</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB-01</td>
+<td>Red, Green, Blue at brightness 64, 2 s each</td>
+<td>Correct pure colors, correct order</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RGB-02</td>
+<td>White full (255,255,255) briefly</td>
+<td>White, no color tint/flicker (3.3 V data + 3.3 V VDD margins OK)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RGB-03</td>
+<td>3V3 current delta at full white</td>
+<td>≈ +30–50 mA — record; demo firmware should cap brightness</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RGB-04</td>
+<td>Temperature-map colors from demo (cold→blue … hot→red)</td>
+<td>Match spec</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-adc">
+  <div class="subsys-head">
+    <h3>ADC &middot; Sense channels</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">5 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">ADC-001</span><span class="t-desc">Bench battery 3.60 V → firmware VBAT reading (helper 7)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 3.60 V ± 5 %</p><p class="t-spec">target 3.6 &middot; limits 3.42 &ndash; 3.78 V</p><p class="t-ref">Tracker ADC-001 &middot; Plan &sect;ADC-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">ADC-002</span><span class="t-desc">Repeat at 4.20 V</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ± 5 %</p><p class="t-spec">target 4.2 &middot; limits 3.99 &ndash; 4.41 V</p><p class="t-ref">Tracker ADC-002 &middot; Plan &sect;ADC-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">ADC-003</span><span class="t-desc">Repeat at 3.20 V</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ± 5 %</p><p class="t-spec">target 3.2 &middot; limits 3.04 &ndash; 3.36 V</p><p class="t-ref">Tracker ADC-003 &middot; Plan &sect;ADC-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">ADC-005</span><span class="t-desc">VUSB reading, USB in</span><span class="t-act">4.95 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 4.75–5.25 V</p><p class="t-spec">target 5 &middot; limits 4.75 &ndash; 5.25 V</p><p><b>Measured:</b> 4.95 V</p><p class="t-ref">Tracker ADC-005 &middot; Plan &sect;ADC-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">ADC-006</span><span class="t-desc">VUSB reading, USB out (on battery)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> USB-present flag works</p><p class="t-ref">Tracker ADC-006 &middot; Plan &sect;ADC-05</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADC-01</td>
+<td>Bench "battery" at exactly 3.60 V → firmware VBAT reading (GPIO4 × 2)</td>
+<td>3.60 V ± 5 % raw; record offset</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC-02</td>
+<td>Repeat at 4.20 V and 3.20 V</td>
+<td>± 5 %; linearity note for one-point cal in production firmware</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC-03</td>
+<td>Battery % on OLED matches DMM-derived %</td>
+<td>Sensible mapping</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC-04</td>
+<td>VUSB reading (GPIO2 × 2): USB in</td>
+<td>≈ 4.75–5.25 V</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC-05</td>
+<td>VUSB reading: USB out, on battery</td>
+<td>&lt; 0.5 V → firmware "USB present" flag works both ways</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-btn">
+  <div class="subsys-head">
+    <h3>BTN &middot; Buttons</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">2 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">BTN-001</span><span class="t-desc">SW4 BOOT: helper prints press/release, 20 ms debounce</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 1 idle, 0 pressed, no bounce</p><p class="t-ref">Tracker BTN-001 &middot; Plan &sect;BTN-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">BTN-002</span><span class="t-desc">SW1 RESET pressed while running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Immediate clean reset</p><p class="t-ref">Tracker BTN-002 &middot; Plan &sect;BTN-02</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BTN-01</td>
+<td>SW4 (BOOT/IO0): firmware prints on press/release</td>
+<td>1 idle, 0 pressed, no bounce issues with 20 ms debounce</td>
+<td></td>
+</tr>
+<tr>
+<td>BTN-02</td>
+<td>SW1 (RESET): press while running</td>
+<td>Immediate clean reset</td>
+<td></td>
+</tr>
+<tr>
+<td>LED-01</td>
+<td>Green LED2</td>
+<td>On whenever 3V3 is up (any power source)</td>
+<td></td>
+</tr>
+<tr>
+<td>LED-02</td>
+<td>Yellow LED1 matrix: charging / charge-done / no-battery / no-USB</td>
+<td>ON / OFF / off-or-blink (record) / OFF</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-led">
+  <div class="subsys-head">
+    <h3>LED &middot; Indicator LEDs</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">2 pass</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">LED-001</span><span class="t-desc">Green LED2</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> On whenever 3V3 is up, any power source</p><p class="t-ref">Tracker LED-001 &middot; Plan &sect;LED-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">LED-002</span><span class="t-desc">Yellow LED1 matrix: charging / done / no-battery / no-USB</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ON / OFF / off-or-blink (record) / OFF</p><p class="t-ref">Tracker LED-002 &middot; Plan &sect;LED-02</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Check</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BTN-01</td>
+<td>SW4 (BOOT/IO0): firmware prints on press/release</td>
+<td>1 idle, 0 pressed, no bounce issues with 20 ms debounce</td>
+<td></td>
+</tr>
+<tr>
+<td>BTN-02</td>
+<td>SW1 (RESET): press while running</td>
+<td>Immediate clean reset</td>
+<td></td>
+</tr>
+<tr>
+<td>LED-01</td>
+<td>Green LED2</td>
+<td>On whenever 3V3 is up (any power source)</td>
+<td></td>
+</tr>
+<tr>
+<td>LED-02</td>
+<td>Yellow LED1 matrix: charging / charge-done / no-battery / no-USB</td>
+<td>ON / OFF / off-or-blink (record) / OFF</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-rfw">
+  <div class="subsys-head">
+    <h3>RFW &middot; Wi-Fi RF</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">4 pass</span><span class="pill pill-fail">1 fail</span><span class="pill pill-na">5 pending</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">RFW-001</span><span class="t-desc">WiFi scan (helper 8)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Sees all APs the reference board sees</p><p class="t-ref">Tracker RFW-001 &middot; Plan &sect;RF-W-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-002</span><span class="t-desc">DUT average RSSI @ 3 m, worst of 4 orientations (helper 8)</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Notes:</b> Record all 4 orientations in Notes</p><p class="t-ref">Tracker RFW-002 &middot; Plan &sect;RF-W-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-004</span><span class="t-desc">Δ RSSI = |DUT − reference| (auto-computed)</span><span class="t-act"></span><span class="pill pill-fail">Fail</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≤ 6 dB — the antenna keep-out verdict</p><p class="t-spec">limits &minus;&infin; &ndash; 6 dB</p><p><b>Notes:</b> Actual auto = |two rows above|</p><p class="t-ref">Tracker RFW-004 &middot; Plan &sect;RF-W-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-005</span><span class="t-desc">Connect to WPA2 + DHCP time (helper c)</span><span class="t-act">5.2 s</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 10 s</p><p class="t-spec">limits &minus;&infin; &ndash; 10 s</p><p><b>Measured:</b> 5.2 s</p><p class="t-ref">Tracker RFW-005 &middot; Plan &sect;RF-W-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-006</span><span class="t-desc">Ping ×100 from PC @ 3 m: loss</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 2 %</p><p class="t-spec">limits &minus;&infin; &ndash; 2 %</p><p class="t-ref">Tracker RFW-006 &middot; Plan &sect;RF-W-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-007</span><span class="t-desc">Ping ×100: average latency</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 20 ms</p><p class="t-spec">limits &minus;&infin; &ndash; 20 ms</p><p class="t-ref">Tracker RFW-007 &middot; Plan &sect;RF-W-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-008</span><span class="t-desc">Throughput best-of-5 (helper h)</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≥ 8 Mbit/s sanity floor</p><p class="t-spec">limits 8 &ndash; +&infin; Mbps</p><p class="t-ref">Tracker RFW-008 &middot; Plan &sect;RF-W-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-009</span><span class="t-desc">Range walk: DUT distance ÷ reference distance</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≥ 70 %</p><p class="t-spec">limits 70 &ndash; +&infin; %</p><p class="t-ref">Tracker RFW-009 &middot; Plan &sect;RF-W-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-010</span><span class="t-desc">Full demo: NTP + Open-Meteo over WiFi on S3</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Weather + time render; note HTTPS result in Notes</p><p class="t-ref">Tracker RFW-010 &middot; Plan &sect;RF-W-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFW-011</span><span class="t-desc">On battery @ 3.5 V: 5 min continuous TX (helper 9)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No brownout/reset</p><p class="t-ref">Tracker RFW-011 &middot; Plan &sect;RF-W-08</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><p>The antenna keep-out clearance on this rev is known to be short of Espressif's 15 mm guideline — <strong>RF-W-02 is the test that quantifies the real-world cost.</strong> Run RF tests with the board on a non-metallic stand, away from your body, USB cable routed away from the antenna.</p>
+<table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Procedure</strong></th>
+<th><strong>Expected / Target</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF-W-01</td>
+<td>WiFi scan</td>
+<td>Sees all APs the reference board sees</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-02</td>
+<td>Comparative RSSI: DUT vs reference board (C6 DevKit on hand; an S3 devkit is a fairer reference if available). Same location/orientation, 3 m from AP, average 20 scan samples. Repeat in 4 orientations (0/90/180/270°)</td>
+<td>Δ RSSI ≤ 6 dB vs reference in worst orientation. Record all 4 values — this is the antenna keep-out verdict</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-03</td>
+<td>Connect to WPA2 AP, DHCP</td>
+<td>Associated + IP &lt; 10 s</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-04</td>
+<td>ping -c 100 from PC to board at 3 m</td>
+<td>Loss &lt; 2 %, avg &lt; 20 ms</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-05</td>
+<td>Throughput (iperf TCP or repeated HTTP GET) at 3 m</td>
+<td>≥ 8 Mbps sustained (sanity, not a spec)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-06</td>
+<td>Range walk: max distance holding connection, same path for DUT and reference</td>
+<td>DUT ≥ 70 % of reference distance</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-07</td>
+<td>Full demo (NTP + Open-Meteo fetch, plain HTTP per firmware spec) on the S3 board</td>
+<td>Weather + time render; note whether HTTPS also works on S3 (C6 TLS hang was C6-specific — verify)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-W-08</td>
+<td>On battery at 3.5 V: 5 min continuous WiFi traffic</td>
+<td>No brownout/reset</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>If RF-W-02 shows &gt; 6 dB deficit or RF-W-06 shows badly reduced range, that is the data point that forces the planned left-edge pull-in (X ≈ 7 mm) before mass production.</p></div>
+  </details>
+</div><div class="subsys" id="sub-rfb">
+  <div class="subsys-head">
+    <h3>RFB &middot; Bluetooth LE RF</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">1 pass</span><span class="pill pill-na">3 pending</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">RFB-001</span><span class="t-desc">BLE advertise (helper b), nRF Connect @ 1 m — DUT RSSI</span><span class="t-act">-43 dBm</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> -43 dBm</p><p class="t-ref">Tracker RFB-001 &middot; Plan &sect;RF-B-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFB-003</span><span class="t-desc">RainMaker BLE provisioning end-to-end (DVT_RainMaker_Prov)</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Node appears in RainMaker app dashboard</p><p class="t-ref">Tracker RFB-003 &middot; Plan &sect;RF-B-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFB-004</span><span class="t-desc">Provisioned node: 60 s reporting for 10 min</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Data arrives; no Out-of-MQTT-Budget errors</p><p class="t-ref">Tracker RFB-004 &middot; Plan &sect;RF-B-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">RFB-005</span><span class="t-desc">WiFi + BLE coexistence: advertise + demo 10 min</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No crash/reset, WiFi stays associated</p><p class="t-ref">Tracker RFB-005 &middot; Plan &sect;RF-B-04</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Procedure</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF-B-01</td>
+<td>BLE advertise test sketch; observe in nRF Connect at 1 m</td>
+<td>Visible, RSSI recorded; compare vs reference board same as RF-W-02</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-B-02</td>
+<td>RainMaker BLE provisioning end-to-end (with network_prov_mgr_disable_auto_stop(10000) in the PROV_INIT handler, per firmware spec)</td>
+<td>Provisioning completes, user-node association succeeds, node appears in RainMaker app — this closes the open item from the last dev session</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-B-03</td>
+<td>Provisioned node: cloud reporting on the 60 s slow timer for 10 min</td>
+<td>Data points arrive; no Out of MQTT Budget errors</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF-B-04</td>
+<td>WiFi + BLE coexistence: keep BLE advertising while WiFi demo runs 10 min</td>
+<td>No crash/reset, WiFi stays associated</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+  </details>
+</div><div class="subsys" id="sub-sys">
+  <div class="subsys-head">
+    <h3>SYS &middot; System-level</h3>
+    <div class="subsys-chips"><span class="pill pill-pass">9 pass</span><span class="pill pill-na">1 pending</span></div>
+  </div>
+  <div class="t-table"><details class="t-row">
+  <summary><span class="t-id">SYS-001</span><span class="t-desc">Factory-fresh: erase → flash demo → cold boot full flow</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Portal → WiFi → NTP → weather → RGB temp color → battery %</p><p class="t-ref">Tracker SYS-001 &middot; Plan &sect;SYS-01</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-002</span><span class="t-desc">24 h soak on USB: unexpected reboots</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 0</p><p class="t-spec">limits &minus;&infin; &ndash; 0 count</p><p class="t-ref">Tracker SYS-002 &middot; Plan &sect;SYS-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-003</span><span class="t-desc">24 h soak: free heap stable</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> No leak trend; record start/end heap in Notes</p><p class="t-ref">Tracker SYS-003 &middot; Plan &sect;SYS-02</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-004</span><span class="t-desc">ArduinoOTA update over WiFi (DVT_OTA_Test v1→v2)</span><span class="t-act"></span><span class="pill pill-na">Pending</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Boots into new image</p><p class="t-ref">Tracker SYS-004 &middot; Plan &sect;SYS-03</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-005</span><span class="t-desc">Power cycle ×20 (USB, 5 s off): successful boots</span><span class="t-act">20 boots</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 20/20</p><p class="t-spec">limits 20 &ndash; 20 boots</p><p><b>Measured:</b> 20 boots</p><p class="t-ref">Tracker SYS-005 &middot; Plan &sect;SYS-04</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-006</span><span class="t-desc">USB data hot-plug ×10 on battery: clean re-enumerations</span><span class="t-act">10 plugs</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> 10/10</p><p class="t-spec">limits 10 &ndash; 10 plugs</p><p><b>Measured:</b> 10 plugs</p><p class="t-ref">Tracker SYS-006 &middot; Plan &sect;SYS-05</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-007</span><span class="t-desc">Overnight charge-while-running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Morning: battery full, LED1 off, still running</p><p class="t-ref">Tracker SYS-007 &middot; Plan &sect;SYS-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-008</span><span class="t-desc">Overnight: board temperature in the morning</span><span class="t-act">38 °C</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> &lt; 45 °C</p><p class="t-spec">limits &minus;&infin; &ndash; 45 °C</p><p><b>Measured:</b> 38 °C</p><p class="t-ref">Tracker SYS-008 &middot; Plan &sect;SYS-06</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-009</span><span class="t-desc">Thermal survey hottest surface (U2 / U5 / U6) — record part in Notes</span><span class="t-act">38 °C</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> ≤ 85 °C</p><p class="t-spec">limits &minus;&infin; &ndash; 85 °C</p><p><b>Measured:</b> 38 °C</p><p class="t-ref">Tracker SYS-009 &middot; Plan &sect;SYS-07</p></div>
+</details>
+<details class="t-row">
+  <summary><span class="t-id">SYS-010</span><span class="t-desc">Firmware S3 pin block matches plan Appendix B</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Match</p><p class="t-ref">Tracker SYS-010 &middot; Plan &sect;SYS-08</p></div>
+</details></div>
+  <details class="plan-detail">
+    <summary>Full test plan for this section (from the DVT plan document)</summary>
+    <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>ID</strong></th>
+<th><strong>Procedure</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Measured</strong></th>
+<th><strong>P/F</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SYS-01</td>
+<td>Factory-fresh flow: erase flash → flash shipping demo → cold boot</td>
+<td>Captive portal appears → configure WiFi → NTP sync → weather renders → RGB temp color → battery % shown</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-02</td>
+<td>24 h soak on USB power, demo running, log uptime + free heap hourly</td>
+<td>No reboot; heap stable (no leak trend)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-03</td>
+<td>ArduinoOTA update over WiFi</td>
+<td>Succeeds, reboots into new image</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-04</td>
+<td>Power cycle × 20 (USB unplug/replug, 5 s off)</td>
+<td>Boots to demo 20/20</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-05</td>
+<td>USB data hot-plug × 10 while running on battery</td>
+<td>No crash; CDC re-enumerates each time</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-06</td>
+<td>Overnight: battery connected, USB in, demo running</td>
+<td>Morning: battery full, LED1 off, board &lt; 45 °C, still running</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-07</td>
+<td>Thermal survey at steady state (WiFi demo, charging): spot-check U2 module, U5, U6</td>
+<td>Record temps; nothing &gt; 85 °C surface</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS-08</td>
+<td>Firmware pin-map migration check: confirm the sketch's S3 #else pin block matches Appendix B exactly (SDA 8, SCL 18, DC 9, CS 10, MOSI 11, SCLK 12, RST 14, RGB 48, VBAT 4, VUSB 2)</td>
+<td>Match</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2><strong>20. Results Summary </strong><strong>&amp;</strong><strong> Sign-Off</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Section</strong></th>
+<th><strong>Tests</strong></th>
+<th><strong>Pass</strong></th>
+<th><strong>Fail</strong></th>
+<th><strong>N/A</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VIS visual</td>
+<td>9</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PRE unpowered</td>
+<td>13</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>PWR power rails</td>
+<td>9</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CHG charger</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BAT protection/path</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MCU bring-up</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GPIO</td>
+<td>4 groups</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>I2C</td>
+<td>6</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>OLED</td>
+<td>10</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RGB</td>
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADC</td>
+<td>5</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BTN/LED</td>
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF WiFi</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RF BLE</td>
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SYS</td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Issue log</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>#</strong></th>
+<th><strong>Test ID</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Severity (blocker / major / minor)</strong></th>
+<th><strong>Disposition</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Board disposition:  ☐ PASS — release candidate  ☐ PASS w/ deviations (list)  ☐ FAIL — rework/respin</p>
+<p>Signature: <strong><em>_</em></strong><strong><em>_</em></strong>  Date: <strong><em>_</em></strong><strong><em>_</em></strong></p></div>
+  </details>
+</div>
+      </div>
+    </section>
+
+    <section id="issues" class="section">
+      <div class="wrap">
+        <p class="kicker">Issues &amp; fixes</p>
+        <h2>What we found, and what happens next</h2>
+        <p class="section-intro">Rev A is a first-article validation build. These are the findings from the campaign &mdash; each with its disposition. Fixes marked &ldquo;next revision&rdquo; are locked into the Rev B layout.</p>
+        <div class="iss">
+  <div class="iss-head"><h3>USB data path: wrong part at D1</h3><span class="pill pill-pass">Resolved</span></div>
+  <p class="iss-tag">MCU-001</p>
+  <p>The first-article boards arrived with an SRV05-4 populated at D1 instead of the specified USBLC6-2SC6 ESD protector, which broke USB enumeration. Board #1 was reworked with the correct part and USB enumerates and flashes normally. The corrected part is locked in for the next build, and magnified IC-marking inspection of first articles is now a standing check (VIS-03).</p>
+</div><div class="iss">
+  <div class="iss-head"><h3>R5 charge-programming resistor — cleared</h3><span class="pill pill-pass">Resolved</span></div>
+  <p class="iss-tag">CHG</p>
+  <p>An in-circuit DMM reading of ~4.12 kΩ put the 5.1 kΩ PROG resistor under suspicion. The measured charge plateau of 200.6 mA corresponds to an effective 4.99 kΩ (+2.3% of nominal), proving the populated part behaves as a 5.1 kΩ; the odd reading was an in-circuit artifact of the PROG pin’s internal network. No action needed.</p>
+</div><div class="iss">
+  <div class="iss-head"><h3>Antenna keep-out below guideline</h3><span class="pill pill-open">Next revision</span></div>
+  <p class="iss-tag">RFW-004</p>
+  <p>Layout review shows the module antenna keep-out falls short of the 15 mm guideline, constrained by board height. Range-delta testing (RF-W-02/06) is quantifying the real-world impact; the planned fix for the next revision pulls the board’s left edge in to about X = 7 mm if performance is unacceptable.</p>
+</div><div class="iss">
+  <div class="iss-head"><h3>Header spacing makes breadboard fit tight</h3><span class="pill pill-open">Next revision</span></div>
+  <p class="iss-tag">VIS-011</p>
+  <p>The row-to-row header spacing is slightly off, so pressing the board into a breadboard takes more force than it should. Header footprint spacing is corrected in the next-revision layout.</p>
+</div><div class="iss">
+  <div class="iss-head"><h3>GPIO headers missing top-side labels</h3><span class="pill pill-open">Next revision</span></div>
+  <p class="iss-tag">VIS</p>
+  <p>Pin labels are printed on the back only; the next revision adds top-side silkscreen so pins can be identified while the board is seated in a breadboard.</p>
+</div><div class="iss">
+  <div class="iss-head"><h3>Battery connector part change</h3><span class="pill pill-open">Next revision</span></div>
+  <p class="iss-tag">BAT</p>
+  <p>The populated battery connector is not the intended part. The correct connector is specified for the next build; polarity marking and reverse-protection behavior (BAT-01) are unaffected.</p>
+</div>
+      </div>
+    </section>
+
+    <section id="reference" class="section">
+      <div class="wrap">
+        <p class="kicker">Plan &amp; reference</p>
+        <h2>The test plan&rsquo;s reference data</h2>
+        <p class="section-intro">The supporting chapters of the DVT plan: what was used, the safety rules the campaign ran under, and the as-built electrical reference for this board.</p>
+        <div class="ref-block">
+          <details>
+            <summary>Document &amp; provenance</summary>
+            <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>Field</strong></th>
+<th><strong>Value</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Board</td>
+<td>ESP32-S3 dev board, 76.2 × 25.4 mm, 4-layer</td>
+</tr>
+<tr>
+<td>Fab data</td>
+<td>Gerber/BOM/PnP/Flying-probe exports dated 2026-06-28</td>
+</tr>
+<tr>
+<td>Assembler</td>
+<td>JLCPCB (LCSC parts)</td>
+</tr>
+<tr>
+<td>Doc version</td>
+<td>1.1 — 2026-07-03 (netlist 06-28 verified against fab data)</td>
+</tr>
+</tbody>
+</table></div>
+          </details>
+          <details>
+            <summary>Methodology &amp; test discipline</summary>
+            <div class="plan-body"><p>Run sections <strong>in order</strong>. Sections VIS and PRE are unpowered and are <strong>gates</strong>: any failure there means <strong>do not apply power</strong> until resolved. First power-up (PWR-01) must be done with a current-limited supply, not a USB port on your computer.</p>
+<p>Each test has an ID, procedure, expected result, and a blank <em>Measured</em> / <em>P/F</em> field. Fill in actual values, not just pass/fail — measured numbers are what make board #1 comparable to board #50 later. Tests marked <strong>(optional)</strong> can be skipped for later boards once the design is proven; run everything on the first articles.</p>
+<p><strong>Stop-on-fail rules:</strong></p>
+<ul>
+<li>
+<p>Any rail-to-GND short in PRE → stop.</p>
+</li>
+<li>
+<p>Current limit trips at first power-up → stop, thermal-inspect.</p>
+</li>
+<li>
+<p>Battery tests: never connect a Li-Po until PRE-05 and BAT-01 (reverse-polarity, done with a bench supply) have passed.</p>
+</li>
+</ul></div>
+          </details>
+          <details>
+            <summary>References &amp; revision notes</summary>
+            <div class="plan-body"><p>Source data used to build this plan: BOM_Board1_PCB1_20260628.xlsx, PickAndPlace_PCB1_2026_06_28.xlsx, FlyingProbeTesting.json (net-to-pad map), Gerber set (board outline 76.20 × 25.40 mm), Netlist_PCB1_2026-06-28.tel.</p>
+<p><strong>✔ Netlist verified against the as-built board (2026-07-03).</strong> The June 28 netlist was cross-checked net-by-net against the flying-probe export: all 57 shared nets match member-for-member. The four discrepancies previously found in the obsolete June 24 netlist are confirmed resolved in the current one — discard the June 24 file. For reference, the corrections now verified in both netlist and fab data:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Item</strong></th>
+<th><strong>Obsolete netlist 2026-06-24</strong></th>
+<th><strong>Netlist + fab data 2026-06-28 (verified match)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J5 pin 5</td>
+<td>IO17</td>
+<td>IO39 (IO17 is no-connect)</td>
+</tr>
+<tr>
+<td>J4 pins 1/2, J5 pins 1/2</td>
+<td>1 = 3V3, 2 = GND</td>
+<td>1 = GND, 2 = 3V3</td>
+</tr>
+<tr>
+<td>J4 pins 7/8</td>
+<td>7 = GND, 8 = IO16</td>
+<td>7 = IO16, 8 = GND</td>
+</tr>
+<tr>
+<td>FPC1 pin 12 (BS2)</td>
+<td>3V3</td>
+<td>GND (correct for 4-wire SPI)</td>
+</tr>
+</tbody>
+</table>
+<p>Also confirmed in the cross-check: all no-connect pins agree (IO3/17/38/40/41/42/45/46/47, FPC1.7, FPC1.20 D2 floating, USB-C SBU pins, U1.4, U3.2 DOUT, U6.4), and net RGB_LED_DIN (U2.25 → U3.4) is simply auto-renamed NET_10 in the fab export — same connectivity. One schematic housekeeping item found: <strong>LED3 (WS2812B-V6) is an orphan symbol</strong> — present in the schematic with zero connections, absent from BOM, pick-and-place, and the board. Harmless to this build; delete it from the schematic.</p></div>
+          </details>
+          <details>
+            <summary>Required equipment</summary>
+            <div class="plan-body"><table>
+<thead>
+<tr>
+<th><strong>#</strong></th>
+<th><strong>Item</strong></th>
+<th><strong>Used for</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>DMM with diode mode</td>
+<td>Everything</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bench PSU, 0–5 V, adjustable current limit (CC mode)</td>
+<td>First power, battery emulation, brownout sweep</td>
+</tr>
+<tr>
+<td>3</td>
+<td>USB-C cables: one A-to-C, one C-to-C</td>
+<td>USB + CC resistor validation</td>
+</tr>
+<tr>
+<td>4</td>
+<td>USB power meter (inline V/A)</td>
+<td>Input current, charge current</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1S Li-Po with JST-XH plug (~500 mAh) — verify pigtail polarity first</td>
+<td>Battery tests</td>
+</tr>
+<tr>
+<td>6</td>
+<td>µA-capable current meter (µCurrent, Joulescope, or DMM µA range)</td>
+<td>Sleep current</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Oscilloscope (optional but recommended)</td>
+<td>3V3 droop during WiFi TX, switchover transients</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Thermal camera or IR thermometer (optional)</td>
+<td>LDO/charger thermal</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Qwiic SHT4x breakout + cable</td>
+<td>I2C port test</td>
+</tr>
+<tr>
+<td>10</td>
+<td>VG-2864KSWEG05 OLED panel</td>
+<td>Display tests</td>
+</tr>
+<tr>
+<td>11</td>
+<td>USB-UART adapter (3.3 V)</td>
+<td>UART0 header test</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Known-good reference board (ESP32-C6-DevKitC-1 on hand; an S3 devkit is a better RF reference if available)</td>
+<td>Comparative RF test</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Phone with nRF Connect + ESP RainMaker app; WiFi AP; PC with Arduino IDE (ESP32S3 Dev Module, 8 MB flash, USB CDC On Boot: Enabled)</td>
+<td>RF + system tests</td>
+</tr>
+</tbody>
+</table></div>
+          </details>
+          <details>
+            <summary>Safety notes</summary>
+            <div class="plan-body"><ul>
+<li>
+<p><strong>Li-Po:</strong> JST-XH battery pigtail polarity is not standardized between vendors. Verify with the DMM that battery <strong>+</strong> lands on <strong>J2 pin 1</strong> (the pin at board position x=68.7, y=22.4 mm, net through Q3 to BATT+) before ever plugging in. Q3 provides reverse protection, but do not rely on it.</p>
+</li>
+<li>
+<p>Use the bench PSU in current-limit mode for every "first" — first power, first battery connect, first OLED attach.</p>
+</li>
+<li>
+<p>Never hot-plug the OLED FPC. Power off, seat the flex fully, close the latch, then power.</p>
+</li>
+<li>
+<p>The board has unprotected 0.5 mm-pitch FPC and USB-C pins — handle with ESD precautions.</p>
+</li>
+</ul></div>
+          </details>
+          <details>
+            <summary>Board reference data</summary>
+            <div class="plan-body"><h4><strong>4.1 Power Tree (as built)</strong></h4>
+<p>USB-C J1 VBUS ──F?none──► V_USB ──D3 (SS34)──► V_SYS ──U6 AP2112K-3.3──► 3V3</p>
+<pre><code>                        │                    ▲  (EN tied to VIN)
+
+                        ├─U5 MCP73831 ──► BATT+ ── Q3 (AO3415, rev-pol) ── J2.1 (battery +)
+
+                        │  (PROG R5=5.1k ≈196 mA)      │
+
+                        │                              └─ R10/R11 (100k/100k) ──► VBAT_SENSE → GPIO4
+
+                        ├─ R15/R16 (100k/100k) ──► VUSB_SENSE → GPIO2
+
+                        └─ Q1 gate (AO3407): USB present → Q1 OFF (battery isolated from V_SYS)
+
+                                             USB absent (R7 10k pulls gate low) → Q1 ON, BATT+ → V_SYS
+</code></pre>
+<p>+5V header J5.12 ──F1 (0.5A polyfuse)──D2 (SS34)──► V_SYS      (input only; D2 blocks output)</p>
+<p>Battery low side: J2.2 (BATT−) ── Q2 FS8205A dual FET ── GND, controlled by U1 DW01A</p>
+<p>LED2 (green) = 3V3 power indicator via R34 2.2k. LED1 (yellow) = charge status from U5 STAT via R6 470Ω.</p>
+<p>D1 USBLC6-2SC6 = ESD clamp on USB D+/D− (rail pin tied to 3V3).</p>
+<h4><strong>4.2 Expected Voltages Summary</strong></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Net</strong></th>
+<th><strong>Condition</strong></th>
+<th><strong>Expected</strong></th>
+<th><strong>Where to probe (side)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V_USB</td>
+<td>USB-C 5 V source</td>
+<td>4.75–5.25 V</td>
+<td>D3 anode pad, D3.2 (B)</td>
+</tr>
+<tr>
+<td>V_SYS</td>
+<td>USB powered</td>
+<td>V_USB − 0.2…0.45 V (≈ 4.55–4.8 V)</td>
+<td>D2/D3 cathode pad, D2.1 (B)</td>
+</tr>
+<tr>
+<td>V_SYS</td>
+<td>Battery only</td>
+<td>V_BAT − &lt;0.05 V (Q1 on)</td>
+<td>same</td>
+</tr>
+<tr>
+<td>3V3</td>
+<td>any</td>
+<td>3.25–3.35 V</td>
+<td>J4.2 / J4.12 / J5.2 (headers)</td>
+</tr>
+<tr>
+<td>BATT+</td>
+<td>battery connected</td>
+<td>3.0–4.23 V</td>
+<td>C3.2 pad (B)</td>
+</tr>
+<tr>
+<td>BATT+</td>
+<td>charging, near full</td>
+<td>4.168–4.232 V (MCP73831 VREG ±0.75 %)</td>
+<td>C3.2</td>
+</tr>
+<tr>
+<td>+5V (J5.12)</td>
+<td>USB powered, nothing on pin</td>
+<td>≈ 0 V / floating (input-only pin)</td>
+<td>J5.12</td>
+</tr>
+<tr>
+<td>VBAT_SENSE</td>
+<td>battery connected</td>
+<td>BATT+ ÷ 2</td>
+<td>U2 pin 4 (T)</td>
+</tr>
+<tr>
+<td>VUSB_SENSE</td>
+<td>USB powered</td>
+<td>V_USB ÷ 2 (≈ 2.5 V)</td>
+<td>U2 pin 38 (T)</td>
+</tr>
+<tr>
+<td>EN</td>
+<td>idle</td>
+<td>≈ 3.3 V (R12 10k pull-up)</td>
+<td>U2 pin 3 (T)</td>
+</tr>
+<tr>
+<td>IO0</td>
+<td>idle</td>
+<td>≈ 3.3 V (internal pull-up only)</td>
+<td>U2 pin 27 (T)</td>
+</tr>
+<tr>
+<td>I2C SDA/SCL</td>
+<td>idle</td>
+<td>≈ 3.3 V (R9/R13 4.7k pull-ups)</td>
+<td>J3.3 / J3.4</td>
+</tr>
+<tr>
+<td>OLED VCC</td>
+<td>display on</td>
+<td>6.0–7.7 V (internal charge pump) — record</td>
+<td>C21.2 pad (B)</td>
+</tr>
+<tr>
+<td>OLED VCOMH</td>
+<td>display on</td>
+<td>0.6–0.9 × VCC</td>
+<td>C20.1 pad (B)</td>
+</tr>
+</tbody>
+</table>
+<h4><strong>4.3 Module Pin Map (ESP32-S3-WROOM-1, as built per fab data)</strong></h4>
+<table>
+<thead>
+<tr>
+<th><strong>Mod pin</strong></th>
+<th><strong>GPIO</strong></th>
+<th><strong>Net</strong></th>
+<th><strong>Destination</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>EN</td>
+<td>EN</td>
+<td>SW1 reset btn, R12 10k→3V3, C11 1µ + C14 100n</td>
+</tr>
+<tr>
+<td>4</td>
+<td>IO4</td>
+<td>VBAT_SENSE</td>
+<td>R10/R11 divider (ADC1_CH3)</td>
+</tr>
+<tr>
+<td>5/6/7</td>
+<td>IO5/6/7</td>
+<td>IO5/6/7</td>
+<td>J4.3 / J4.4 / J4.5</td>
+</tr>
+<tr>
+<td>8/9</td>
+<td>IO15/16</td>
+<td>IO15/16</td>
+<td>J4.6 / J4.7</td>
+</tr>
+<tr>
+<td>10</td>
+<td>IO17</td>
+<td>—</td>
+<td>no connect</td>
+</tr>
+<tr>
+<td>11</td>
+<td>IO18</td>
+<td>I2C_SCL</td>
+<td>J3.4 (Qwiic SCL), R13 4.7k PU</td>
+</tr>
+<tr>
+<td>12</td>
+<td>IO8</td>
+<td>I2C_SDA</td>
+<td>J3.3 (Qwiic SDA), R9 4.7k PU</td>
+</tr>
+<tr>
+<td>13/14</td>
+<td>IO19/IO20</td>
+<td>D− / D+</td>
+<td>USB via D1 ESD</td>
+</tr>
+<tr>
+<td>15/16</td>
+<td>IO3/IO46</td>
+<td>—</td>
+<td>no connect (strapping, internal defaults OK)</td>
+</tr>
+<tr>
+<td>17</td>
+<td>IO9</td>
+<td>OLED_DC</td>
+<td>FPC1.15</td>
+</tr>
+<tr>
+<td>18</td>
+<td>IO10</td>
+<td>OLED_DS (CS)</td>
+<td>FPC1.13</td>
+</tr>
+<tr>
+<td>19</td>
+<td>IO11</td>
+<td>OLED_MOSI</td>
+<td>FPC1.19 (D1)</td>
+</tr>
+<tr>
+<td>20</td>
+<td>IO12</td>
+<td>OLED_SCLK</td>
+<td>FPC1.18 (D0)</td>
+</tr>
+<tr>
+<td>21</td>
+<td>IO13</td>
+<td>IO13</td>
+<td>J5.4</td>
+</tr>
+<tr>
+<td>22</td>
+<td>IO14</td>
+<td>OLED_RST</td>
+<td>FPC1.14</td>
+</tr>
+<tr>
+<td>23</td>
+<td>IO21</td>
+<td>IO21</td>
+<td>J5.10</td>
+</tr>
+<tr>
+<td>24/26</td>
+<td>IO47/IO45</td>
+<td>—</td>
+<td>no connect</td>
+</tr>
+<tr>
+<td>25</td>
+<td>IO48</td>
+<td>(RGB data)</td>
+<td>U3 SK6812 DIN</td>
+</tr>
+<tr>
+<td>27</td>
+<td>IO0</td>
+<td>IO0</td>
+<td>SW4 boot btn (internal PU only)</td>
+</tr>
+<tr>
+<td>28/29/30</td>
+<td>IO35/36/37</td>
+<td>IO35/36/37</td>
+<td>J5.9 / J5.8 / J5.7 (free on N8 — no PSRAM)</td>
+</tr>
+<tr>
+<td>31/33/34/35</td>
+<td>IO38/40/41/42</td>
+<td>—</td>
+<td>no connect</td>
+</tr>
+<tr>
+<td>32</td>
+<td>IO39</td>
+<td>IO39</td>
+<td>J5.5 (JTAG MTCK by default — fine as GPIO with USB-JTAG)</td>
+</tr>
+<tr>
+<td>36</td>
+<td>IO43 (U0TXD)</td>
+<td>"RX"</td>
+<td>J4.10</td>
+</tr>
+<tr>
+<td>37</td>
+<td>IO44 (U0RXD)</td>
+<td>"TX"</td>
+<td>J4.9</td>
+</tr>
+<tr>
+<td>38</td>
+<td>IO2</td>
+<td>VUSB_SENSE</td>
+<td>R15/R16 divider (ADC1_CH1)</td>
+</tr>
+<tr>
+<td>39</td>
+<td>IO1</td>
+<td>IO1</td>
+<td>J5.3 (ADC1_CH0)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>⚠ Note the UART nets:</strong> the net named "TX" (J4.9) lands on the ESP32's <strong>receive</strong> pin (U0RXD/GPIO44); "RX" (J4.10) is the ESP32's <strong>transmit</strong> (U0TXD/GPIO43). This is host-perspective labeling. Verify what the silkscreen says (MCU-06) and document unambiguously in the product manual.</p>
+<h4><strong>4.4 Connector Pinouts (as built)</strong></h4>
+<p><strong>J4 (bottom edge, y = 1.3 mm, left→right):</strong> 1 GND · 2 3V3 · 3 IO5 · 4 IO6 · 5 IO7 · 6 IO15 · 7 IO16 · 8 GND · 9 "TX"(→U0RXD/IO44) · 10 "RX"(→U0TXD/IO43) · 11 GND · 12 3V3</p>
+<p><strong>J5 (top edge, y = 24.2 mm, left→right):</strong> 1 GND · 2 3V3 · 3 IO1 · 4 IO13 · 5 IO39 · 6 GND · 7 IO37 · 8 IO36 · 9 IO35 · 10 IO21 · 11 GND · 12 +5V (input only)</p>
+<p><strong>J3 Qwiic (BM04B-SRSS):</strong> 1 GND · 2 3V3 · 3 SDA(IO8) · 4 SCL(IO18) — standard Qwiic order (cable: black, red, blue, yellow).</p>
+<p><strong>J2 battery (JST-XH 2P):</strong> 1 = BAT+ (via Q3) · 2 = BAT− (via Q2/DW01A to GND). Pin 1 is at x=68.7, y=22.4 mm.</p>
+<p><strong>J1 USB-C (TYPE-C-31-M-12, USB 2.0):</strong> VBUS→V_USB, CC1/CC2 each 5.1 k to GND (R4/R3), D±→D1→IO19/IO20, SBU floating, shell GND.</p>
+<h4><strong>4.5 OLED FPC (FPC1, 30-pin 0.5 mm, VG-2864KSWEG05, §4.4.6 config)</strong></h4>
+<table>
+<thead>
+<tr>
+<th><strong>FPC pin</strong></th>
+<th><strong>Signal</strong></th>
+<th><strong>Connection</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1, 30</td>
+<td>GND guard</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>2–3 / 4–5</td>
+<td>C2P/C2N, C1P/C1N</td>
+<td>C16 1µF, C17 1µF (charge pump)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>VDDB (DC/DC in)</td>
+<td>3V3</td>
+</tr>
+<tr>
+<td>7</td>
+<td>NC</td>
+<td>—</td>
+</tr>
+<tr>
+<td>8</td>
+<td>VSS</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>9</td>
+<td>VDD (logic)</td>
+<td>3V3</td>
+</tr>
+<tr>
+<td>10/11/12</td>
+<td>BS0/BS1/BS2</td>
+<td>GND / GND / GND (4-wire SPI)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>CS#</td>
+<td>IO10</td>
+</tr>
+<tr>
+<td>14</td>
+<td>RES#</td>
+<td>IO14</td>
+</tr>
+<tr>
+<td>15</td>
+<td>D/C#</td>
+<td>IO9</td>
+</tr>
+<tr>
+<td>16/17</td>
+<td>R/W#, E/RD#</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>18</td>
+<td>D0 (SCLK)</td>
+<td>IO12</td>
+</tr>
+<tr>
+<td>19</td>
+<td>D1 (MOSI)</td>
+<td>IO11</td>
+</tr>
+<tr>
+<td>20</td>
+<td>D2</td>
+<td>floating (correct for serial)</td>
+</tr>
+<tr>
+<td>21–25</td>
+<td>D3–D7</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>26</td>
+<td>IREF</td>
+<td>R14 390 k → GND</td>
+</tr>
+<tr>
+<td>27</td>
+<td>VCOMH</td>
+<td>C20 4.7 µF → GND</td>
+</tr>
+<tr>
+<td>28</td>
+<td>VCC (panel HV)</td>
+<td>C21 2.2 µF → GND</td>
+</tr>
+<tr>
+<td>29</td>
+<td>VLSS</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h4><strong>4.6 Probe Point Quick Reference</strong></h4>
+<p>Best physical probe pad per key net (from flying-probe export; origin = board lower-left, top view; B = bottom side). Largest/most accessible pad chosen — header pins are through-hole and easiest.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Net</strong></th>
+<th><strong>Probe at</strong></th>
+<th><strong>Side</strong></th>
+<th><strong>X, Y (mm)</strong></th>
+<th><strong>Notes</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GND</td>
+<td>J1 shell / any header GND pin</td>
+<td>T</td>
+<td>—</td>
+<td>176 pads on net</td>
+</tr>
+<tr>
+<td>V_USB</td>
+<td>D3 anode (D3.2)</td>
+<td>B</td>
+<td>63.0, 10.5</td>
+<td>2.0 mm pad</td>
+</tr>
+<tr>
+<td>V_SYS</td>
+<td>D2 cathode (D2.1)</td>
+<td>B</td>
+<td>48.3, 23.8</td>
+<td>2.0 mm pad</td>
+</tr>
+<tr>
+<td>3V3</td>
+<td>J4.2 header pin</td>
+<td>T</td>
+<td>9.9, 1.3</td>
+<td>also J4.12, J5.2</td>
+</tr>
+<tr>
+<td>BATT+</td>
+<td>C3 + terminal (C3.2)</td>
+<td>B</td>
+<td>69.5, 14.1</td>
+<td>47 µF bulk cap</td>
+</tr>
+<tr>
+<td>BATT−</td>
+<td>J2.2</td>
+<td>T</td>
+<td>68.7, 19.8</td>
+<td>cell negative (≠ GND)</td>
+</tr>
+<tr>
+<td>+5V in</td>
+<td>J5.12</td>
+<td>T</td>
+<td>35.3, 24.2</td>
+<td>before F1</td>
+</tr>
+<tr>
+<td>EN</td>
+<td>U2 pin 3</td>
+<td>T</td>
+<td>10.1, 3.7</td>
+<td></td>
+</tr>
+<tr>
+<td>IO0</td>
+<td>U2 pin 27</td>
+<td>T</td>
+<td>24.1, 21.5</td>
+<td></td>
+</tr>
+<tr>
+<td>VBAT_SENSE</td>
+<td>U2 pin 4</td>
+<td>T</td>
+<td>11.4, 3.7</td>
+<td></td>
+</tr>
+<tr>
+<td>VUSB_SENSE</td>
+<td>U2 pin 38</td>
+<td>T</td>
+<td>10.1, 21.5</td>
+<td></td>
+</tr>
+<tr>
+<td>SDA / SCL</td>
+<td>J3.3 / J3.4</td>
+<td>T</td>
+<td>71.3, 20.5 / 19.5</td>
+<td></td>
+</tr>
+<tr>
+<td>USB D+ / D− (conn side)</td>
+<td>D1.1 / D1.3</td>
+<td>B</td>
+<td>64.5, 3.4 / 1.5</td>
+<td></td>
+</tr>
+<tr>
+<td>Charger STAT</td>
+<td>U5 pin 1</td>
+<td>B</td>
+<td>55.6, 21.7</td>
+<td></td>
+</tr>
+<tr>
+<td>Charger PROG</td>
+<td>U5 pin 5</td>
+<td>B</td>
+<td>55.6, 24.0</td>
+<td>1.0 V during charge</td>
+</tr>
+<tr>
+<td>OLED VCC</td>
+<td>C21 (pin 28 side)</td>
+<td>B</td>
+<td>57.7, 16.6</td>
+<td>~7 V, display on</td>
+</tr>
+<tr>
+<td>OLED VCOMH</td>
+<td>C20 (pin 27 side)</td>
+<td>B</td>
+<td>56.3, 16.6</td>
+<td></td>
+</tr>
+<tr>
+<td>OLED IREF</td>
+<td>FPC1.26</td>
+<td>B</td>
+<td>56.2, 14.7</td>
+<td>390 k to GND</td>
+</tr>
+<tr>
+<td>RGB data</td>
+<td>U3.4</td>
+<td>T</td>
+<td>32.8, 14.4</td>
+<td>IO48</td>
+</tr>
+</tbody>
+</table></div>
+          </details>
+          <details>
+            <summary>Appendix A — Known open items entering DVT</summary>
+            <div class="plan-body"><ul>
+<li>
+<p><strong>Antenna keep-out </strong><strong>&lt;</strong><strong> 15 mm</strong> (from Gerber review). RF-W-02/06 quantify the impact; planned fix is pulling the left board edge to X ≈ 7 mm if performance is unacceptable.</p>
+</li>
+<li>
+<p><strong>UART header labeling</strong>: nets "TX"/"RX" are host-perspective (J4.9 → ESP U0RXD, J4.10 → ESP U0TXD). Verify silk in MCU-06 and document.</p>
+</li>
+<li>
+<p><strong>Netlist rev lag — RESOLVED (2026-07-03)</strong>: Netlist_PCB1_2026-06-28.tel verified to match the flying-probe data on all 57 nets, member-for-member. Remaining schematic cleanup only: delete the unconnected orphan symbol <strong>LED3 (WS2812B-V6)</strong> — it is not in the BOM, the pick-and-place, or on the board.</p>
+</li>
+<li>
+<p><strong>Standby current floor ≈ 0.6 mA</strong> set by green LED2 — fine for this product, but blocks any future sub-100 µA sleep claim (along with SS34 leakage and the always-on 200 k sense dividers).</p>
+</li>
+<li>
+<p><strong>AP2112 dissipation from USB</strong> at sustained &gt;300 mA (PWR-05 thermal record decides if action needed).</p>
+</li>
+<li>
+<p><strong>USB current </strong><strong>&gt;</strong><strong> 500 mA</strong> possible while charging + WiFi (CHG-07) → product docs to require ≥ 1 A supply.</p>
+</li>
+</ul></div>
+          </details>
+          <details>
+            <summary>Appendix B — Verified S3 pin definitions</summary>
+            <div class="plan-body"><p>// ESP32-S3 product board — fab rev 2026-06-28 (verified against flying-probe netlist)</p>
+<h1>define PIN_I2C_SDA     8    // Qwiic J3.3, 4.7k pull-up (R9)</h1>
+<h1>define PIN_I2C_SCL     18   // Qwiic J3.4, 4.7k pull-up (R13)</h1>
+<h1>define PIN_OLED_DC     9    // FPC1.15</h1>
+<h1>define PIN_OLED_CS     10   // FPC1.13</h1>
+<h1>define PIN_OLED_MOSI   11   // FPC1.19</h1>
+<h1>define PIN_OLED_SCLK   12   // FPC1.18</h1>
+<h1>define PIN_OLED_RST    14   // FPC1.14</h1>
+<h1>define PIN_RGB         48   // SK6812 DIN</h1>
+<h1>define PIN_BOOT_BTN    0    // SW4, internal pull-up only</h1>
+<h1>define PIN_VBAT_SENSE  4    // ADC1_CH3 = BATT+ / 2  (R10/R11 100k/100k)</h1>
+<h1>define PIN_VUSB_SENSE  2    // ADC1_CH1 = V_USB / 2  (R15/R16 100k/100k)</h1>
+<p>// Free header GPIOs — J4: 5, 6, 7, 15, 16   J5: 1, 13, 39, 37, 36, 35, 21</p>
+<p>// UART0: GPIO43 (U0TXD) on J4.10, GPIO44 (U0RXD) on J4.9</p>
+<p>// No-connect on this board: IO3, IO17, IO38, IO40, IO41, IO42, IO45, IO46, IO47</p></div>
+          </details>
+          <details>
+            <summary>Appendix C — DVT helper firmware</summary>
+            <div class="plan-body"><p>One Arduino sketch, serial-menu driven over native USB CDC, implementing: 1 GPIO walking output (GPIO-01) · 2 GPIO input/pull-up report (GPIO-02) · 3 adjacent-pattern test (GPIO-03) · 4 I2C scan + SHT4x read · 5 OLED pattern cycle (all-on / all-off / border / crosshair / contrast sweep) · 6 RGB R/G/B/W cycle via rgbLedWrite() · 7 ADC dump: VBAT×2, VUSB×2 every 500 ms · 8 WiFi scan + RSSI averaging (20 samples) · 9 continuous ping/TX mode for droop + brownout tests · s deep-sleep 60 s (for PWR-08) · b BLE advertise. Build settings per the locked Arduino profile (ESP32S3 Dev Module, 8 MB, USB CDC On Boot: Enabled, RainMaker 8 MB partition where applicable).</p>
+<p>Page  of</p></div>
+          </details>
+        </div>
+        <p class="disclaimer">Engineering report for the Rev A design-verification build. Values are bench measurements on first-article hardware; production specifications may change. Board photos, guides, and downloads live on the <a href="../">product page</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>&copy; 2026 HW Designs &middot; DVT Report, updated July 21, 2026</span>
+      <a href="https://hwdesigns.us">hwdesigns.us</a>
+    </div>
+  </footer>
+  <script src="../../assets/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HW Designs — shared site stylesheet (assets/site.css)
+   Used by: /index.html (hub) · /esp32-s3/index.html · /esp32-s3/dvt/
+   Theme: "circuit copper & cobalt" — ink-navy dark surfaces, cobalt
+   primary, copper secondary. No green (the boards supply that).
+   Every text/background pair verified ≥ 4.5:1 (most ≥ 6:1) WCAG AA.
+   Colors and fonts live in :root below — edit once, applies site-wide.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root{
+  color-scheme: light;
+  /* Light surfaces */
+  --paper:#F6F7FB;         /* page background                  */
+  --card:#FFFFFF;          /* cards & tables                   */
+  --tint:#EDF1FA;          /* alternating section bands        */
+  --ink:#12162E;           /* headings & body text  (16.6:1)   */
+  --soft:#3F4966;          /* secondary text        (8.3:1)    */
+  --label:#4E5878;         /* small labels          (6.6:1)    */
+  --line:#DFE4F0;          /* borders                          */
+  /* Dark surfaces */
+  --navy:#0B1226;          /* hero & dark panels               */
+  --navy-2:#151F42;        /* raised dark panels               */
+  --bright:#F2F5FC;        /* text on navy          (17:1)     */
+  --dim:#BAC4DE;           /* secondary on navy     (10.7:1)   */
+  --faint:#8E9AC0;         /* tertiary on navy      (6.7:1)    */
+  /* Accents */
+  --cobalt:#1A4FD6;        /* primary — links, buttons, active (6.3:1 on paper) */
+  --cobalt-ink:#1443B8;    /* primary text on cobalt-tint      */
+  --cobalt-lt:#8FB1FF;     /* primary on navy       (8.8:1)    */
+  --cobalt-tint:#E3EAFD;
+  --copper:#C06A14;        /* secondary — decorative           */
+  --copper-ink:#8F4E12;    /* secondary text        (6.0:1)    */
+  --copper-lt:#F0A65A;     /* secondary on navy     (9.1:1)    */
+  --copper-tint:#FBEEDD;
+  --red-ink:#A8271F;       /* failures              (6.1:1)    */
+  --red-tint:#FBE7E6;
+  --gray-tint:#EDEFF5;
+  --radius:10px;
+  --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);font-size:16.5px;line-height:1.6;color:var(--ink);background:var(--paper)}
+::selection{background:var(--navy);color:#fff}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+a{color:var(--cobalt)}
+
+.skip{position:absolute;left:-999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99}
+.skip:focus{left:12px;top:12px}
+
+/* ── Header & pill-tab nav ─────────────────────────────────────────── */
+.site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 24px;max-width:1060px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo{height:30px;width:auto;display:block}
+.brand-fallback{font-weight:700;letter-spacing:.06em;color:var(--ink)}
+.brand-docs{font-family:var(--mono);font-size:12px;color:var(--label);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.site-nav{display:flex;flex-wrap:wrap;gap:4px}
+.site-nav a{font-size:14px;font-weight:500;color:var(--soft);text-decoration:none;padding:7px 12px;border-radius:999px;border:1px solid transparent;transition:background .15s ease,color .15s ease}
+.site-nav a:hover{color:var(--cobalt-ink);background:var(--cobalt-tint)}
+.site-nav a.active{color:var(--cobalt-ink);background:var(--cobalt-tint);border-color:#CBD8F8;font-weight:600}
+
+/* ── Hero (ink-navy with faint circuit dot-grid) ───────────────────── */
+.hero{background:var(--navy) radial-gradient(circle at 1px 1px,rgba(143,177,255,.13) 1px,transparent 1.6px);background-size:auto,26px 26px;color:var(--bright);padding:64px 0 60px}
+.hero-grid{display:grid;grid-template-columns:1fr 250px;gap:52px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--copper-lt);margin:0;display:flex;align-items:center;gap:9px}
+.rgb-dot{width:9px;height:9px;border-radius:50%;background:#6FE08A;animation:ledcycle 6s ease-in-out infinite;flex:none}
+@keyframes ledcycle{0%,100%{background:#FF6A5A}33%{background:#6FE08A}66%{background:#6FB2FF}}
+.hero h1{font-size:clamp(38px,6vw,62px);line-height:1.04;letter-spacing:-.015em;font-weight:700;margin:16px 0 16px;color:#fff;max-width:16ch}
+.lede{font-size:clamp(17px,2vw,19.5px);color:var(--dim);max-width:58ch;margin:0 0 26px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px}
+.btn{display:inline-block;padding:12px 22px;border-radius:8px;font-weight:600;font-size:15.5px;text-decoration:none;border:1px solid transparent}
+.btn-light{background:var(--cobalt);color:#fff}
+.btn-light:hover{background:#1443B8}
+.btn-ghost{border-color:rgba(186,196,222,.5);color:var(--bright)}
+.btn-ghost:hover{border-color:var(--bright)}
+.quickfacts{font-family:var(--mono);font-size:13px;color:var(--faint);margin:0}
+
+/* Product shot: white card floating on navy with cobalt + copper glow.
+   (Board renders now have white backgrounds, so the frame is light.)   */
+.hero-shot{position:relative;margin:0;justify-self:center;background:#fff;border-radius:16px;padding:16px 12px;box-shadow:0 24px 70px rgba(4,8,20,.55)}
+.hero-shot::before{content:"";position:absolute;inset:-18%;z-index:-1;background:radial-gradient(closest-side at 35% 40%,rgba(90,134,255,.4),transparent 70%),radial-gradient(closest-side at 70% 75%,rgba(240,166,90,.22),transparent 72%);pointer-events:none}
+.hero-shot img{position:relative;display:block;height:440px;width:auto;max-width:100%}
+
+/* ── Sections ──────────────────────────────────────────────────────── */
+.section{padding:72px 0}
+main > .section:nth-child(even){background:var(--tint)}
+section{scroll-margin-top:96px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--copper-ink);margin:0}
+.section h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.01em;margin:10px 0 10px}
+.section-intro{color:var(--soft);max-width:62ch;margin:0}
+
+/* ── Getting-started steps ─────────────────────────────────────────── */
+.steps{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;display:grid;grid-template-columns:44px 1fr;gap:20px}
+.step-no{font-family:var(--mono);font-size:16px;color:#fff;background:var(--cobalt);width:40px;height:40px;border-radius:8px;display:grid;place-items:center}
+.step h3{margin:7px 0 8px;font-size:19px}
+.step p{margin:0 0 10px;color:var(--soft)}
+.step p:last-child{margin-bottom:0}
+pre{background:#F0F2F8;color:#181D36;border:1px solid var(--line);border-left:3px solid var(--cobalt);border-radius:8px;padding:14px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;margin:12px 0}
+code{font-family:var(--mono)}
+p code,li code,td code{background:#E7EAF4;border-radius:5px;padding:2px 6px;font-size:.88em}
+.settings{border-collapse:collapse;margin:12px 0 4px;font-size:14.5px}
+.settings th,.settings td{text-align:left;padding:8px 22px 8px 0;border-bottom:1px solid var(--line)}
+.settings th{font-weight:600;color:var(--ink)}
+.settings td{font-family:var(--mono);font-size:13.5px;color:var(--soft)}
+.hint{font-size:14px;color:var(--label)}
+
+/* ── Board tour ────────────────────────────────────────────────────── */
+.tour-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:36px 0 0}
+.tour-col h3{margin:0 0 12px;font-size:19px}
+.render-frame{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;justify-content:center}
+.render-frame img{display:block;height:520px;width:auto;max-width:100%}
+.feat{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:9px}
+.feat li{position:relative;padding-left:20px;color:var(--soft);font-size:15.5px}
+.feat li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--copper)}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 0}
+.note{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--copper);border-radius:var(--radius);padding:20px 22px}
+.note h4{margin:0 0 8px;font-size:16px}
+.note p{margin:0;color:var(--soft);font-size:14.5px}
+.dims{font-family:var(--mono);font-size:13.5px;color:var(--label);margin:26px 0 0}
+
+/* ── Spec grid ─────────────────────────────────────────────────────── */
+.grid-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:36px 0 0}
+.spec{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.spec .label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--copper-ink)}
+.spec .val{margin-top:8px;font-weight:600;font-size:15px;line-height:1.5}
+
+/* ── Downloads table ───────────────────────────────────────────────── */
+.dl-table{width:100%;border-collapse:collapse;margin:32px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.dl-table thead th{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--label);text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);font-weight:500;background:var(--card)}
+.dl-table td{padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:top;background:var(--card)}
+.dl-table tbody tr:last-child td{border-bottom:none}
+.dl-table tbody tr:hover td{background:#F3F6FD}
+.dl-name{font-weight:600}
+.dl-desc{color:var(--soft);font-size:15px}
+.dl-file a{font-family:var(--mono);font-size:13.5px;text-underline-offset:3px}
+.table-note{font-size:14px;color:var(--label);margin:14px 0 0}
+
+/* ── Example cards ─────────────────────────────────────────────────── */
+.grid-ex{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:36px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:10px}
+.card h3{margin:0;font-size:18px}
+.card p{margin:0;color:var(--soft);font-size:15px;flex:1}
+.btn-sm{align-self:flex-start;font-size:14px;font-weight:600;color:var(--cobalt-ink);border:1.5px solid var(--cobalt);border-radius:7px;padding:8px 14px;text-decoration:none}
+.btn-sm:hover{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+
+/* ── Support ───────────────────────────────────────────────────────── */
+.grid-support{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;margin:36px 0 0}
+.contact{background:var(--navy-2);color:var(--bright);border-radius:var(--radius);padding:26px 28px}
+.contact h3{margin:0 0 8px;font-size:19px;color:#fff}
+.contact p{margin:0 0 14px;color:var(--dim);font-size:15px}
+.contact p:last-child{margin:0}
+.contact a{color:var(--cobalt-lt);font-family:var(--mono);font-size:15px}
+.faq{display:grid;gap:10px;align-content:start}
+details{background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+summary{list-style:none;cursor:pointer;padding:16px 20px;font-weight:600;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--copper-ink)}
+details[open] summary::after{content:"–"}
+details p{margin:0;padding:0 20px 16px;color:var(--soft);font-size:15px}
+
+/* ── Hub board cards ───────────────────────────────────────────────── */
+.grid-boards{display:grid;gap:16px}
+.board-card{display:grid;grid-template-columns:200px 1fr;gap:26px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;transition:border-color .15s ease,box-shadow .15s ease}
+.board-card:hover{border-color:var(--cobalt);box-shadow:0 8px 28px rgba(26,79,214,.12)}
+.thumb{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 10px;display:flex;justify-content:center}
+.thumb img{display:block;height:230px;width:auto;max-width:100%}
+.b-name{display:block;font-size:21px;font-weight:700;color:var(--ink);margin:0 0 6px}
+.b-desc{display:block;color:var(--soft);font-size:15.5px;margin:0 0 12px}
+.b-tags{display:block;font-family:var(--mono);font-size:12.5px;color:var(--copper-ink);margin:0 0 14px}
+.b-go{display:inline-block;font-weight:600;font-size:15px;color:var(--cobalt)}
+.board-card:hover .b-go{text-decoration:underline;text-underline-offset:4px}
+.more-note{font-size:14.5px;color:var(--label);margin:20px 0 0}
+
+/* ── Status pills & progress (DVT report) ──────────────────────────── */
+.pill{display:inline-block;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;font-weight:500;border-radius:999px;padding:3px 10px;border:1px solid transparent;white-space:nowrap}
+.pill-pass{background:var(--cobalt-tint);color:var(--cobalt-ink);border-color:#C9D7FA}
+.pill-fail{background:var(--red-tint);color:var(--red-ink);border-color:#F2CBC8}
+.pill-open{background:var(--copper-tint);color:var(--copper-ink);border-color:#F0D9BC}
+.pill-na{background:var(--gray-tint);color:var(--label);border-color:#DCE0EC}
+.progress{height:10px;border-radius:999px;background:var(--gray-tint);overflow:hidden;border:1px solid var(--line)}
+.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--cobalt),#5A86FF)}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.site-footer{border-top:1px solid var(--line);padding:26px 0 42px;background:var(--paper)}
+.footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:14px;color:var(--label)}
+.site-footer a{color:var(--label)}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:36px}
+  .hero-shot{justify-self:start}
+  .hero-shot img{height:380px}
+  .tour-grid{grid-template-columns:1fr}
+  .render-frame img{height:440px}
+  .notes{grid-template-columns:1fr}
+  .grid-specs{grid-template-columns:repeat(2,1fr)}
+  .grid-ex{grid-template-columns:1fr}
+  .grid-support{grid-template-columns:1fr}
+  .board-card{grid-template-columns:1fr}
+  .thumb img{height:200px}
+}
+@media (max-width:560px){
+  .grid-specs{grid-template-columns:1fr}
+  .step{grid-template-columns:1fr;gap:10px}
+  .dl-desc-col{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rgb-dot{animation:none;background:var(--cobalt-lt)}
+  .site-nav a,.board-card{transition:none}
+}
