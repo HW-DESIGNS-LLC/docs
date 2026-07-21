@@ -19,6 +19,24 @@
   <meta property="og:description" content="Getting started guide, downloads, and example projects for the HW Designs ESP32-S3 development board.">
   <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/">
   <meta name="color-scheme" content="light">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       PRODUCT PHOTOS · SINGLE POINT OF CONTROL
+       When you post new board photos, change ONE value below (IMG_VERSION),
+       then upload the matching files to the assets/ folder. Nothing else moves.
+
+         IMG_VERSION = "V2"  ->  loads  assets/top_view_V2.jpg
+                                        assets/bottom_view_V2.jpg
+
+       Next time, save the new photos as  ..._V3.jpg,  set IMG_VERSION = "V3".
+       (Optional: pin one photo to a different version in IMG_OVERRIDES below.)
+       ══════════════════════════════════════════════════════════════════════ -->
+  <script>
+    window.IMG_VERSION = "V2";          // <-- the "V" you bump each time
+    window.IMG_OVERRIDES = {            // optional per-photo pins; leave empty to use IMG_VERSION for all
+      // bottom_view: "V3",             //   e.g. only the back photo changed
+    };
+  </script>
   <link rel="icon" href="../assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -226,7 +244,7 @@
       </div>
       <figure class="hero-shot">
         <!-- Front render. The JPG's pure-black background matches the hero, so the board appears to float. -->
-        <img src="assets/top_view.jpg" alt="Front of the ESP32-S3 dev board, showing the Wi-Fi module, EN and BOOT buttons, RGB LED, and USB-C port">
+        <img data-img="top_view" alt="Front of the ESP32-S3 dev board, showing the Wi-Fi module, EN and BOOT buttons, RGB LED, and USB-C port">
       </figure>
     </div>
   </section>
@@ -311,8 +329,8 @@ void loop() {
           <div class="tour-col">
             <h3>Front</h3>
             <div class="render-frame">
-              <!-- TODO: these filenames must match what you uploaded to the assets folder -->
-              <img src="assets/top_view.jpg" alt="Front of the board: ESP32-S3 module with antenna at top, EN and BOOT buttons with RGB LED between them, display ribbon slot in the middle, USB-C at the bottom" loading="lazy">
+              <!-- Photo version is controlled by IMG_VERSION at the top of this file. -->
+              <img data-img="top_view" alt="Front of the board: ESP32-S3 module with antenna at top, EN and BOOT buttons with RGB LED between them, display ribbon slot in the middle, USB-C at the bottom" loading="lazy">
             </div>
             <ul class="feat">
               <li>ESP32&#8209;S3 module up top &mdash; the green area is the Wi&#8209;Fi antenna; keep it clear of metal.</li>
@@ -326,7 +344,7 @@ void loop() {
           <div class="tour-col">
             <h3>Back</h3>
             <div class="render-frame">
-              <img src="assets/bottom_view.jpg" alt="Back of the board: silkscreen labels for every header pin, 30-pin display ribbon connector in the middle, battery connector with polarity marks at the bottom" loading="lazy">
+              <img data-img="bottom_view" alt="Back of the board: silkscreen labels for every header pin, 30-pin display ribbon connector in the middle, battery connector with polarity marks at the bottom" loading="lazy">
             </div>
             <ul class="feat">
               <li>Every header pin labeled on the silkscreen &mdash; power (3V3, GND, 5V_IN), GPIO numbers, and TX/RX.</li>
@@ -488,5 +506,27 @@ void loop() {
       <a href="https://hwdesigns.us">hwdesigns.us</a>
     </div>
   </footer>
+  <script>
+    /* Applies IMG_VERSION (set at the top of this file) to every product photo.
+       Each <img data-img="NAME"> loads assets/NAME_<version>.jpg.
+       If that versioned file is missing, it falls back to assets/NAME.jpg. */
+    (function () {
+      var V = window.IMG_VERSION || "";
+      var OV = window.IMG_OVERRIDES || {};
+      document.querySelectorAll('img[data-img]').forEach(function (img) {
+        var name = img.getAttribute('data-img');
+        var ver  = OV[name] || V;
+        var base = 'assets/' + name + '.jpg';
+        img.addEventListener('error', function onErr() {
+          img.removeEventListener('error', onErr);
+          if (img.getAttribute('src') !== base) {
+            console.warn('Missing ' + img.getAttribute('src') + ' — falling back to ' + base);
+            img.src = base;
+          }
+        });
+        img.src = ver ? 'assets/' + name + '_' + ver + '.jpg' : base;
+      });
+    })();
+  </script>
 </body>
 </html>
