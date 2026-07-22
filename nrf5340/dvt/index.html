@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  HW Designs — DVT report (nRF5340 BLE Dev Board, Rev B)
+  ──────────────────────────────────────────────────────
+  GENERATED SNAPSHOT — built from tests.json / DVT plan v2.0 (2026-07-22),
+  currently the PRE-RUN status page: first articles are on the bench.
+  When the tracker fills in, regenerate this page as the full results
+  report (same pattern as esp32-s3/dvt/) rather than hand-editing numbers.
+  Styling: ../../assets/site.css. Page-specific styles below.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DVT Report — nRF5340 BLE Dev Board Rev B · HW Designs</title>
+  <meta name="description" content="Design-verification status for the HW Designs nRF5340 BLE development board Rev B: 101 tests across 12 subsystems, published test plan, pre-build findings, and the complete DVT document pack.">
+  <meta property="og:title" content="DVT Report — nRF5340 BLE Dev Board Rev B">
+  <meta property="og:url" content="https://docs.hwdesigns.us/nrf5340/dvt/">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="../../assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <style>
+    /* ── DVT-status page styles (subset of the full report's) ── */
+    .crumb{font-size:13.5px;margin:0 0 18px;color:var(--faint)}
+    .crumb a{color:var(--dim);text-decoration:none}
+    .crumb a:hover{color:#fff;text-decoration:underline}
+    .hero h1{max-width:none}
+    .meta-row{display:flex;flex-wrap:wrap;gap:8px 10px;margin:24px 0 0}
+    .chip{font-family:var(--mono);font-size:12.5px;color:var(--bright);border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:5px 11px}
+    .chip b{color:var(--cobalt-lt);font-weight:500}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:34px 0 0}
+    .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+    .stat b{display:block;font-size:26px;letter-spacing:-.01em}
+    .stat span{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--label)}
+    .overall{margin:22px 0 0;display:flex;align-items:center;gap:14px}
+    .overall .progress{flex:1}
+    .overall span.lbl{font-family:var(--mono);font-size:12.5px;color:var(--label);white-space:nowrap}
+    .sub-code{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--label);white-space:nowrap}
+    .sub-n{font-family:var(--mono);text-align:right}
+    .sub-st{white-space:nowrap}
+    .find{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:16px 0 0}
+    .find h3{margin:0 0 6px;font-size:17px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+    .find p{margin:0;color:var(--soft)}
+    @media (max-width:760px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#status">Skip to status</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" title="All HW Designs boards">
+        <img src="../../assets/logo.svg" alt="HW Designs" class="logo" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <span class="brand-fallback" hidden>HW&nbsp;Designs</span>
+        <span class="brand-docs">DVT</span>
+      </a>
+      <nav class="site-nav" aria-label="Report sections">
+        <a href="#status">Status</a>
+        <a href="#plan">Test plan</a>
+        <a href="#findings">Findings so far</a>
+        <a href="#downloads">Documents</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="crumb"><a href="../../">Docs</a> &rsaquo; <a href="../">nRF5340 BLE Dev Board</a> &rsaquo; DVT Report</p>
+      <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Design Verification Testing</p>
+      <h1>DVT &mdash; Rev B <span class="pill pill-open" style="vertical-align:middle">in progress</span></h1>
+      <p class="lede">Every HW&nbsp;Designs board is proven out against a published test plan before it ships &mdash; and the whole record goes here, pass or fail. Rev&nbsp;B first articles are on the bench now: 101&nbsp;tests across 12&nbsp;subsystems, from incoming inspection through Bluetooth range. This page shows the plan and pre-build findings today, and becomes the full results report as testing completes.</p>
+      <div class="meta-row">
+        <span class="chip"><b>Board</b> MDBT53-1M (nRF5340) &middot; Rev B</span>
+        <span class="chip"><b>Fab rev</b> 2026-07-04</span>
+        <span class="chip"><b>Plan</b> v2.0</span>
+        <span class="chip"><b>Tests planned</b> 101</span>
+        <span class="chip"><b>First articles</b> 5 boards</span>
+        <span class="chip"><b>Updated</b> July 22, 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="status" class="section">
+      <div class="wrap">
+        <p class="kicker">Where things stand</p>
+        <h2>Plan published &mdash; bench work underway</h2>
+        <p class="section-intro">The design has been through schematic review, layout review, and a line-by-line reconciliation of the fabrication data (netlist, BOM, and placement files) against the schematic. The test plan, results tracker, and bring-up firmware below are the exact documents the bench run uses.</p>
+        <div class="stat-row">
+          <div class="stat"><b>101</b><span>Tests planned</span></div>
+          <div class="stat"><b>12</b><span>Subsystems</span></div>
+          <div class="stat"><b>5</b><span>First-article boards</span></div>
+          <div class="stat"><b>0</b><span>Results published yet</span></div>
+        </div>
+        <div class="overall">
+          <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="101" aria-label="Tests completed"><span style="width:0%"></span></div>
+          <span class="lbl">0 / 101 complete &mdash; results appear here as tests finish</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan" class="section">
+      <div class="wrap">
+        <p class="kicker">The test plan</p>
+        <h2>101 tests, 12 subsystems</h2>
+        <p class="section-intro">Testing runs in order &mdash; nothing gets power until the unpowered checks pass, and nothing gets a radio test until the power story is proven. The full step-by-step procedure, limits, and probe points are in the <a href="#downloads">plan document</a>.</p>
+        <table class="dl-table">
+          <thead>
+            <tr><th>Code</th><th>Subsystem</th><th style="text-align:right">Tests</th><th class="dl-desc-col">What it proves</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sub-code">VIS</td>
+              <td class="sub-name">Incoming Visual &amp; Mechanical Inspection</td>
+              <td class="sub-n">11</td>
+              <td class="sub-what dl-desc-col">Assembly quality — solder joints, part orientation, module seating</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">PRE</td>
+              <td class="sub-name">Unpowered Electrical Checks (DMM)</td>
+              <td class="sub-n">13</td>
+              <td class="sub-what dl-desc-col">No shorts or wiring faults before power is ever applied</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">PWR</td>
+              <td class="sub-name">First Power-Up and Power Rails</td>
+              <td class="sub-n">14</td>
+              <td class="sub-what dl-desc-col">Every rail comes up clean, in spec, and stays there</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">CHG</td>
+              <td class="sub-name">Battery Charger (MCP73831-2AC, PROG = 5.1 k)</td>
+              <td class="sub-n">6</td>
+              <td class="sub-what dl-desc-col">LiPo charging at the designed current and termination voltage</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">BAT</td>
+              <td class="sub-name">Battery Protection and Power Path (DW01A + FS8205A + AO3415/AO3407)</td>
+              <td class="sub-n">6</td>
+              <td class="sub-what dl-desc-col">Battery protection actually protects — including reversed batteries</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">DBG</td>
+              <td class="sub-name">RP2040 Debug Subsystem (CMSIS-DAP probe + UART bridge)</td>
+              <td class="sub-n">10</td>
+              <td class="sub-what dl-desc-col">The built-in probe flashes, debugs, and bridges serial reliably</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">NRF</td>
+              <td class="sub-name">nRF5340 Bring-Up (MDBT53-1M)</td>
+              <td class="sub-n">9</td>
+              <td class="sub-what dl-desc-col">The nRF5340 itself: clocks, QSPI flash, native USB</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">GPIO</td>
+              <td class="sub-name">I/O Verification (H1 / H2 headers)</td>
+              <td class="sub-n">5</td>
+              <td class="sub-what dl-desc-col">Every header pin toggles, reads, and measures correctly</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">I2C</td>
+              <td class="sub-name">Qwiic Port (CN1) and I2C1</td>
+              <td class="sub-n">5</td>
+              <td class="sub-what dl-desc-col">The Qwiic port talks to real sensors at full speed</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">IMEAS</td>
+              <td class="sub-name">Current Measurement (J2, 3V3_NRF) — headline feature</td>
+              <td class="sub-n">9</td>
+              <td class="sub-what dl-desc-col">The headline feature — true µA current measurement via J2</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">RF</td>
+              <td class="sub-name">Bluetooth LE Radio</td>
+              <td class="sub-n">7</td>
+              <td class="sub-what dl-desc-col">Bluetooth range and signal strength against a reference board</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+            <tr>
+              <td class="sub-code">SYS</td>
+              <td class="sub-name">System / Application Level</td>
+              <td class="sub-n">6</td>
+              <td class="sub-what dl-desc-col">Everything at once: soak tests, power cycling, battery handover</td>
+              <td class="sub-st"><span class="pill pill-open">scheduled</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="findings" class="section">
+      <div class="wrap">
+        <p class="kicker">Findings so far</p>
+        <h2>Caught before a single board was built</h2>
+        <p class="section-intro">DVT starts before the soldering iron warms up. Reconciling the fabrication data against the schematic ahead of the build turned up two items &mdash; both closed.</p>
+        <div class="find">
+          <h3>Two I&sup2;C pull-up resistors missing from the assembly BOM <span class="pill pill-pass">resolved pre-build</span></h3>
+          <p>The layout and placement data include both pull-up resistors for the Qwiic&nbsp;/&nbsp;I&sup2;C bus, but they were absent from the parts list used for kitting &mdash; built as-listed, the I&sup2;C port would not have worked. Caught in the pre-build review; the parts are kitted for the first articles and the BOM is corrected for the production run. The bench test I2C-01 confirms them on every board.</p>
+        </div>
+        <div class="find">
+          <h3>Qwiic power-rail assignment <span class="pill pill-pass">verified fixed</span></h3>
+          <p>An earlier design revision powered the Qwiic connector from the nRF5340&rsquo;s measured rail, which would have polluted the board&rsquo;s current-measurement feature with sensor draw. The 2026-07-04 fabrication netlist confirms the connector now sits on the main 3.3&nbsp;V rail &mdash; plugged-in sensors no longer appear in your &micro;A measurements. Test IMEAS-09 re-verifies this on hardware.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="downloads" class="section">
+      <div class="wrap">
+        <p class="kicker">Documents</p>
+        <h2>The complete DVT pack</h2>
+        <p class="section-intro">These are the working documents, not summaries &mdash; the same files the bench run uses.</p>
+        <table class="dl-table">
+          <thead>
+            <tr><th>Document</th><th class="dl-desc-col">What it covers</th><th>File</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dl-name">DVT test plan</td>
+              <td class="dl-desc dl-desc-col">Full Rev B procedure: equipment, safety, board reference, all 101 tests with limits (v2.0)</td>
+              <td class="dl-file"><a href="../docs/DVT_Plan_nRF5340_Board_RevB.docx">plan.docx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT results tracker</td>
+              <td class="dl-desc dl-desc-col">Per-measurement record with tolerance checks, dashboard rollup &amp; issue log</td>
+              <td class="dl-file"><a href="../docs/nRF5340_RevB_DVT_Tracker.xlsx">tracker.xlsx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT firmware guide</td>
+              <td class="dl-desc dl-desc-col">How to flash the probe &amp; the nRF5340, and run each shell test</td>
+              <td class="dl-file"><a href="../docs/DVT_Firmware_Guide.docx">guide.docx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT helper firmware</td>
+              <td class="dl-desc dl-desc-col">Shell-based bring-up &amp; self-test app (Zephyr&nbsp;/&nbsp;nRF Connect SDK), commands tagged with test IDs</td>
+              <td class="dl-file"><a href="../docs/DVT_Helper_nRF5340.zip">DVT_Helper_nRF5340.zip</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-note">Questions about the process? <a href="mailto:support@hwdesigns.us">Email us</a> &mdash; we&rsquo;re happy to talk methodology.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>&copy; 2026 HW Designs</span>
+      <a href="https://hwdesigns.us">hwdesigns.us</a>
+    </div>
+  </footer>
+  <script src="../../assets/site.js" defer></script>
+</body>
+</html>
