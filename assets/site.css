@@ -120,6 +120,11 @@ p code,li code,td code{background:#E7EAF4;border-radius:5px;padding:2px 6px;font
 .note h4{margin:0 0 8px;font-size:16px}
 .note p{margin:0;color:var(--soft);font-size:14.5px}
 .dims{font-family:var(--mono);font-size:13.5px;color:var(--label);margin:26px 0 0}
+.diagram-frame{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px;margin:26px 0 0}
+.diagram-frame > a{display:block}
+.diagram-frame img{display:block;width:100%;height:auto}
+.diagram-caption{font-size:14px;color:var(--label);margin:12px 2px 0;line-height:1.55}
+.diagram-caption b{color:var(--soft)}
 
 /* ── Spec grid ─────────────────────────────────────────────────────── */
 .grid-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:36px 0 0}

@@ -1,13 +1,14 @@
-Upload the ESP32-S3 board's customer-facing files into this folder using these
-EXACT filenames (the links on the board page already point to them):
+Customer-facing files for the ESP32-S3 board page. The links on the board page
+point to these EXACT filenames - keep the names if you ever replace a file:
 
   schematic.pdf     - full board schematic (export from EasyEDA Pro)
-  user-guide.pdf    - setup, features & troubleshooting guide
-  pinout.pdf        - printable pin reference diagram
+  user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev A)
+  pinout.pdf        - printable pin reference diagram (PIN-01 Rev A)
   3D.step           - 3D model for enclosure/mechanical design
-                      (a zipped version is fine too - if you upload
-                      "3D.zip" instead, update the two links in
-                      ../index.html to match)
+
+All four are uploaded. The pinout is also rendered as ../assets/pinout.png for
+the "Know your board" section of the board page - if pinout.pdf is ever
+updated, re-render that PNG from page 1 so the two stay in sync.
 
 DVT source documents (already uploaded - the DVT report at ../dvt/ renders
 these, and the download links on both ../index.html and ../dvt/ point to them

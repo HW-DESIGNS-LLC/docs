@@ -20,6 +20,7 @@ forever no matter how many products are added.
 | `esp32-s3/power-profile.html` | *(redirects to `…/esp32-s3/dvt/`)*    | Legacy link — keep so old bookmarks still work |
 | `esp32-s3/assets/`            | —                                     | That board's images + DVT chart PNGs      |
 | `esp32-s3/docs/`              | —                                     | That board's PDFs and 3D model            |
+| `esp32-s3/firmware/`          | —                                     | Public home of the board's example sketches (the board page's "View source" buttons point here) |
 | `CNAME`                       | —                                     | Custom-domain file GitHub manages — leave it alone |
 
 Each future board repeats the `esp32-s3/` pattern under its own folder.
@@ -80,19 +81,22 @@ findings are described neutrally, e.g. "wrong part was populated."
 Search `esp32-s3/index.html` for **`TODO`** — every item below has a matching
 comment marking the exact spot.
 
-- [ ] Upload `user-guide.pdf` and `pinout.pdf` into `esp32-s3/docs/`
+- [x] Upload `user-guide.pdf` and `pinout.pdf` into `esp32-s3/docs/`
       (`schematic.pdf` and `3D.step` are already there)
 - [ ] Confirm the product name in the hero (`<h1>`) and the page `<title>`
 - [ ] Verify steps 1–2 match the shipping firmware (demo behavior, hotspot name)
-- [ ] Verify the RGB LED GPIO number in the step-4 sketch matches the board
-- [ ] Verify the board-tour details: Qwiic connector location, battery
-      connector type, display-ribbon note, and the board code on the back
-- [ ] Point the "Demo firmware source" link and the three example "View source"
-      buttons at the public firmware repository
-      (`https://github.com/HW-DESIGNS-LLC/...`)
+- [x] Verify the RGB LED GPIO number in the step-4 sketch matches the board
+      (GPIO48, confirmed by the pinout reference PIN-01)
+- [x] Verify the board-tour details: Qwiic connector location, battery
+      connector type (JST-XH), display-ribbon note, and the board code on
+      the back (all confirmed against the user guide UG-01 and pinout PIN-01)
+- [x] Point the "Demo firmware source" link and the three example "View source"
+      buttons at the public firmware home (`esp32-s3/firmware/` in this repo —
+      upload the example sketches there when ready)
 - [ ] Make sure `support@hwdesigns.us` exists (or change it — it appears on
       both the hub and the board page)
-- [ ] After the RF tests wrap, refresh the DVT report so the pending items close
+- [x] After the RF tests wrap, refresh the DVT report so the pending items close
+      (done 2026-07-22 — report reconciled to DVT plan v1.2, 122 tests / 0 pending)
 - [ ] Test-scan the packaging QR code on a phone **after** the live page works
 
 ## How publishing works
