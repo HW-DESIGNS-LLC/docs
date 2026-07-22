@@ -265,8 +265,29 @@ void loop() {
             </tr>
             <tr>
               <td class="dl-name">DVT report</td>
-              <td class="dl-desc dl-desc-col">Rev A design-verification results &mdash; 128 tests, power deep-dive, known issues</td>
+              <td class="dl-desc dl-desc-col">Rev A design-verification results &mdash; 122 tests, power deep-dive, known issues</td>
               <td class="dl-file"><a href="dvt/">open report&nbsp;&#8599;</a></td>
+            </tr>
+            <!-- DVT source documents (rendered by the report above; offered here as the editable originals) -->
+            <tr>
+              <td class="dl-name">DVT test plan</td>
+              <td class="dl-desc dl-desc-col">Full Rev A test procedure &amp; board reference (v1.2)</td>
+              <td class="dl-file"><a href="docs/DVT_Plan_ESP32S3_Board_RevA.docx">plan.docx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT firmware guide</td>
+              <td class="dl-desc dl-desc-col">How to flash &amp; run the DVT firmware pack</td>
+              <td class="dl-file"><a href="docs/DVT_Firmware_Guide.docx">guide.docx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT results tracker</td>
+              <td class="dl-desc dl-desc-col">Every measurement, pass/fail rollup &amp; issue log</td>
+              <td class="dl-file"><a href="docs/ESP32_RevA_DVT_Tracker.xlsx">tracker.xlsx</a></td>
+            </tr>
+            <tr>
+              <td class="dl-name">DVT helper firmware</td>
+              <td class="dl-desc dl-desc-col">Serial-menu bring-up &amp; self-test sketch (Arduino)</td>
+              <td class="dl-file"><a href="docs/DVT_Helper.ino">DVT_Helper.ino</a></td>
             </tr>
             <tr>
               <td class="dl-name">ESP32&#8209;S3&#8209;WROOM&#8209;1 datasheet</td>
@@ -303,8 +324,8 @@ void loop() {
             <a class="btn-sm" href="#">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
-            <h3>Smart home with ESP RainMaker</h3>
-            <p>Pair the board with the free ESP RainMaker phone app and control the RGB LED from anywhere &mdash; a first step into connected devices.</p>
+            <h3>Battery-powered sensor logger</h3>
+            <p>Read a Qwiic temperature &amp; humidity sensor, show it on the OLED, then deep&#8209;sleep between readings &mdash; the board&rsquo;s low sleep current is the key to running for days on a small LiPo.</p>
             <!-- TODO: link to the sketch in your firmware repository -->
             <a class="btn-sm" href="#">View source&nbsp;&#8599;</a>
           </div>
