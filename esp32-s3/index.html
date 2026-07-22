@@ -78,7 +78,7 @@
           <a class="btn btn-ghost" href="#downloads">Downloads</a>
           <a class="btn btn-ghost" href="dvt/">Full DVT report</a>
         </div>
-        <p class="quickfacts">ESP32-S3-WROOM-1 &middot; 8 MB flash &middot; 76.2 &times; 25.4 mm</p>
+        <p class="quickfacts">ESP32-S3-WROOM-1 &middot; 8 MB flash &middot; 70.1 &times; 25.4 mm</p>
       </div>
       <figure class="hero-shot">
         <!-- Front render. The JPG's pure-black background matches the hero, so the board appears to float. -->
@@ -133,7 +133,6 @@
             <div>
               <h3>Upload your first sketch</h3>
               <p>Select the board&rsquo;s port under <strong>Tools &rarr; Port</strong>, paste this in, and click Upload. The onboard LED cycles red, green, blue:</p>
-              <!-- TODO: verify the RGB LED GPIO for your board (48 is the common S3 default) and update the pinout diagram to match -->
               <pre><code>#define RGB_PIN 48   // onboard RGB LED
 
 void setup() {}
@@ -175,8 +174,7 @@ void loop() {
               <li><strong>EN</strong> (reset) and <strong>BOOT</strong> buttons, with the RGB status LED between them.</li>
               <li>USB&#8209;C for power, charging, and programming.</li>
               <li><strong>CHG</strong> and <strong>SYS&nbsp;ON</strong> indicator LEDs by the USB port.</li>
-              <!-- TODO: confirm the Qwiic connector's position wording matches the physical board -->
-              <li>Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT connector for solder-free I&sup2;C sensors.</li>
+              <li>Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT connector (JST&#8209;SH 4&#8209;pin) for solder-free I&sup2;C sensors.</li>
             </ul>
           </div>
           <div class="tour-col">
@@ -187,18 +185,22 @@ void loop() {
             <ul class="feat">
               <li>Every header pin labeled on the silkscreen &mdash; power (3V3, GND, 5V_IN), GPIO numbers, and TX/RX.</li>
               <li>30&#8209;pin ribbon connector for the OLED display.</li>
-              <!-- TODO: add the battery connector type here (e.g. JST-PH 2.0 mm) once confirmed -->
-              <li>Battery connector with polarity marked <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong>.</li>
-              <!-- TODO: confirm the code silkscreened on the board edge is your revision code -->
-              <li>Board code printed along the edge &mdash; include it when you contact support.</li>
+              <li>LiPo battery connector (JST&#8209;XH) with polarity marked <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong>.</li>
+              <li>Board revision code printed along the edge &mdash; include it when you contact support.</li>
             </ul>
           </div>
         </div>
 
+        <figure class="diagram-frame">
+          <a href="docs/pinout.pdf" target="_blank" rel="noopener" title="Open the printable pinout PDF">
+            <img src="assets/pinout.png" alt="Pinout reference diagram: J4 and J5 header maps showing every GPIO with its ADC, touch, and RTC functions, UART TX/RX, power pins, and callouts for the USB-C port, battery and Qwiic connectors, plus on-board connection, good-to-know, and power summary tables" loading="lazy">
+          </a>
+          <figcaption class="diagram-caption"><b>Every pin on one page.</b> Click the diagram to open the printable PDF &mdash; it&rsquo;s also in <a href="#downloads">Downloads</a>, together with the full user guide.</figcaption>
+        </figure>
+
         <div class="notes">
           <div class="note">
             <h4>Where&rsquo;s the screen?</h4>
-            <!-- TODO: confirm this matches how the display actually mounts -->
             <p>These renders show the bare board. The 0.96&Prime; OLED sits on the front; its ribbon cable passes through the center slot to the connector on the back.</p>
           </div>
           <div class="note">
@@ -207,11 +209,11 @@ void loop() {
           </div>
           <div class="note">
             <h4>Before you plug in a battery</h4>
-            <p>Use a single-cell 3.7&nbsp;V LiPo and match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks on the board. Battery lead polarity is not standardized between vendors &mdash; check every new battery.</p>
+            <p>Use a single-cell 3.7&nbsp;V LiPo with a JST&#8209;XH plug and match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks on the board. Battery lead polarity is not standardized between vendors &mdash; check every new battery.</p>
           </div>
         </div>
 
-        <p class="dims">76.2 &times; 25.4 mm (3.00&Prime; &times; 1.00&Prime;) &middot; 0.1&Prime; header pitch, breadboard friendly &middot; Designing an enclosure? <a href="docs/3D.step">Download the 3D model (STEP)</a></p>
+        <p class="dims">70.1 &times; 25.4 mm (2.76&Prime; &times; 1.00&Prime;) &middot; &asymp;72.4 mm incl. antenna overhang &middot; 0.1&Prime; header pitch, breadboard friendly &middot; Designing an enclosure? <a href="docs/3D.step">Download the 3D model (STEP)</a></p>
       </div>
     </section>
 
@@ -227,7 +229,7 @@ void loop() {
           <div class="spec"><div class="label">Power</div><div class="val">USB&#8209;C input &middot; LiPo charging + battery protection</div></div>
           <div class="spec"><div class="label">Expansion</div><div class="val">Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT (I&sup2;C) &middot; 2&times;12 header pins</div></div>
           <div class="spec"><div class="label">Status LED</div><div class="val">Addressable RGB (SK6812)</div></div>
-          <div class="spec"><div class="label">Size</div><div class="val">76.2 &times; 25.4&nbsp;mm &middot; breadboard friendly</div></div>
+          <div class="spec"><div class="label">Size</div><div class="val">70.1 &times; 25.4&nbsp;mm &middot; breadboard friendly</div></div>
         </div>
       </div>
     </section>
@@ -297,8 +299,7 @@ void loop() {
             <tr>
               <td class="dl-name">Demo firmware source</td>
               <td class="dl-desc dl-desc-col">The Weather Clock sketch your board ships with</td>
-              <!-- TODO: point this at your public firmware repository once you create it -->
-              <td class="dl-file"><a href="#" rel="noopener">GitHub&nbsp;&#8599;</a></td>
+              <td class="dl-file"><a href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></td>
             </tr>
           </tbody>
         </table>
@@ -314,20 +315,17 @@ void loop() {
           <div class="card">
             <h3>Weather Clock</h3>
             <p>The firmware your board ships with. It fetches your local forecast over Wi&#8209;Fi and draws a clock and conditions on the OLED &mdash; a full tour of Wi&#8209;Fi, HTTP, JSON, and the display in one sketch.</p>
-            <!-- TODO: link to the sketch in your firmware repository -->
-            <a class="btn-sm" href="#">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
             <h3>Qwiic sensor in 5 minutes</h3>
             <p>Plug a Qwiic temperature &amp; humidity sensor into the side connector &mdash; no soldering &mdash; and chart live readings on the screen.</p>
-            <!-- TODO: link to the sketch in your firmware repository -->
-            <a class="btn-sm" href="#">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
             <h3>Battery-powered sensor logger</h3>
             <p>Read a Qwiic temperature &amp; humidity sensor, show it on the OLED, then deep&#8209;sleep between readings &mdash; the board&rsquo;s low sleep current is the key to running for days on a small LiPo.</p>
-            <!-- TODO: link to the sketch in your firmware repository -->
-            <a class="btn-sm" href="#">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
         </div>
       </div>
@@ -351,8 +349,7 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <!-- TODO: add your battery connector type (e.g. JST-PH 2.0 mm) and confirm the polarity note -->
-              <p>A single-cell 3.7&nbsp;V LiPo. It charges automatically from USB&#8209;C, and on-board protection guards against over-discharge. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
+              <p>A single-cell 3.7&nbsp;V LiPo with a JST&#8209;XH plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;200&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
             </details>
             <details>
               <summary>Can I use something other than Arduino?</summary>

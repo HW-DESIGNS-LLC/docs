@@ -78,29 +78,19 @@
     .pwr-chapter .section{padding:34px 0 0;background:transparent}
     .pwr-chapter .kicker{color:var(--copper-ink)}
     @media (max-width:900px){.sum-grid{grid-template-columns:repeat(2,1fr)}.stat-row{grid-template-columns:repeat(2,1fr)}.t-row summary{grid-template-columns:70px 1fr auto}.t-act{display:none}.t-body{padding-left:16px}}
-    /* ── ported from the original power-profile page (recolored) ── */
+    /* ── ported from the original power-profile page (recolored) ──
+       Aliases only: never re-declare a site.css variable in terms of itself
+       (--x:var(--x) is a cycle, which invalidates the variable page-wide). */
 :root{
-      color-scheme: light;
-      --paper:var(--paper); --card:#FFFFFF; --ink:var(--ink); --soft:var(--soft);
-      --label:var(--label); --line:var(--line); --black:var(--navy); --bright:var(--bright);
-      --dim:var(--dim); --faint:var(--faint); --accent:var(--cobalt); --accent-lt:var(--cobalt-lt);
+      --black:var(--navy); --accent:var(--cobalt); --accent-lt:var(--cobalt-lt);
       --amber:#C77800; --red:#B0342A; --green:#2E7D32;
-      --radius:10px;
-      --sans:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
-      --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
     }
-*{box-sizing:border-box}
-::selection{background:var(--black);color:#fff}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-/* Header (mirrors hub) */
-    .site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-/* Report hero */
-    .rpt-hero{background:var(--black);color:var(--bright);padding:52px 0 46px}
-33%{background:#6FE08A}
-66%{background:#6FB2FF}
 .meta-row{display:flex;flex-wrap:wrap;gap:8px 10px;margin:24px 0 0}
 .chip{font-family:var(--mono);font-size:12.5px;color:var(--bright);border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:5px 11px}
 .chip b{color:var(--accent-lt);font-weight:500}
+/* chips reused outside the dark hero sit on light section backgrounds */
+    #power .chip{color:var(--soft);background:var(--card);border-color:var(--line)}
+#power .chip b{color:var(--cobalt-ink)}
 /* Sections */
     .section{padding:56px 0}
 section{scroll-margin-top:84px}
@@ -136,9 +126,9 @@ figcaption b{color:var(--soft);font-weight:600}
 .event .body p+p{margin-top:10px}
 .tagline{display:inline-block;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:5px;margin-bottom:10px}
 .tag-spike{background:#F7E7E5;color:var(--red)}
-.tag-sag{background:#FBF0DC;color:var(--amber)}
+.tag-sag{background:#FBF0DC;color:var(--copper-ink)}
 .tag-dwell{background:#E4EEF9;color:var(--accent)}
-.tag-ripple{background:#E6F1E7;color:var(--green)}
+.tag-ripple{background:#E6F1E7;color:#1F6124}
 /* Method + findings lists */
     .feat{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:9px;max-width:78ch}
 code{font-family:var(--mono)}
