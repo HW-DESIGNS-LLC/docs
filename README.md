@@ -21,14 +21,13 @@ forever no matter how many products are added.
 | `esp32-s3/assets/`            | —                                     | That board's images + DVT chart PNGs      |
 | `esp32-s3/docs/`              | —                                     | That board's PDFs and 3D model            |
 | `esp32-s3/firmware/`          | —                                     | Public home of the board's example sketches (the board page's "View source" buttons point here) |
-| `nrf5340/index.html`          | `docs.hwdesigns.us/nrf5340/`          | nRF5340 BLE Dev Board page (QR target)    |
-| `nrf5340/dvt/index.html`      | `docs.hwdesigns.us/nrf5340/dvt/`      | Public DVT report — currently the pre-run plan & status snapshot |
-| `nrf5340/assets/`             | —                                     | That board's images (photos to upload — see the folder's README) |
-| `nrf5340/docs/`               | —                                     | That board's PDFs, 3D model, and the DVT document pack |
-| `nrf5340/firmware/`           | —                                     | Public home of the board's example projects (Zephyr / nRF Connect SDK) |
 | `CNAME`                       | —                                     | Custom-domain file GitHub manages — leave it alone |
 
 Each future board repeats the `esp32-s3/` pattern under its own folder.
+
+> **In progress:** the **nRF5340 BLE Dev Board** (`nrf5340/`) is being
+> prepared on the **`In_Development`** branch. It stays off `main` — and
+> off the live site — until it's ready, then merges in at launch.
 
 ## How to edit anything
 
@@ -45,14 +44,14 @@ page follows. Page files contain only content.
 
 ## Product photos (versioned)
 
-`esp32-s3/index.html` and `nrf5340/index.html` load their photos through
-`IMG_VERSION` (set near the top of each file). To post new photos: save them
+Each board page (e.g. `esp32-s3/index.html`) loads its photos through
+`IMG_VERSION` (set near the top of the file). To post new photos: save them
 as `top_view_V3.jpg` / `bottom_view_V3.jpg` in that board's `assets/`
 folder, then bump that page's `IMG_VERSION` to `"V3"`.
 
 > **Also update the hub:** each board card in the root `index.html`
 > references the versioned filename directly (e.g.
-> `esp32-s3/assets/top_view_V2.jpg`, `nrf5340/assets/top_view_V1.jpg`) —
+> `esp32-s3/assets/top_view_V2.jpg`) —
 > point it at the new file when you bump a version.
 
 ## Adding a new board
@@ -83,10 +82,8 @@ from the updated files rather than hand-editing the numbers.
 Internal-only material (supplier discussions) is excluded by design —
 findings are described neutrally, e.g. "wrong part was populated."
 
-`nrf5340/dvt/index.html` follows the same rule. It is currently the
-**pre-run snapshot** (plan v2.0, 101 tests, pre-build findings). Once the
-Rev B bench run fills in `nrf5340/docs/nRF5340_RevB_DVT_Tracker.xlsx`,
-regenerate it as the full results report — same treatment as the ESP32 page.
+The nRF5340 DVT page follows the same rule — see the `In_Development`
+branch, where that board lives until launch.
 
 ## Launch checklist (ESP32-S3)
 
@@ -113,28 +110,8 @@ comment marking the exact spot.
 
 ## Launch checklist (nRF5340)
 
-Search `nrf5340/index.html` for **`TODO`** — every item below has a matching
-comment marking the exact spot.
-
-- [ ] Upload board photos `top_view_V1.jpg` and `bottom_view_V1.jpg` into
-      `nrf5340/assets/` (the hero, board tour, and the hub card all use them —
-      see `nrf5340/assets/README.txt`)
-- [ ] Upload `schematic.pdf`, `user-guide.pdf`, `pinout.pdf`, and `3D.step`
-      into `nrf5340/docs/`, and render `pinout.pdf` page 1 as
-      `nrf5340/assets/pinout.png` (the DVT document pack is already there)
-- [ ] Confirm the product name in the hero (`<h1>`) and the page `<title>`
-- [ ] Verify steps 1–2 match the shipping firmware (demo behavior and the
-      exact BLE advertised name — the page says `HWD-5340` as a placeholder)
-- [ ] Replace the MDBT53-1M datasheet link in Downloads with the direct
-      PDF link on raytac.com
-- [ ] Upload the example projects into `nrf5340/firmware/` (the board page's
-      "View source" buttons already point there)
-- [ ] Make sure `support@hwdesigns.us` exists (shared with the ESP32 page)
-- [ ] After the Rev B bench run, regenerate `nrf5340/dvt/` as the full
-      results report from the completed tracker
-- [ ] Test-scan the packaging QR code
-      (`https://docs.hwdesigns.us/nrf5340/`) on a phone **after** the live
-      page works
+Lives in this file **on the `In_Development` branch**, alongside the
+board's pages — it merges back here when the board launches.
 
 ## How publishing works
 
