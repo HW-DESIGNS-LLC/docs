@@ -26,7 +26,7 @@ forever no matter how many products are added.
 Each future board repeats the `esp32-s3/` pattern under its own folder.
 
 > **In progress:** the **nRF5340 BLE Dev Board** (`nrf5340/`) is being
-> prepared on the **`In_Development`** branch. It stays off `main` — and
+> prepared on the **`In_Development_nRF5340`** branch. It stays off `main` — and
 > off the live site — until it's ready, then merges in at launch.
 
 ## How to edit anything
@@ -82,7 +82,7 @@ from the updated files rather than hand-editing the numbers.
 Internal-only material (supplier discussions) is excluded by design —
 findings are described neutrally, e.g. "wrong part was populated."
 
-The nRF5340 DVT page follows the same rule — see the `In_Development`
+The nRF5340 DVT page follows the same rule — see the `In_Development_nRF5340`
 branch, where that board lives until launch.
 
 ## Launch checklist (ESP32-S3)
@@ -110,7 +110,7 @@ comment marking the exact spot.
 
 ## Launch checklist (nRF5340)
 
-Lives in this file **on the `In_Development` branch**, alongside the
+Lives in this file **on the `In_Development_nRF5340` branch**, alongside the
 board's pages — it merges back here when the board launches.
 
 ## How publishing works
