@@ -14,7 +14,10 @@ forever no matter how many products are added.
 | `index.html`                  | `docs.hwdesigns.us/`                  | Hub — lists every board                   |
 | `assets/site.css`             | —                                     | **Shared theme** — colors & fonts defined once here, used by every page |
 | `assets/site.js`              | —                                     | Small shared script: highlights the nav tab for the section on screen |
-| `assets/logo.svg`             | —                                     | Company logo, shared by all pages         |
+| `assets/logo-white.svg`       | —                                     | White company logo shown in the black header of every page |
+| `assets/logo.svg`             | —                                     | Original black company logo (kept for reference) |
+| `assets/favicon.svg`          | —                                     | Browser-tab icon (gold gear on black)     |
+| `assets/fonts/`               | —                                     | Nunito and Nunito Sans font files — stored here so pages never contact Google |
 | `esp32-s3/index.html`         | `docs.hwdesigns.us/esp32-s3/`         | ESP32-S3 Dev Board page (QR target)       |
 | `esp32-s3/dvt/index.html`     | `docs.hwdesigns.us/esp32-s3/dvt/`     | Public DVT report (results, power deep-dive, issues, test plan) |
 | `esp32-s3/power-profile.html` | *(redirects to `…/esp32-s3/dvt/`)*    | Legacy link — keep so old bookmarks still work |
@@ -41,6 +44,10 @@ make the change, **Commit changes**.
 Colors and fonts for the whole site live in one place: the `:root { ... }`
 block at the top of **`assets/site.css`**. Change a value there and every
 page follows. Page files contain only content.
+
+The theme matches the company website (hwdesigns.us): black header with a
+gold line, gold buttons, copper as the hardware accent, Nunito fonts, and
+automatic light/dark mode that follows the visitor's device.
 
 ## Product photos (versioned)
 
