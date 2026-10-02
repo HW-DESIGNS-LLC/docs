@@ -1,10 +1,10 @@
 Customer-facing files for the ESP32-S3 board page. The links on the board page
 point to these EXACT filenames - keep the names if you ever replace a file:
 
-  schematic.pdf     - full board schematic (export from EasyEDA Pro)
-  user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev A)
-  pinout.pdf        - printable pin reference diagram (PIN-01 Rev A)
-  3D.step           - 3D model for enclosure/mechanical design
+  schematic.pdf     - full board schematic, V2.0 (export from EasyEDA Pro)
+  user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev B, board V2.0)
+  pinout.pdf        - printable pin reference diagram (PIN-01 Rev B, board V2.0)
+  3D.step           - 3D model for enclosure/mechanical design (V2.0)
 
 All four are uploaded. The pinout is also rendered as ../assets/pinout.png for
 the "Know your board" section of the board page - if pinout.pdf is ever

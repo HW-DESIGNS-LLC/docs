@@ -157,7 +157,7 @@ void loop() {
       <div class="wrap">
         <p class="kicker">Board tour</p>
         <h2>Know your board</h2>
-        <p class="section-intro">Both sides, and what everything on them does. Renders show the bare board &mdash; the OLED display mounts on the front.</p>
+        <p class="section-intro">Both sides, and what everything on them does. Renders show the bare board &mdash; the OLED display mounts on the front. Photos show the V1.0 prototype; V2.0 boards add pin labels on the front and use a smaller JST&#8209;PH battery connector.</p>
 
         <div class="tour-grid">
           <div class="tour-col">
@@ -172,6 +172,7 @@ void loop() {
               <li>USB&#8209;C for power, charging, and programming.</li>
               <li><strong>CHG</strong> and <strong>SYS&nbsp;ON</strong> indicator LEDs by the USB port.</li>
               <li>Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT connector (JST&#8209;SH 4&#8209;pin) for solder-free I&sup2;C sensors.</li>
+              <li>Pin names printed beside every header pin, so you can wire it up without flipping the board.</li>
             </ul>
           </div>
           <div class="tour-col">
@@ -180,9 +181,9 @@ void loop() {
               <img data-img="bottom_view" alt="Back of the board: silkscreen labels for every header pin, 30-pin display ribbon connector in the middle, battery connector with polarity marks at the bottom" loading="lazy">
             </div>
             <ul class="feat">
-              <li>Every header pin labeled on the silkscreen &mdash; power (3V3, GND, 5V_IN), GPIO numbers, and TX/RX.</li>
+              <li>Every header pin labeled on the back too &mdash; power (3V3, GND, 5V_IN), GPIO numbers, and TX/RX.</li>
               <li>30&#8209;pin ribbon connector for the OLED display.</li>
-              <li>LiPo battery connector (JST&#8209;XH) with polarity marked <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong>.</li>
+              <li>LiPo battery connector (JST&#8209;PH 2.0&nbsp;mm) with polarity marked <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong>.</li>
               <li>Board revision code printed along the edge &mdash; include it when you contact support.</li>
             </ul>
           </div>
@@ -206,11 +207,11 @@ void loop() {
           </div>
           <div class="note">
             <h4>Before you plug in a battery</h4>
-            <p>Use a single-cell 3.7&nbsp;V LiPo with a JST&#8209;XH plug and match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks on the board. Battery lead polarity is not standardized between vendors &mdash; check every new battery.</p>
+            <p>Use a single-cell 3.7&nbsp;V LiPo (600&nbsp;mAh or larger) with a JST&#8209;PH 2.0&nbsp;mm plug and match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks on the board. Battery lead polarity is not standardized between vendors &mdash; check every new battery.</p>
           </div>
         </div>
 
-        <p class="dims">70.1 &times; 25.4 mm (2.76&Prime; &times; 1.00&Prime;) &middot; &asymp;72.4 mm incl. antenna overhang &middot; 0.1&Prime; header pitch, breadboard friendly &middot; Designing an enclosure? <a href="docs/3D.step">Download the 3D model (STEP)</a></p>
+        <p class="dims">70.1 &times; 25.4 mm (2.76&Prime; &times; 1.00&Prime;) &middot; &asymp;76.4 mm incl. antenna overhang &middot; 0.1&Prime; header pitch, breadboard friendly &middot; Designing an enclosure? <a href="docs/3D.step">Download the 3D model (STEP)</a></p>
       </div>
     </section>
 
@@ -244,7 +245,7 @@ void loop() {
                  Upload your files there with these exact names (see docs/README.txt). -->
             <tr>
               <td class="dl-name">Schematic</td>
-              <td class="dl-desc dl-desc-col">Full board schematic</td>
+              <td class="dl-desc dl-desc-col">Full board schematic (V2.0)</td>
               <td class="dl-file"><a href="docs/schematic.pdf" target="_blank" rel="noopener">schematic.pdf</a></td>
             </tr>
             <tr>
@@ -259,7 +260,7 @@ void loop() {
             </tr>
             <tr>
               <td class="dl-name">3D model</td>
-              <td class="dl-desc dl-desc-col">Exact board geometry for enclosures &amp; mounts</td>
+              <td class="dl-desc dl-desc-col">Exact V2.0 board geometry for enclosures &amp; mounts</td>
               <td class="dl-file"><a href="docs/3D.step">3D.step</a></td>
             </tr>
             <tr>
@@ -346,7 +347,11 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <p>A single-cell 3.7&nbsp;V LiPo with a JST&#8209;XH plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;200&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
+              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;300&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
+            </details>
+            <details>
+              <summary>Which board revision is this page for?</summary>
+              <p>Board revision <strong>V2.0</strong> &mdash; the code <code>EE2026003B</code> is printed along the back edge. The DVT report covers the V1.0 prototypes (Rev&nbsp;A, code <code>EE2026003A</code>). V2.0 uses a JST&#8209;PH 2.0&nbsp;mm battery connector (was JST&#8209;XH), charges at &asymp;300&nbsp;mA (was &asymp;200&nbsp;mA), and adds pin labels on the front.</p>
             </details>
             <details>
               <summary>Can I use something other than Arduino?</summary>
