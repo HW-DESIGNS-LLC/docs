@@ -1,0 +1,560 @@
+# =============================================================================
+#  The Crescent City (HWD-ESP32-OLED-01) - ESPHome configuration
+#  ESP32-S3 dev board with a built-in 0.96" OLED and protected LiPo power
+#  Docs: https://docs.hwdesigns.us/esp32-s3/esphome/
+#
+#  What you get in Home Assistant
+#    Indoor temperature + humidity (SHT4x on the Qwiic port), battery voltage,
+#    battery level, USB power, battery-low alert, BOOT button, RGB LED (light),
+#    status LED switch, low-battery shutdown switch, Wi-Fi signal, IP address.
+#  On the OLED
+#    Clock (time from Home Assistant), indoor and outdoor temperature, battery
+#    gauge. Press BOOT to switch to the status page (Wi-Fi, IP, battery).
+#  Battery
+#    Same low-battery behaviour as the weather-clock firmware: a "LOW" warning,
+#    then "Battery low / charge me" and deep sleep until USB is plugged in.
+#
+#  Use it as is (web installer or "Adopt" in ESPHome Builder), or as a package:
+#    packages:
+#      hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/esp32-s3/firmware/esphome/crescent-city.yaml@main
+#
+#  Board pin map (identical on board versions V1.0 and V2.0)
+#    OLED SSD1306 SPI  SCLK 12, MOSI 11, CS 10, DC 9, RST 14
+#    Qwiic I2C         SDA 8, SCL 18
+#    RGB LED SK6812    GPIO48          BOOT button  GPIO0
+#    Battery sense     GPIO4  (100k/100k divider)
+#    USB present       GPIO2  (100k/100k divider from USB 5 V; RTC pin, wakes the board)
+#
+#  MIT License - Copyright (c) 2026 HW DESIGNS LLC
+# =============================================================================
+
+substitutions:
+  name: crescent-city
+  friendly_name: Crescent City
+  # OLED only. Home Assistant shows temperatures in its own unit setting.
+  # Set this to match Home Assistant, because the outdoor value comes from it.
+  temp_unit: "F"
+  # Home Assistant weather entity for the outdoor temperature on the OLED.
+  outdoor_weather_entity: weather.forecast_home
+  # Low-battery cutoff. Voltages are at the battery connector. Keep these the
+  # same as the weather-clock firmware (LOW-BATTERY CUTOFF block).
+  vbat_cal_offset: "0.070"    # V added to the ADC reading
+  vbat_warn: "3.45"           # below: battery-low warning
+  vbat_warn_clear: "3.55"     # above: warning clears
+  vbat_cutoff: "3.30"         # below (30 s median): shut down to deep sleep
+  vbat_resume: "3.50"         # at boot on battery: below this, back to sleep
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: true
+  comment: "The Crescent City ESP32-S3 OLED board"
+  project:
+    name: hwdesigns.crescent-city
+    version: "1.0.0"
+  on_boot:
+    # Very first: release the pin holds set before a low-battery deep sleep.
+    - priority: 1100
+      then:
+        - lambda: |-
+            gpio_hold_dis(GPIO_NUM_48);
+            gpio_hold_dis(GPIO_NUM_10);
+            gpio_hold_dis(GPIO_NUM_14);
+            gpio_deep_sleep_hold_dis();
+    # After the display and ADC are up, before Wi-Fi starts: a battery that is
+    # still empty after a reset goes straight back to sleep (Wi-Fi never starts).
+    - priority: 300
+      then:
+        - lambda: |-
+            if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1)
+              ESP_LOGI("battery", "Woke from low-battery sleep: USB plugged in");
+            if (!id(low_battery_shutdown_enabled).state) return;
+            if (id(usb_adc).sample() * 2.0f > 4.0f) return;
+            float v = 0;
+            for (int i = 0; i < 10; i++) { v += id(battery_adc).sample(); delay(20); }
+            v = v / 10.0f * 2.0f + ${vbat_cal_offset};
+            ESP_LOGI("battery", "Boot check: %.3f V (resume above %.2f V)", v, ${vbat_resume});
+            if (v >= ${vbat_resume}) return;
+            // Still empty: same shutdown as at runtime, done here before Wi-Fi.
+            id(lowbatt_v) = v;
+            id(show_lowbatt) = true;
+            id(oled).update();
+            uint32_t t0 = millis();
+            while (millis() - t0 < 10000) {
+              App.feed_wdt();
+              if (id(usb_adc).sample() * 2.0f > 4.0f) App.safe_reboot();
+              delay(100);
+            }
+            id(sleep_prepare).execute();
+            id(deep_sleep_ctl).begin_sleep(true);
+
+esp32:
+  variant: esp32s3
+  flash_size: 8MB
+  framework:
+    type: esp-idf
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+
+api:
+  id: api_id
+  reboot_timeout: 0s          # keep running as a clock when Home Assistant is offline
+
+ota:
+  - platform: esphome
+    id: ota_esphome
+
+wifi:
+  id: wifi_id
+  reboot_timeout: 0s          # keep the clock running if Wi-Fi drops (default reboots after 15 min)
+  # Credentials come from the web installer, the setup hotspot or your
+  # ESPHome Builder secrets. With no saved network, the board opens the
+  # setup hotspot below.
+  ap:
+    ssid: "Crescent City"
+
+captive_portal:
+
+improv_serial:
+
+dashboard_import:
+  package_import_url: github://HW-DESIGNS-LLC/docs/esp32-s3/firmware/esphome/crescent-city.yaml@main
+  import_full_config: false
+
+deep_sleep:
+  id: deep_sleep_ctl
+  # No timer: the board sleeps only on a low battery and wakes when USB is
+  # plugged in (GPIO2 goes high) or RESET is pressed.
+  esp32_ext1_wakeup:
+    pins:
+      - number: GPIO2
+        allow_other_uses: true
+    mode: ANY_HIGH
+
+globals:
+  - id: page
+    type: int
+    initial_value: "0"
+  - id: show_lowbatt
+    type: bool
+    initial_value: "false"
+  - id: low_batt_warn
+    type: bool
+    initial_value: "false"
+  - id: lowbatt_v
+    type: float
+    initial_value: "0"
+  - id: led_code
+    type: int
+    initial_value: "-1"
+  - id: vbat_n                # battery readings since boot / USB unplugged
+    type: int
+    initial_value: "0"
+  - id: cut_now
+    type: bool
+    initial_value: "false"
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# ---------------------------------------------------------------- buses
+spi:
+  clk_pin: GPIO12
+  mosi_pin: GPIO11
+
+i2c:
+  sda: GPIO8
+  scl: GPIO18
+  frequency: 100kHz
+  scan: true
+
+# ---------------------------------------------------------------- sensors
+sensor:
+  # Battery: raw reading every 3 s at the battery connector
+  - platform: adc
+    id: battery_adc
+    pin: GPIO4
+    attenuation: 12db
+    samples: 16
+    update_interval: 3s
+    internal: true
+    filters:
+      - multiply: 2.0
+      - offset: ${vbat_cal_offset}
+
+  # 30 s median, updated every 3 s - drives the warning and the cutoff
+  - platform: copy
+    source_id: battery_adc
+    id: battery_filtered
+    internal: true
+    filters:
+      - median:
+          window_size: 10
+          send_every: 1
+    on_value:
+      then:
+        - lambda: |-
+            id(cut_now) = false;
+            if (id(usb_power).state || !id(low_battery_shutdown_enabled).state) {
+              id(low_batt_warn) = false;
+              id(vbat_n) = 0;
+              return;
+            }
+            if (id(vbat_n) < 10) { id(vbat_n)++; return; }   // first decision after 30 s on battery
+            if (!id(low_batt_warn) && x < ${vbat_warn}) {
+              id(low_batt_warn) = true;
+              ESP_LOGW("battery", "Battery low: %.3f V", x);
+            } else if (id(low_batt_warn) && x > ${vbat_warn_clear}) {
+              id(low_batt_warn) = false;
+            }
+            if (x < ${vbat_cutoff}) {
+              id(lowbatt_v) = x;
+              id(cut_now) = true;
+            }
+        - if:
+            condition:
+              lambda: "return id(cut_now);"
+            then:
+              - script.execute: low_battery_shutdown
+
+  # Reported to Home Assistant every 30 s
+  - platform: copy
+    source_id: battery_adc
+    id: battery_voltage
+    name: "Battery voltage"
+    device_class: voltage
+    state_class: measurement
+    unit_of_measurement: V
+    accuracy_decimals: 2
+    filters:
+      - median:
+          window_size: 10
+          send_every: 10
+          send_first_at: 10
+
+  - platform: copy
+    source_id: battery_voltage
+    id: battery_level
+    name: "Battery level"
+    device_class: battery
+    state_class: measurement
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    filters:
+      - lambda: |-
+          static const float P[][2] = {{4.20f,100},{4.13f,90},{4.06f,80},{3.98f,70},{3.92f,60},
+            {3.87f,50},{3.82f,40},{3.79f,30},{3.75f,20},{3.70f,10},{3.60f,5},{3.40f,0}};
+          if (x >= P[0][0]) return 100.0f;
+          for (int i = 0; i < 11; i++) {
+            if (x <= P[i][0] && x >= P[i + 1][0])
+              return P[i + 1][1] + (x - P[i + 1][0]) * (P[i][1] - P[i + 1][1]) / (P[i][0] - P[i + 1][0]);
+          }
+          return 0.0f;
+
+  # USB 5 V present (read as analog: the divided 5 V sits near the logic threshold)
+  - platform: adc
+    id: usb_adc
+    pin:
+      number: GPIO2
+      allow_other_uses: true
+    attenuation: 12db
+    update_interval: 1s
+    internal: true
+    filters:
+      - multiply: 2.0
+
+  # Indoor temperature/humidity on the Qwiic port (Qwiic is not hot-plug in
+  # ESPHome: plug the sensor in before power-up)
+  - platform: sht4x
+    address: 0x44
+    update_interval: 30s
+    temperature:
+      id: indoor_temp
+      name: "Indoor temperature"
+    humidity:
+      id: indoor_rh
+      name: "Indoor humidity"
+
+  # Outdoor temperature for the OLED, from Home Assistant
+  - platform: homeassistant
+    id: outdoor_temp
+    entity_id: ${outdoor_weather_entity}
+    attribute: temperature
+    internal: true
+
+  - platform: wifi_signal
+    id: wifi_rssi
+    name: "Wi-Fi signal"
+    update_interval: 60s
+    entity_category: diagnostic
+
+  - platform: uptime
+    id: uptime_s
+    name: "Uptime"
+    entity_category: diagnostic
+
+binary_sensor:
+  - platform: analog_threshold
+    id: usb_power
+    name: "USB power"
+    sensor_id: usb_adc
+    device_class: power
+    threshold:
+      upper: 4.0
+      lower: 3.8
+
+  - platform: template
+    id: battery_low
+    name: "Battery low"
+    device_class: battery
+    lambda: "return id(low_batt_warn);"
+
+  - platform: gpio
+    id: boot_button
+    name: "BOOT button"
+    pin:
+      number: GPIO0
+      inverted: true
+      ignore_strapping_warning: true
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_on_off: 20ms
+    on_press:
+      - lambda: "id(page) = 1 - id(page);"
+      - component.update: oled
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      id: ip_addr
+      name: "IP address"
+      entity_category: diagnostic
+
+switch:
+  - platform: template
+    id: low_battery_shutdown_enabled
+    name: "Low-battery shutdown"
+    icon: mdi:battery-alert-variant-outline
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: template
+    id: status_led_enabled
+    name: "Status LED"
+    icon: mdi:led-on
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    on_turn_off:
+      - light.turn_off: status_rgb
+      - globals.set:
+          id: led_code
+          value: "-1"
+
+button:
+  - platform: restart
+    name: "Restart"
+  - platform: factory_reset
+    name: "Factory reset"
+    disabled_by_default: true
+
+# ---------------------------------------------------------------- RGB LED
+light:
+  - platform: esp32_rmt_led_strip
+    id: status_rgb
+    name: "RGB LED"
+    pin: GPIO48
+    num_leds: 1
+    chipset: SK6812
+    channel_colors: GRB
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 0s
+    effects:
+      - strobe:
+          name: "Blink blue"
+          colors:
+            - state: true
+              brightness: 40%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 150ms
+            - state: false
+              duration: 850ms
+      - strobe:
+          name: "Blink red"
+          colors:
+            - state: true
+              brightness: 40%
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 150ms
+            - state: false
+              duration: 1850ms
+
+# Status colours (when the "Status LED" switch is on):
+#   red blink = battery low, blue blink = no Wi-Fi (or setup hotspot open),
+#   amber = Wi-Fi up but Home Assistant not connected, off = all good.
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (!id(status_led_enabled).state || id(show_lowbatt)) return;
+          int code = id(low_batt_warn) ? 1 : !id(wifi_id).is_connected() ? 2 : !id(api_id).is_connected() ? 3 : 0;
+          if (code == id(led_code)) return;
+          id(led_code) = code;
+          auto call = code == 0 ? id(status_rgb).turn_off() : id(status_rgb).turn_on();
+          if (code == 1) call.set_effect("Blink red");
+          if (code == 2) call.set_effect("Blink blue");
+          if (code == 3) { call.set_effect("None"); call.set_rgb(1.0, 0.45, 0.0); call.set_brightness(0.25); }
+          call.perform();
+
+# ---------------------------------------------------------------- shutdown
+script:
+  # Pins that could wake a load during deep sleep are parked and held:
+  # RGB data low (the LED cannot latch a colour from noise), OLED chip-select
+  # high (panel ignores the bus), OLED reset high (panel stays asleep).
+  - id: sleep_prepare
+    then:
+      - lambda: |-
+          id(oled).turn_off();
+          gpio_reset_pin(GPIO_NUM_48);
+          gpio_set_direction(GPIO_NUM_48, GPIO_MODE_OUTPUT);
+          gpio_set_level(GPIO_NUM_48, 0);
+          gpio_set_level(GPIO_NUM_10, 1);
+          gpio_set_level(GPIO_NUM_14, 1);
+          gpio_hold_en(GPIO_NUM_48);
+          gpio_hold_en(GPIO_NUM_10);
+          gpio_hold_en(GPIO_NUM_14);
+          gpio_deep_sleep_hold_en();
+
+  - id: low_battery_shutdown
+    mode: single
+    then:
+      - logger.log:
+          level: WARN
+          format: "Battery %.3f V - shutting down until USB is plugged in"
+          args: ["id(lowbatt_v)"]
+      - globals.set:
+          id: show_lowbatt
+          value: "true"
+      - light.turn_off:
+          id: status_rgb
+          transition_length: 0s
+      - component.update: oled
+      - delay: 1s               # let the last state reach Home Assistant
+      - wifi.disable:
+      - wait_until:
+          condition:
+            binary_sensor.is_on: usb_power
+          timeout: 9s
+      - if:
+          condition:
+            binary_sensor.is_on: usb_power
+          then:
+            - lambda: "App.safe_reboot();"
+      - script.execute: sleep_prepare
+      - deep_sleep.enter: deep_sleep_ctl
+
+# ---------------------------------------------------------------- display
+font:
+  - file: "gfonts://Archivo@700"
+    id: font_clock
+    size: 24
+    glyphs: "0123456789:-"
+  - file: "gfonts://Archivo@700"
+    id: font_head
+    size: 15
+  - file: "gfonts://Archivo@600"
+    id: font_value
+    size: 18
+    glyphs: "0123456789-.°%CF "
+  - file: "gfonts://Spline Sans Mono"
+    id: font_small
+    size: 10
+
+display:
+  - platform: ssd1306_spi
+    id: oled
+    model: "SSD1306 128x64"
+    cs_pin: GPIO10
+    dc_pin: GPIO9
+    reset_pin: GPIO14
+    update_interval: 1s
+    lambda: |-
+      const bool unit_f = std::string("${temp_unit}") == "F";
+      auto to_disp = [&](float c) { return unit_f ? c * 9.0f / 5.0f + 32.0f : c; };
+
+      // ---- low-battery screen ----
+      if (id(show_lowbatt)) {
+        it.rectangle(47, 2, 30, 14);
+        it.filled_rectangle(77, 6, 3, 6);
+        it.print(64, 34, id(font_head), TextAlign::BASELINE_CENTER, "Battery low");
+        it.print(64, 50, id(font_small), TextAlign::BASELINE_CENTER, "charge me");
+        it.printf(64, 63, id(font_small), TextAlign::BASELINE_CENTER, "%.2f V", id(lowbatt_v));
+        return;
+      }
+
+      // ---- battery icon, top right (blinks with LOW when the battery is low) ----
+      const bool usb = id(usb_power).state;
+      const bool warn = id(low_batt_warn) && !usb;
+      float pct = id(battery_level).has_state() ? id(battery_level).state : 0;
+      int bars = pct >= 74 ? 4 : pct >= 49 ? 3 : pct >= 29 ? 2 : pct >= 14 ? 1 : 0;
+      const int bx = 106, by = 2;
+      if (!warn || (millis() / 1000) % 2 == 0) {
+        it.rectangle(bx, by, 20, 10);
+        it.filled_rectangle(bx + 20, by + 3, 2, 4);
+      }
+      for (int i = 0; i < bars; i++) it.filled_rectangle(bx + 2 + i * 4, by + 2, 3, 6);
+      if (usb) {
+        it.line(bx - 4, by + 1, bx - 7, by + 5);
+        it.line(bx - 7, by + 5, bx - 5, by + 5);
+        it.line(bx - 5, by + 5, bx - 8, by + 9);
+      }
+      if (warn) it.print(bx - 3, by + 9, id(font_small), TextAlign::BASELINE_RIGHT, "LOW");
+
+      if (id(page) == 0) {
+        // ---- clock page ----
+        auto now = id(ha_time).now();
+        if (now.is_valid()) {
+          it.strftime(0, 0, id(font_clock), TextAlign::TOP_LEFT, "%H:%M", now);
+          it.strftime(127, 31, id(font_small), TextAlign::BASELINE_RIGHT, "%a %d %b", now);
+        } else {
+          it.print(0, 0, id(font_clock), TextAlign::TOP_LEFT, "--:--");
+        }
+        it.print(0, 42, id(font_small), TextAlign::BASELINE_LEFT, "INDOOR");
+        it.print(127, 42, id(font_small), TextAlign::BASELINE_RIGHT, "OUTDOOR");
+        if (id(indoor_temp).has_state() && !std::isnan(id(indoor_temp).state)) {
+          it.printf(0, 63, id(font_value), TextAlign::BASELINE_LEFT, "%.0f°%s", to_disp(id(indoor_temp).state), "${temp_unit}");
+          if (id(indoor_rh).has_state() && !std::isnan(id(indoor_rh).state))
+            it.printf(52, 63, id(font_small), TextAlign::BASELINE_LEFT, "%.0f%%", id(indoor_rh).state);
+        } else {
+          it.print(0, 63, id(font_value), TextAlign::BASELINE_LEFT, "--");
+        }
+        if (id(outdoor_temp).has_state() && !std::isnan(id(outdoor_temp).state))
+          it.printf(127, 63, id(font_value), TextAlign::BASELINE_RIGHT, "%.0f°%s", id(outdoor_temp).state, "${temp_unit}");
+        else
+          it.print(127, 63, id(font_value), TextAlign::BASELINE_RIGHT, "--");
+      } else {
+        // ---- status page ----
+        it.print(0, 9, id(font_small), TextAlign::BASELINE_LEFT, "STATUS");
+        if (id(wifi_id).is_connected()) {
+          it.printf(0, 19, id(font_small), TextAlign::BASELINE_LEFT, "WiFi %.0f dBm", id(wifi_rssi).state);
+          it.printf(0, 29, id(font_small), TextAlign::BASELINE_LEFT, "%s", id(ip_addr).state.c_str());
+        } else {
+          it.print(0, 19, id(font_small), TextAlign::BASELINE_LEFT, "WiFi not connected");
+          it.print(0, 29, id(font_small), TextAlign::BASELINE_LEFT, "Join 'Crescent City'");
+        }
+        it.printf(0, 39, id(font_small), TextAlign::BASELINE_LEFT, "HA %s", id(api_id).is_connected() ? "connected" : "waiting");
+        if (id(battery_voltage).has_state())
+          it.printf(0, 49, id(font_small), TextAlign::BASELINE_LEFT, "Batt %.2f V %.0f%%", id(battery_voltage).state, pct);
+        else
+          it.print(0, 49, id(font_small), TextAlign::BASELINE_LEFT, "Batt reading...");
+        it.print(0, 60, id(font_small), TextAlign::BASELINE_LEFT, usb ? "USB power" : "On battery");
+      }

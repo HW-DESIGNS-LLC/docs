@@ -14,11 +14,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ESP32-S3 Dev Board — Documentation · HW Designs</title>
+  <title>Crescent City — ESP32-S3 Dev Board Documentation · HW Designs</title>
   <meta name="description" content="Official documentation for the HW Designs ESP32-S3 development board: getting started guide, board tour, schematic, user guide, pinout, 3D model, and example projects.">
-  <meta property="og:title" content="ESP32-S3 Dev Board — Documentation">
+  <meta property="og:title" content="Crescent City — ESP32-S3 Dev Board Documentation">
   <meta property="og:description" content="Getting started guide, downloads, and example projects for the HW Designs ESP32-S3 development board.">
   <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/">
+  <meta property="og:image" content="https://docs.hwdesigns.us/assets/og-esp32-s3.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#111111">
 
@@ -67,9 +69,8 @@
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Official documentation</p>
-        <!-- TODO: replace with your final product name everywhere it appears on this page -->
-        <h1>ESP32&#8209;S3 Dev Board</h1>
-        <p class="lede">A Wi&#8209;Fi + Bluetooth&nbsp;LE development board with a built&#8209;in 0.96&Prime; OLED display, USB&#8209;C, LiPo battery charging, and a Qwiic connector &mdash; running a live weather clock straight out of the box.</p>
+        <h1>Crescent City</h1>
+        <p class="lede">An ESP32&#8209;S3 Wi&#8209;Fi + Bluetooth&nbsp;LE development board with a built&#8209;in 0.96&Prime; OLED display, USB&#8209;C, LiPo battery charging, and a Qwiic connector &mdash; running a live weather clock straight out of the box.</p>
         <div class="cta-row">
           <a class="btn btn-light" href="#start">Get started</a>
           <a class="btn btn-ghost" href="#downloads">Downloads</a>
@@ -96,7 +97,6 @@
             <span class="step-no" aria-hidden="true">1</span>
             <div>
               <h3>Plug it in</h3>
-              <!-- TODO: confirm this description matches your final shipping firmware -->
               <p>Connect the board to any USB&#8209;C charger or computer port. It powers up and starts the built-in Weather Clock on the OLED display.</p>
             </div>
           </li>
@@ -104,8 +104,7 @@
             <span class="step-no" aria-hidden="true">2</span>
             <div>
               <h3>Put it on your Wi&#8209;Fi</h3>
-              <!-- TODO: replace the hotspot name below with the exact SSID your firmware broadcasts -->
-              <p>On first boot the board opens its own setup hotspot. Join it from your phone, and a setup page appears &mdash; pick your home network and enter its password. The board restarts and shows your local time and weather, with the RGB LED tinted by the temperature outside.</p>
+              <p>On first boot the board creates its own Wi&#8209;Fi network called <strong>HW&#8209;WeatherClock</strong>. Join it from your phone and a setup page opens (or go to <code>192.168.4.1</code>). Pick your home network, enter its password, and set your city and &deg;F or &deg;C. The board restarts and shows your local time and weather, with the RGB LED tinted by the temperature outside. To change Wi&#8209;Fi or city later, hold <strong>BOOT</strong> for 3 seconds.</p>
               <p class="hint">The board uses 2.4&nbsp;GHz Wi&#8209;Fi. If your router broadcasts separate 2.4&nbsp;GHz and 5&nbsp;GHz names, choose the 2.4&nbsp;GHz one.</p>
             </div>
           </li>
@@ -223,12 +222,13 @@ void loop() {
           <div class="spec"><div class="label">Module</div><div class="val">ESP32&#8209;S3&#8209;WROOM&#8209;1&#8209;N8 &middot; dual&#8209;core @ 240&nbsp;MHz</div></div>
           <div class="spec"><div class="label">Wireless</div><div class="val">Wi&#8209;Fi 4 (2.4&nbsp;GHz) + Bluetooth 5&nbsp;LE</div></div>
           <div class="spec"><div class="label">Memory</div><div class="val">8&nbsp;MB flash &middot; 512&nbsp;KB SRAM</div></div>
-          <div class="spec"><div class="label">Display</div><div class="val">0.96&Prime; 128&times;64 OLED (SSD1306, SPI)</div></div>
-          <div class="spec"><div class="label">Power</div><div class="val">USB&#8209;C input &middot; LiPo charging + battery protection</div></div>
+          <div class="spec"><div class="label">Display</div><div class="val">0.96&Prime; 128&times;64 white OLED (SSD1306, SPI)</div></div>
+          <div class="spec"><div class="label">Power</div><div class="val">USB&#8209;C &middot; &asymp;300&nbsp;mA LiPo charging + protection &middot; &asymp;14&nbsp;h per 1000&nbsp;mAh with Wi&#8209;Fi on</div></div>
           <div class="spec"><div class="label">Expansion</div><div class="val">Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT (I&sup2;C) &middot; 2&times;12 header pins</div></div>
           <div class="spec"><div class="label">Status LED</div><div class="val">Addressable RGB (SK6812)</div></div>
           <div class="spec"><div class="label">Size</div><div class="val">70.1 &times; 25.4&nbsp;mm &middot; breadboard friendly</div></div>
         </div>
+        <p style="margin:26px 0 0"><a class="btn-sm" href="specs/">Full spec sheet</a></p>
       </div>
     </section>
 
@@ -243,6 +243,11 @@ void loop() {
           <tbody>
             <!-- The first four links point at files inside this site's docs/ folder.
                  Upload your files there with these exact names (see docs/README.txt). -->
+            <tr>
+              <td class="dl-name">Spec sheet</td>
+              <td class="dl-desc dl-desc-col">Full V2.0 specifications, pinout and power figures (printable)</td>
+              <td class="dl-file"><a href="specs/">open&nbsp;&#8599;</a> &middot; <a href="docs/spec-sheet.pdf" target="_blank" rel="noopener">spec-sheet.pdf</a></td>
+            </tr>
             <tr>
               <td class="dl-name">Schematic</td>
               <td class="dl-desc dl-desc-col">Full board schematic (V2.0)</td>
@@ -264,25 +269,20 @@ void loop() {
               <td class="dl-file"><a href="docs/3D.step">3D.step</a></td>
             </tr>
             <tr>
+              <td class="dl-name">Battery test data</td>
+              <td class="dl-desc dl-desc-col">Full discharge and full charge of a real cell, 10-second averages (CSV)</td>
+              <td class="dl-file"><a href="docs/battery_full_discharge_revA_10s.csv">discharge.csv</a> &middot; <a href="docs/battery_full_charge_revA_10s.csv">charge.csv</a></td>
+            </tr>
+            <tr>
               <td class="dl-name">DVT report</td>
-              <td class="dl-desc dl-desc-col">Rev A design-verification results &mdash; 122 tests, power deep-dive, known issues</td>
+              <td class="dl-desc dl-desc-col">Rev A design-verification results &mdash; 122 tests, battery and power measurements, known issues</td>
               <td class="dl-file"><a href="dvt/">open report&nbsp;&#8599;</a></td>
             </tr>
             <!-- DVT source documents (rendered by the report above; offered here as the editable originals) -->
             <tr>
-              <td class="dl-name">DVT test plan</td>
-              <td class="dl-desc dl-desc-col">Full Rev A test procedure &amp; board reference (v1.2)</td>
-              <td class="dl-file"><a href="docs/DVT_Plan_ESP32S3_Board_RevA.docx">plan.docx</a></td>
-            </tr>
-            <tr>
               <td class="dl-name">DVT firmware guide</td>
               <td class="dl-desc dl-desc-col">How to flash &amp; run the DVT firmware pack</td>
               <td class="dl-file"><a href="docs/DVT_Firmware_Guide.docx">guide.docx</a></td>
-            </tr>
-            <tr>
-              <td class="dl-name">DVT results tracker</td>
-              <td class="dl-desc dl-desc-col">Every measurement, pass/fail rollup &amp; issue log</td>
-              <td class="dl-file"><a href="docs/ESP32_RevA_DVT_Tracker.xlsx">tracker.xlsx</a></td>
             </tr>
             <tr>
               <td class="dl-name">DVT helper firmware</td>
@@ -313,17 +313,17 @@ void loop() {
           <div class="card">
             <h3>Weather Clock</h3>
             <p>The firmware your board ships with. It fetches your local forecast over Wi&#8209;Fi and draws a clock and conditions on the OLED &mdash; a full tour of Wi&#8209;Fi, HTTP, JSON, and the display in one sketch.</p>
-            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware/WeatherClock" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
             <h3>Qwiic sensor in 5 minutes</h3>
             <p>Plug a Qwiic temperature &amp; humidity sensor into the side connector &mdash; no soldering &mdash; and chart live readings on the screen.</p>
-            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware/QwiicSensor" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
             <h3>Battery-powered sensor logger</h3>
             <p>Read a Qwiic temperature &amp; humidity sensor, show it on the OLED, then deep&#8209;sleep between readings &mdash; the board&rsquo;s low sleep current is the key to running for days on a small LiPo.</p>
-            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
+            <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware/BatteryLogger" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
         </div>
       </div>
@@ -337,7 +337,6 @@ void loop() {
           <div class="contact">
             <h3>Talk to us</h3>
             <p>Tell us what you tried and what happened &mdash; a photo of your setup helps, and the code printed on the back of the board tells us your exact revision. We read every message.</p>
-            <!-- TODO: make sure this mailbox exists (or change it) before printing the QR code -->
             <p><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></p>
           </div>
           <div class="faq">
@@ -347,7 +346,7 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;300&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
+              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;300&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Running the Weather Clock with Wi&#8209;Fi always on, the board draws about 70&nbsp;mA &mdash; roughly 14&nbsp;hours per 1000&nbsp;mAh (<a href="dvt/#pwr-battery">measured on a full discharge</a>). When the battery runs low, the Weather Clock shows &ldquo;charge me&rdquo; and goes to sleep; plug in USB&#8209;C to wake it. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
             </details>
             <details>
               <summary>Which board revision is this page for?</summary>
@@ -355,7 +354,7 @@ void loop() {
             </details>
             <details>
               <summary>Can I use something other than Arduino?</summary>
-              <p>Yes &mdash; it&rsquo;s a standard ESP32&#8209;S3, so ESP&#8209;IDF, MicroPython, and CircuitPython all work. This guide covers Arduino because it&rsquo;s the fastest path to a first upload.</p>
+              <p>Yes. It&rsquo;s a standard ESP32&#8209;S3 (8&nbsp;MB flash, no PSRAM), so ESP&#8209;IDF, MicroPython and CircuitPython should work with their generic ESP32&#8209;S3 builds &mdash; we haven&rsquo;t tested them yet. We test with Arduino and ESPHome; use the <a href="docs/pinout.pdf">pinout</a> for the display, LED and button pins.</p>
             </details>
           </div>
         </div>

@@ -18,7 +18,7 @@ forever no matter how many products are added.
 | `assets/logo.svg`             | —                                     | Original black company logo (kept for reference) |
 | `assets/favicon.svg`          | —                                     | Browser-tab icon (gold gear on black)     |
 | `assets/fonts/`               | —                                     | Nunito and Nunito Sans font files — stored here so pages never contact Google |
-| `esp32-s3/index.html`         | `docs.hwdesigns.us/esp32-s3/`         | ESP32-S3 Dev Board page (QR target)       |
+| `esp32-s3/index.html`         | `docs.hwdesigns.us/esp32-s3/`         | Crescent City board page (QR target)       |
 | `esp32-s3/dvt/index.html`     | `docs.hwdesigns.us/esp32-s3/dvt/`     | Public DVT report (results, power deep-dive, issues, test plan) |
 | `esp32-s3/power-profile.html` | *(redirects to `…/esp32-s3/dvt/`)*    | Legacy link — keep so old bookmarks still work |
 | `esp32-s3/assets/`            | —                                     | That board's images + DVT chart PNGs      |

@@ -1,4 +1,4 @@
-Customer-facing files for the ESP32-S3 board page. The links on the board page
+Customer-facing files for the Crescent City board page. The links on the board page
 point to these EXACT filenames - keep the names if you ever replace a file:
 
   schematic.pdf     - full board schematic, V2.0 (export from EasyEDA Pro)
@@ -10,17 +10,16 @@ All four are uploaded. The pinout is also rendered as ../assets/pinout.png for
 the "Know your board" section of the board page - if pinout.pdf is ever
 updated, re-render that PNG from page 1 so the two stay in sync.
 
-DVT source documents (already uploaded - the DVT report at ../dvt/ renders
-these, and the download links on both ../index.html and ../dvt/ point to them
-by these EXACT names):
+Spec sheet and test data (linked from ../index.html and ../specs/):
 
-  DVT_Plan_ESP32S3_Board_RevA.docx  - the Rev A design-verification test plan (v1.2)
-  DVT_Firmware_Guide.docx           - how to flash & run the DVT firmware pack
-  ESP32_RevA_DVT_Tracker.xlsx       - executed per-measurement results + issue log
-  DVT_Helper.ino                    - the serial-menu DVT/bring-up firmware sketch
+  spec-sheet.pdf                       - printable spec sheet (printed from ../specs/)
+  battery_full_discharge_revA_10s.csv  - full battery discharge, 10-second averages
+  battery_full_charge_revA_10s.csv     - full charge from empty, 10-second averages
 
-  Keep these filenames if you replace them: ESP32_RevA_DVT_Tracker.xlsx and
-  DVT_Helper.ino are also referenced by name inside the documents themselves.
+DVT firmware (linked from ../index.html and ../dvt/):
+
+  DVT_Firmware_Guide.docx  - how to flash & run the DVT firmware pack
+  DVT_Helper.ino           - the serial-menu DVT/bring-up firmware sketch
 
 How to upload on GitHub: open this folder in the repository, click
 "Add file" -> "Upload files", drag the files in, then "Commit changes".

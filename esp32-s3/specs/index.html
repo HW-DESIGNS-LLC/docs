@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec Sheet — Crescent City V2.0 · HW Designs</title>
+  <meta name="description" content="Specifications for Crescent City V2.0, the HW Designs ESP32-S3 development board: processor, display, USB, battery charging and protection, power consumption, pinout and dimensions.">
+  <meta property="og:title" content="Spec Sheet — Crescent City V2.0">
+  <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/specs/">
+  <meta property="og:description" content="Full specifications for Crescent City V2.0, the HW Designs ESP32-S3 development board: display, USB-C, battery charging and protection, power use, pinout and dimensions.">
+  <meta property="og:image" content="https://docs.hwdesigns.us/assets/og-esp32-s3.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#111111">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <style>
+    .crumb{font-size:13.5px;margin:0 0 18px;color:var(--faint)}
+    .crumb a{color:var(--dim);text-decoration:none}
+    .crumb a:hover{color:#fff;text-decoration:underline}
+    .hero h1{max-width:none}
+    .hero .meta-row{margin-top:22px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+    .hl{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+    .hl li{position:relative;padding-left:20px;color:var(--soft)}
+    .hl li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;background:var(--copper)}
+    .legend{margin:20px 0 0;font-size:14px;color:var(--label)}
+    .meta-row{display:flex;flex-wrap:wrap;gap:8px 10px;margin:24px 0 0}
+    .chip{font-family:var(--mono);font-size:12.5px;color:var(--bright);border:1px solid rgba(255,255,255,.28);border-radius:6px;padding:5px 11px}
+    .chip b{color:var(--gold);font-weight:500}
+    .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;align-items:start}
+    .spec-group{margin:28px 0 0;min-width:0}
+    .spec-group h3{font-family:var(--head);font-weight:800;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink);margin:0 0 10px}
+    .spec-tbl{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .spec-tbl th,.spec-tbl td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.5}
+    .spec-tbl th{width:34%;font-weight:700;color:var(--ink)}
+    .spec-tbl td{color:var(--soft)}
+    .spec-tbl tr:last-child th,.spec-tbl tr:last-child td{border-bottom:none}
+    .sub{display:inline-block;margin-top:4px;font-size:13.5px;color:var(--label)}
+    .tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:1px 7px;border-radius:5px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+    .tag-m{background:var(--cobalt-tint);color:var(--cobalt-ink);border:1px solid var(--cobalt-line)}
+    .tag-t{background:var(--copper-tint);color:var(--copper-ink);border:1px solid var(--copper-line)}
+    .confirm{background:#FFE58A;color:#3A2E00;font-weight:700;padding:1px 6px;border-radius:4px}
+    .pin-tbl{width:100%;max-width:640px;border-collapse:separate;border-spacing:0;margin:26px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .pin-tbl th,.pin-tbl td{text-align:left;padding:9px 16px;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--soft)}
+    .pin-tbl thead th{font-family:var(--head);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--label)}
+    .pin-tbl tr:last-child td{border-bottom:none}
+    .pin-tbl .pn{font-family:var(--mono);color:var(--label);width:56px}
+    .note{margin:16px 0 0;color:var(--label);font-size:14px;max-width:70ch}
+    .disclaimer{margin:40px 0 0;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--label)}
+    @media (max-width:980px){.spec-grid{grid-template-columns:1fr}}
+    @media (max-width:720px){.hl{grid-template-columns:1fr} .spec-tbl th{width:36%} .spec-tbl th,.spec-tbl td{padding:10px 12px;font-size:14.5px}}
+    @media print{
+      @page{size:letter;margin:11mm}
+      .site-header,.site-footer,.hero-actions,.skip,.crumb,#downloads .feat{display:none!important}
+      html,body{background:#fff!important;font-size:10px}
+      .wrap{max-width:none;padding:0}
+      .hero{background:#fff!important;color:#111;padding:0 0 4px} .eyebrow{color:#8A6A00}
+      .hero h1{color:#111;font-size:22px;margin:4px 0} .lede{color:#333;font-size:11px;margin:0;max-width:none}
+      .meta-row{margin:6px 0 0} .chip{color:#111;border-color:#aaa;font-size:9px;padding:2px 6px} .chip b{color:#8A6A00}
+      .section{padding:6px 0;background:#fff!important} .kicker{display:none} .section h2{font-size:14px;margin:6px 0 4px}
+      .hl{grid-template-columns:1fr 1fr;gap:2px 18px;margin:4px 0 0} .hl li{font-size:10px;padding-left:12px} .hl li::before{top:5px;width:5px;height:5px}
+      .legend{font-size:9px;margin:2px 0 0}
+      .spec-grid{grid-template-columns:1fr 1fr;gap:0 14px} .spec-group{margin:8px 0 0;break-inside:avoid} .spec-group h3{font-size:9px;margin:0 0 3px}
+      .spec-tbl,.pin-tbl{break-inside:avoid;border-radius:4px} .spec-tbl th,.spec-tbl td{padding:3px 6px;font-size:9px;line-height:1.35} .sub{font-size:8.5px;margin-top:1px}
+      .tag{font-size:7.5px;padding:0 4px}
+      .pin-tbl{max-width:none;margin:4px 0 0} .pin-tbl th,.pin-tbl td{padding:2px 6px;font-size:9px} .note{font-size:9px;margin:4px 0 0}
+      .disclaimer{font-size:8.5px;margin:6px 0 0;padding-top:4px}
+      #pinout{break-before:auto}
+    }
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#specs">Skip to specifications</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" title="All HW Designs boards">
+        <img src="../../assets/logo-white.svg" alt="HW Designs" class="logo" width="95" height="34" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <span class="brand-fallback" hidden>HW&nbsp;Designs</span>
+        <span class="brand-docs">SPECS</span>
+      </a>
+      <nav class="site-nav" aria-label="Spec sheet sections">
+        <a href="#highlights">Highlights</a>
+        <a href="#specs">Specifications</a>
+        <a href="#pinout">Pinout</a>
+        <a href="#downloads">Downloads</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="crumb"><a href="../../">Docs</a> &rsaquo; <a href="../">Crescent City</a> &rsaquo; Spec sheet</p>
+      <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Spec sheet &middot; preliminary</p>
+      <h1>Crescent City &mdash; V2.0</h1>
+      <p class="lede">An ESP32&#8209;S3 Wi&#8209;Fi and Bluetooth LE development board with a built-in 0.96&Prime; OLED, USB&#8209;C, and protected single-cell battery charging. Breadboard-friendly, fully documented, and running out of the box.</p>
+      <div class="meta-row">
+        <span class="chip"><b>Board</b> V2.0 &middot; EE2026003B</span>
+        <span class="chip"><b>Status</b> Preliminary</span>
+        <span class="chip"><b>Updated</b> October 6, 2026</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-light" href="javascript:window.print()">Print / save as PDF</a>
+        <a class="btn btn-ghost" href="../">Board docs</a>
+        <a class="btn btn-ghost" href="../dvt/">DVT report</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="highlights" class="section">
+      <div class="wrap">
+        <p class="kicker">Highlights</p>
+        <h2>What you get</h2>
+        <ul class="hl">
+          <li>ESP32&#8209;S3, dual-core 240&nbsp;MHz, 8&nbsp;MB flash, Wi&#8209;Fi 4 and Bluetooth 5 LE</li>
+          <li>0.96&Prime; 128&times;64 OLED built in &mdash; no wiring, working out of the box</li>
+          <li>Complete battery power: USB&#8209;C charging, cell protection, automatic USB/battery switching and battery monitoring</li>
+          <li>Qwiic / STEMMA&nbsp;QT connector plus 12 GPIO on breadboard-friendly headers</li>
+          <li>Ships with an open-source Weather Clock; Arduino and ESPHome / Home Assistant ready</li>
+          <li>Published schematic, 3D model and a 122-test validation report</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="specs" class="section">
+      <div class="wrap">
+        <p class="kicker">Specifications</p>
+        <h2>Specifications</h2>
+        <p class="legend"><span class="tag tag-m" style="margin-left:0">measured V1.0</span> bench measurement on the V1.0 prototypes (see the <a href="../dvt/">DVT report</a>). <span class="tag tag-t">V2.0 target</span> design value, confirmed during V2.0 testing (Nov&ndash;Dec 2026). All other values are from the design.</p>
+        <div class="spec-grid">
+          <div class="spec-group">
+            <h3>Processor &amp; wireless</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Module</th><td>ESP32&#8209;S3&#8209;WROOM&#8209;1&#8209;N8 with on-module PCB antenna</td></tr>
+            <tr><th>Processor</th><td>Dual-core Xtensa LX7, up to 240&nbsp;MHz</td></tr>
+            <tr><th>Memory</th><td>512&nbsp;KB SRAM &middot; 8&nbsp;MB flash &middot; no PSRAM</td></tr>
+            <tr><th>Wi&#8209;Fi</th><td>802.11 b/g/n (Wi&#8209;Fi 4), 2.4&nbsp;GHz</td></tr>
+            <tr><th>Bluetooth</th><td>Bluetooth 5 (LE)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Display</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Type</th><td>0.96&Prime; white monochrome OLED, 128&nbsp;&times;&nbsp;64 pixels</td></tr>
+            <tr><th>Controller</th><td>SSD1306, 4-wire SPI on dedicated pins (not shared with the headers)</td></tr>
+            <tr><th>Display pins</th><td>CS GPIO10 &middot; DC GPIO9 &middot; SCLK GPIO12 &middot; MOSI GPIO11 &middot; RESET GPIO14</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>USB &amp; programming</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Connector</th><td>USB&#8209;C, USB 2.0 full speed (native ESP32&#8209;S3 USB)</td></tr>
+            <tr><th>Used for</th><td>Power, charging, programming, serial console and debugging. No driver needed on Windows&nbsp;10/11, macOS or Linux.</td></tr>
+            <tr><th>Compatibility</th><td>Works with USB&#8209;C chargers and C&#8209;to&#8209;C cables; ESD protection on the data lines</td></tr>
+            <tr><th>Buttons</th><td>BOOT (GPIO0, also usable as a user button) and EN (reset)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Power &amp; battery</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Power input</th><td>5&nbsp;V from USB&#8209;C, or the 5V_IN header pin (input only, with a 0.5&nbsp;A resettable fuse and a blocking diode)</td></tr>
+            <tr><th>Battery</th><td>Single-cell 3.7&nbsp;V Li&#8209;ion / LiPo, JST&#8209;PH 2.0&nbsp;mm connector, polarity marked. 600&nbsp;mAh or larger recommended.</td></tr>
+            <tr><th>Charging</th><td>&asymp;300&nbsp;mA constant current to 4.20&nbsp;V, then tapers and stops at &asymp;7.5% of the charge current <span class="tag tag-t">V2.0 target</span><br><span class="sub">V1.0: 201&nbsp;mA, 4.19&nbsp;V, stopped at 7.6% <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Charge time</th><td>To be measured on V2.0<br><span class="sub">V1.0 at 200&nbsp;mA: about 5&nbsp;h per 1000&nbsp;mAh (estimate for a directly connected cell)</span></td></tr>
+            <tr><th>Battery protection</th><td>Over-charge, over-discharge (cuts off at &asymp;2.4&nbsp;V), over-current / short circuit, reverse battery polarity</td></tr>
+            <tr><th>Power switching</th><td>Automatic: runs from USB when plugged in (battery isolated), switches to the battery when USB is removed</td></tr>
+            <tr><th>3.3&nbsp;V regulator</th><td>Low-dropout regulator, 600&nbsp;mA</td></tr>
+            <tr><th>Monitoring</th><td>Battery voltage on GPIO4 and USB voltage on GPIO2, each through a &frac12; divider (ADC1)</td></tr>
+            <tr><th>Low-battery shutdown</th><td>The Weather Clock and ESPHome firmware shut down cleanly before the 3.3&nbsp;V rail sags, and wake when USB is plugged in <span class="tag tag-t">V2.0 target</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Power consumption (typical, 3.8&nbsp;V battery)</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Weather Clock, Wi&#8209;Fi on</th><td>&asymp;70&nbsp;mA &mdash; about 14&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></td></tr>
+            <tr><th>Wi&#8209;Fi transmit peaks</th><td>Up to &asymp;400&nbsp;mA for microseconds <span class="tag tag-m">measured V1.0</span></td></tr>
+            <tr><th>Deep sleep</th><td>&asymp;0.3&nbsp;mA <span class="tag tag-t">V2.0 target</span><br><span class="sub">V1.0: 0.88&nbsp;mA <span class="tag tag-m">measured V1.0</span>; V2.0 lowers the power-LED current</span></td></tr>
+            <tr><th>After protection cutoff</th><td>&asymp;1&nbsp;&micro;A <span class="tag tag-m">measured V1.0</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>I/O &amp; expansion</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Header pins</th><td>2&nbsp;&times;&nbsp;12, 0.1&Prime; (2.54&nbsp;mm) pitch, rows 0.9&Prime; (22.86&nbsp;mm) apart &mdash; fits a standard breadboard</td></tr>
+            <tr><th>GPIO on headers</th><td>12: GPIO 1, 5, 6, 7, 13, 15, 16, 21, 35, 36, 37, 39</td></tr>
+            <tr><th>Analog inputs</th><td>GPIO 1, 5, 6, 7 (ADC1, usable with Wi&#8209;Fi on); GPIO 13, 15, 16 (ADC2)</td></tr>
+            <tr><th>Serial</th><td>UART0 on the header (pins marked TX and RX), 3.3&nbsp;V logic</td></tr>
+            <tr><th>Qwiic / STEMMA&nbsp;QT</th><td>JST&#8209;SH 4-pin, I&sup2;C on GPIO8 (SDA) and GPIO18 (SCL), 3.3&nbsp;V, 4.7&nbsp;k&Omega; pull-ups</td></tr>
+            <tr><th>Power pins</th><td>3V3 &times;4 &middot; GND &times;6 &middot; 5V_IN &times;1 (input only)</td></tr>
+            <tr><th>Logic level</th><td>3.3&nbsp;V. GPIO are not 5&nbsp;V tolerant.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>LEDs</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>RGB status LED</th><td>Addressable SK6812 on GPIO48</td></tr>
+            <tr><th>CHG</th><td>Yellow, on while charging</td></tr>
+            <tr><th>SYS ON</th><td>Green, on when the 3.3&nbsp;V rail is up</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Mechanical</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Board size</th><td>70.1&nbsp;&times;&nbsp;25.4&nbsp;mm (2.76&Prime;&nbsp;&times;&nbsp;1.00&Prime;); &asymp;76.4&nbsp;mm including the antenna overhang</td></tr>
+            <tr><th>Height</th><td>13&nbsp;mm overall, with the display fitted</td></tr>
+            <tr><th>Weight</th><td>14&nbsp;g</td></tr>
+            <tr><th>Mounting holes</th><td>None &mdash; mount by the header pins or in a breadboard</td></tr>
+            <tr><th>PCB</th><td>4-layer</td></tr>
+            <tr><th>3D model</th><td><a href="../docs/3D.step">STEP file</a> for enclosure design</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Software</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Ships with</th><td>Weather Clock: local time and weather over Wi&#8209;Fi, with Wi&#8209;Fi setup from your phone. Open source (MIT license).</td></tr>
+            <tr><th>Arduino</th><td>&ldquo;esp32 by Espressif Systems&rdquo; board package, board &ldquo;ESP32S3 Dev Module&rdquo;</td></tr>
+            <tr><th>ESPHome / Home Assistant</th><td>Ready-made configuration: clock and status pages, battery level, Qwiic sensor, RGB LED, updates over Wi&#8209;Fi (in testing)</td></tr>
+            <tr><th>Other</th><td>ESP&#8209;IDF, MicroPython and CircuitPython should work with their generic ESP32&#8209;S3 builds (not yet tested by us)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="spec-group">
+            <h3>Environment &amp; compliance</h3>
+            <table class="spec-tbl">
+              <tbody>
+            <tr><th>Operating temperature</th><td>&minus;40 to +85&nbsp;&deg;C (ESP32&#8209;S3 module rating). With a battery fitted, stay within the battery&rsquo;s own limits.</td></tr>
+            <tr><th>Charging temperature</th><td>0 to 45&nbsp;&deg;C (battery limit; the charger has no temperature sensor)</td></tr>
+            <tr><th>Certification</th><td>FCC / ISED testing is planned before shipping. The ESP32&#8209;S3 module itself is pre-certified.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pinout" class="section">
+      <div class="wrap">
+        <p class="kicker">Pinout</p>
+        <h2>Header pins</h2>
+        <table class="pin-tbl">
+          <thead><tr><th>Pin</th><th>J4 (bottom row)</th><th>J5 (top row)</th></tr></thead>
+          <tbody>
+            <tr><td class="pn">1</td><td>GND</td><td>GND</td></tr>
+            <tr><td class="pn">2</td><td>3V3</td><td>3V3</td></tr>
+            <tr><td class="pn">3</td><td>GPIO5</td><td>GPIO1</td></tr>
+            <tr><td class="pn">4</td><td>GPIO6</td><td>GPIO13</td></tr>
+            <tr><td class="pn">5</td><td>GPIO7</td><td>GPIO39</td></tr>
+            <tr><td class="pn">6</td><td>GPIO15</td><td>GND</td></tr>
+            <tr><td class="pn">7</td><td>GPIO16</td><td>GPIO37</td></tr>
+            <tr><td class="pn">8</td><td>GND</td><td>GPIO36</td></tr>
+            <tr><td class="pn">9</td><td>TX (UART0)</td><td>GPIO35</td></tr>
+            <tr><td class="pn">10</td><td>RX (UART0)</td><td>GPIO21</td></tr>
+            <tr><td class="pn">11</td><td>GND</td><td>GND</td></tr>
+            <tr><td class="pn">12</td><td>3V3</td><td>5V_IN (input only)</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Qwiic connector: GND, 3V3, SDA (GPIO8), SCL (GPIO18). Pin names are printed on both sides of the board. The full diagram with every alternate function is in the <a href="../docs/pinout.pdf">pinout PDF</a>.</p>
+      </div>
+    </section>
+
+    <section id="downloads" class="section">
+      <div class="wrap">
+        <p class="kicker">Downloads</p>
+        <h2>Documents</h2>
+        <ul class="feat">
+          <li><a href="../docs/schematic.pdf">Schematic</a> (V2.0)</li>
+          <li><a href="../docs/pinout.pdf">Pinout diagram</a> and <a href="../docs/user-guide.pdf">user guide</a></li>
+          <li><a href="../docs/3D.step">3D model</a> (STEP)</li>
+          <li><a href="../docs/spec-sheet.pdf">This spec sheet as a PDF</a></li>
+          <li><a href="../dvt/">DVT report</a> with the battery discharge and charge results</li>
+          <li>Battery test data (CSV, 10-second averages): <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a></li>
+          <li><a href="https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf">ESP32&#8209;S3&#8209;WROOM&#8209;1 module datasheet</a> (Espressif)</li>
+        </ul>
+        <p class="disclaimer">Preliminary specifications for Crescent City V2.0. Values may change before production. Questions: <a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>&copy; 2026 HW DESIGNS LLC &middot; Spec sheet, updated October 6, 2026</span>
+      <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
+    </div>
+  </footer>
+  <script src="../../assets/site.js" defer></script>
+  <!-- Cloudflare Web Analytics (cookieless; see https://hwdesigns.us/privacy/) --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "139cc9ab586844b68c1e6253bc8a0aa7"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
