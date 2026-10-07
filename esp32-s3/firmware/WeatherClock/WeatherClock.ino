@@ -1,5 +1,5 @@
 /*
- * The Crescent City — Weather Clock (the firmware the board ships with)
+ * Crescent City — Weather Clock (the firmware the board ships with)
  * ============================================================================
  * A self-contained WiFi weather clock for the HW Designs ESP32-S3 board.
  * It shows outdoor conditions (Open-Meteo, no API key required), an indoor

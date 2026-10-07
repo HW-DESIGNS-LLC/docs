@@ -1,4 +1,4 @@
-# The Crescent City Rev A - full battery charge from empty (5 Oct 2026)
+# Crescent City Rev A - full battery charge from empty (5 Oct 2026)
 # USB-C charging of a single 18650 cell from the protection cutoff to end of charge.
 # 10 s averages of 1 s samples. hours = time on charger; current_mA = charge current into the cell;
 # cell_V = cell terminal voltage. Test-bench wiring added about 1 ohm in series (see the DVT report).

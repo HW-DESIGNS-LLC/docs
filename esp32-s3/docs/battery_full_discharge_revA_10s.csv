@@ -1,4 +1,4 @@
-# The Crescent City Rev A - full battery discharge (Run 0, 3-5 Oct 2026)
+# Crescent City Rev A - full battery discharge (Run 0, 3-5 Oct 2026)
 # Weather-clock firmware (Wi-Fi + display), single 18650 cell from 4.06 V to protection cutoff.
 # 10 s averages of 1 s samples. hours = time on battery; current_mA = battery current;
 # cell_V = cell terminal voltage (under load); rail_3V3_V = regulated 3.3 V rail.

@@ -1,5 +1,5 @@
 # =============================================================================
-#  The Crescent City (HWD-ESP32-OLED-01) - ESPHome configuration
+#  Crescent City (HWD-ESP32-OLED-01) - ESPHome configuration
 #  ESP32-S3 dev board with a built-in 0.96" OLED and protected LiPo power
 #  Docs: https://docs.hwdesigns.us/esp32-s3/esphome/
 #
@@ -48,7 +48,7 @@ esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: true
-  comment: "The Crescent City ESP32-S3 OLED board"
+  comment: "Crescent City ESP32-S3 OLED board"
   project:
     name: hwdesigns.crescent-city
     version: "1.0.0"

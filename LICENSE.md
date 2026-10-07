@@ -27,5 +27,5 @@ copies of the board. Copyright (c) 2026 HW DESIGNS LLC. All rights reserved.
 
 ## Names and logos
 
-"HW DESIGNS", the HW DESIGNS logo and "The Crescent City" product name are not
+"HW DESIGNS", the HW DESIGNS logo and "Crescent City" product name are not
 covered by any of the licenses above.
