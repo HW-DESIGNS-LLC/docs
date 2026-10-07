@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  ESPHome / Home Assistant page for the ESP32-S3 OLED board (Crescent City).
+  Web installer: firmware/manifest.json -> firmware/crescent-city-esphome.factory.bin,
+  built unchanged from esp32-s3/firmware/esphome/crescent-city.yaml (version = esphome: project: version).
+  Styling comes from the shared ../../assets/site.css; page-only bits are in <style> below.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESPHome &amp; Home Assistant — Crescent City · HW Designs</title>
+  <meta name="description" content="Run the Crescent City ESP32-S3 OLED board as a Home Assistant device with ESPHome: one-click install from the browser, indoor climate, battery level, USB power, the BOOT button and the RGB LED.">
+  <meta property="og:title" content="ESPHome &amp; Home Assistant — Crescent City">
+  <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/esphome/">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#111111">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    .hero-oled{justify-self:center;margin:0;background:#0B0B0B;border-radius:16px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.55);width:100%;max-width:300px}
+    .hero-oled svg{display:block;width:100%;height:auto}
+    .hero-oled figcaption{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;text-align:center}
+    esp-web-install-button:not(:defined) [slot="unsupported"],esp-web-install-button:not(:defined) [slot="not-allowed"]{display:none}
+    esp-web-install-button [slot="unsupported"],esp-web-install-button [slot="not-allowed"]{display:block;color:var(--dim);font-size:15px;max-width:46ch;margin:0 0 6px}
+    .opt{display:inline-block;font-family:var(--head);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink);margin:34px 0 10px}
+    .opt:first-of-type{margin-top:26px}
+    .oled-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .oled{margin:0}
+    .oled svg{display:block;width:100%;height:auto;border-radius:10px}
+    .oled figcaption{font-size:14px;color:#5C5A55;margin-top:8px}
+    .ent td:first-child{font-weight:700;white-space:nowrap}
+    .ent td{font-size:15px;color:var(--soft)}
+    .ent td:first-child{color:var(--ink)}
+    .swatch{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+    @media (max-width:760px){.oled-row{grid-template-columns:1fr}.ent td:first-child{white-space:normal}}
+  </style>
+</head>
+<body id="top">
+  <a class="skip" href="#install">Skip to install</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../" title="All HW Designs boards">
+        <img src="../../assets/logo-white.svg" alt="HW Designs" class="logo" width="95" height="34" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <span class="brand-fallback" hidden>HW&nbsp;Designs</span>
+        <span class="brand-docs">Docs</span>
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="../">Board docs</a>
+        <a href="#install">Install</a>
+        <a href="#entities">What you get</a>
+        <a href="#battery">Battery</a>
+        <a href="#customize">Customize</a>
+        <a href="#help">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>ESPHome &middot; Home Assistant</p>
+        <h1>Your board in Home Assistant</h1>
+        <p class="lede">Install ESPHome from this page and Crescent City becomes a Home Assistant device: indoor temperature and humidity, battery level, USB power, the BOOT button and the RGB LED all show up as entities &mdash; while the OLED keeps showing the time, the temperature inside and out, and the battery.</p>
+        <div class="cta-row">
+          <esp-web-install-button manifest="firmware/manifest.json">
+            <button slot="activate" class="btn btn-light">Install ESPHome</button>
+            <span slot="unsupported">Installing from this page needs Chrome or Edge on a computer. You can still use the ESPHome Builder steps below.</span>
+            <span slot="not-allowed">Installing needs a secure (https) connection to this page.</span>
+          </esp-web-install-button>
+          <a class="btn btn-ghost" href="https://github.com/HW-DESIGNS-LLC/docs/blob/main/esp32-s3/firmware/esphome/crescent-city.yaml" target="_blank" rel="noopener">View the YAML&nbsp;&#8599;</a>
+        </div>
+        <p class="quickfacts">ESPHome 2026.9+ &middot; Home Assistant &middot; board V1.0 and V2.0</p>
+      </div>
+      <figure class="hero-oled">
+        <svg viewBox="0 0 128 64" role="img" aria-label="OLED clock page: 14:32, Sun 04 Oct, indoor 74 degrees F and 47 percent, outdoor 81 degrees F, battery three bars">
+          <rect width="128" height="64" fill="#000"/>
+          <g fill="#DDE8FF" stroke="none" font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+            <text x="0" y="19" font-size="21" font-weight="700">14:32</text>
+            <text x="127" y="31" font-size="7" text-anchor="end" font-family="ui-monospace,Menlo,Consolas,monospace">Sun 04 Oct</text>
+            <text x="0" y="42" font-size="6.4" font-family="ui-monospace,Menlo,Consolas,monospace">INDOOR</text>
+            <text x="127" y="42" font-size="6.4" text-anchor="end" font-family="ui-monospace,Menlo,Consolas,monospace">OUTDOOR</text>
+            <text x="0" y="63" font-size="15" font-weight="600">74°F</text>
+            <text x="52" y="63" font-size="7" font-family="ui-monospace,Menlo,Consolas,monospace">47%</text>
+            <text x="127" y="63" font-size="15" font-weight="600" text-anchor="end">81°F</text>
+            <rect x="106.5" y="2.5" width="19" height="9" fill="none" stroke="#DDE8FF"/>
+            <rect x="126" y="5" width="2" height="4"/>
+            <rect x="108" y="4" width="3" height="6"/><rect x="112" y="4" width="3" height="6"/><rect x="116" y="4" width="3" height="6"/>
+          </g>
+        </svg>
+        <figcaption>Clock page &middot; press BOOT for status</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <main>
+    <!-- ── Install ─────────────────────────────────────────────────────── -->
+    <section id="install" class="section">
+      <div class="wrap">
+        <p class="kicker">Install</p>
+        <h2>Two ways to get ESPHome on the board</h2>
+        <p class="section-intro">New to ESPHome? Use option&nbsp;A &mdash; it takes about two minutes and needs nothing but a browser. Already run ESPHome Builder? Option&nbsp;B adds the board like any other device.</p>
+
+        <span class="opt">Option A &middot; From this page</span>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-no" aria-hidden="true">1</span>
+            <div>
+              <h3>Connect the board</h3>
+              <p>Plug the board into your computer with a data-capable USB&#8209;C cable. Open this page in Chrome or Edge.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-no" aria-hidden="true">2</span>
+            <div>
+              <h3>Click <em>Install ESPHome</em></h3>
+              <p>Pick the board&rsquo;s USB port in the list, confirm, and leave the box ticked to erase the board on a first install. Installing takes about a minute.</p>
+              <p class="hint">This replaces the weather clock. You can put the weather clock back at any time &mdash; see <a href="#help">Help</a>.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-no" aria-hidden="true">3</span>
+            <div>
+              <h3>Connect it to your Wi&#8209;Fi</h3>
+              <p>When the install finishes, choose <strong>Connect to Wi&#8209;Fi</strong> and enter your network and password.</p>
+              <p class="hint">No computer at hand later? With no saved network the board opens a setup hotspot called <code>Crescent City</code>. Join it from your phone and pick your network on the page that opens. Use a 2.4&nbsp;GHz network.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-no" aria-hidden="true">4</span>
+            <div>
+              <h3>Add it in Home Assistant</h3>
+              <p>Home Assistant finds the board by itself: go to <strong>Settings &rarr; Devices &amp; services</strong>, look for <em>Crescent City</em> under <em>Discovered</em> and click <strong>Add</strong>. The clock on the OLED starts as soon as Home Assistant is connected.</p>
+              <p class="hint">Not listed after a minute? Click <strong>Add integration</strong>, choose <strong>ESPHome</strong> and enter the IP address from the board&rsquo;s status page (press BOOT). Leave the port at 6053.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-no" aria-hidden="true">5</span>
+            <div>
+              <h3>Optional: take it over in ESPHome Builder</h3>
+              <p>To change the configuration or update over Wi&#8209;Fi, open ESPHome Builder: the board appears as <em>Discovered</em>. Click <strong>Adopt</strong>, then <strong>Install</strong>. Builder keeps your copy linked to the published configuration.</p>
+            </div>
+          </li>
+        </ol>
+
+        <span class="opt">Option B &middot; ESPHome Builder</span>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-no" aria-hidden="true">1</span>
+            <div>
+              <h3>Create the device</h3>
+              <p>In ESPHome Builder click <strong>New device</strong>, give it a name, choose <strong>ESP32&#8209;S3</strong>, and skip the first install. Open <strong>Edit</strong> and replace everything except the <code>api:</code> block with:</p>
+<pre><code>substitutions:
+  name: crescent-city
+  friendly_name: Crescent City
+
+packages:
+  hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/esp32-s3/firmware/esphome/crescent-city.yaml@main
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password</code></pre>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-no" aria-hidden="true">2</span>
+            <div>
+              <h3>Install over USB the first time</h3>
+              <p>Click <strong>Install</strong> and choose the USB option. After that, updates go over Wi&#8209;Fi. Then add the device in Home Assistant as in option&nbsp;A, step&nbsp;4.</p>
+              <p class="hint">If the port doesn&rsquo;t appear, hold the <strong>BOOT</strong> button while plugging the board in.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── What you get ─────────────────────────────────────────────────── -->
+    <section id="entities" class="section">
+      <div class="wrap">
+        <p class="kicker">What you get</p>
+        <h2>Entities in Home Assistant</h2>
+        <p class="section-intro">Everything the board can sense or show, ready for dashboards and automations.</p>
+        <table class="dl-table ent">
+          <thead><tr><th>Entity</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Indoor temperature, Indoor humidity</td><td>From a Qwiic SHT4x sensor on the side connector, every 30&nbsp;s. Plug the sensor in before powering up.</td></tr>
+            <tr><td>Battery voltage</td><td>Voltage at the battery connector, a 30&#8209;second median reported every 30&nbsp;s. With no battery connected it shows the charger output, about 4.1&nbsp;V.</td></tr>
+            <tr><td>Battery level</td><td>Charge in % from the battery voltage. Reads high while USB is plugged in and charging.</td></tr>
+            <tr><td>Battery low</td><td>Turns on when the battery needs charging &mdash; a ready-made trigger for a phone notification.</td></tr>
+            <tr><td>USB power</td><td>On while the board is powered from USB&#8209;C.</td></tr>
+            <tr><td>BOOT button</td><td>On while the button is pressed. Each press also switches the OLED between the clock and status pages.</td></tr>
+            <tr><td>RGB LED</td><td>A colour light you can control. Turn the <em>Status LED</em> switch off first so the board doesn&rsquo;t use it for status.</td></tr>
+            <tr><td>Status LED (switch)</td><td>Lets the RGB LED show connection and battery status (below).</td></tr>
+            <tr><td>Low-battery shutdown (switch)</td><td>On by default. See <a href="#battery">Battery</a>.</td></tr>
+            <tr><td>Wi&#8209;Fi signal, IP address, Uptime</td><td>Diagnostics.</td></tr>
+            <tr><td>Restart, Factory reset</td><td>Buttons. Factory reset is hidden by default; it clears saved Wi&#8209;Fi and settings.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin:40px 0 6px">On the OLED</h3>
+        <div class="diagram-frame">
+          <div class="oled-row">
+            <figure class="oled">
+              <svg viewBox="0 0 128 64" role="img" aria-label="Clock page">
+                <rect width="128" height="64" fill="#000"/>
+                <g fill="#DDE8FF" font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+                  <text x="0" y="19" font-size="21" font-weight="700">14:32</text>
+                  <text x="127" y="31" font-size="7" text-anchor="end" font-family="ui-monospace,Menlo,Consolas,monospace">Sun 04 Oct</text>
+                  <text x="0" y="42" font-size="6.4" font-family="ui-monospace,Menlo,Consolas,monospace">INDOOR</text>
+                  <text x="127" y="42" font-size="6.4" text-anchor="end" font-family="ui-monospace,Menlo,Consolas,monospace">OUTDOOR</text>
+                  <text x="0" y="63" font-size="15" font-weight="600">74°F</text>
+                  <text x="52" y="63" font-size="7" font-family="ui-monospace,Menlo,Consolas,monospace">47%</text>
+                  <text x="127" y="63" font-size="15" font-weight="600" text-anchor="end">81°F</text>
+                  <rect x="106.5" y="2.5" width="19" height="9" fill="none" stroke="#DDE8FF"/>
+                  <rect x="126" y="5" width="2" height="4"/>
+                  <rect x="108" y="4" width="3" height="6"/><rect x="112" y="4" width="3" height="6"/><rect x="116" y="4" width="3" height="6"/>
+                </g>
+              </svg>
+              <figcaption><b>Clock.</b> Time from Home Assistant, indoor temperature and humidity, outdoor temperature from your Home Assistant weather.</figcaption>
+            </figure>
+            <figure class="oled">
+              <svg viewBox="0 0 128 64" role="img" aria-label="Status page">
+                <rect width="128" height="64" fill="#000"/>
+                <g fill="#DDE8FF" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="7">
+                  <text x="0" y="9">STATUS</text>
+                  <text x="0" y="19">WiFi -61 dBm</text>
+                  <text x="0" y="29">192.168.1.42</text>
+                  <text x="0" y="39">HA connected</text>
+                  <text x="0" y="49">Batt 3.92 V 72%</text>
+                  <text x="0" y="60">On battery</text>
+                  <rect x="106.5" y="2.5" width="19" height="9" fill="none" stroke="#DDE8FF"/>
+                  <rect x="126" y="5" width="2" height="4"/>
+                  <rect x="108" y="4" width="3" height="6"/><rect x="112" y="4" width="3" height="6"/><rect x="116" y="4" width="3" height="6"/>
+                </g>
+              </svg>
+              <figcaption><b>Status.</b> Press BOOT to switch. Shows the setup hotspot name when Wi&#8209;Fi isn&rsquo;t connected.</figcaption>
+            </figure>
+            <figure class="oled">
+              <svg viewBox="0 0 128 64" role="img" aria-label="Battery low screen">
+                <rect width="128" height="64" fill="#000"/>
+                <g fill="#DDE8FF" font-family="system-ui,-apple-system,'Segoe UI',sans-serif">
+                  <rect x="47.5" y="2.5" width="29" height="13" fill="none" stroke="#DDE8FF"/>
+                  <rect x="77" y="6" width="3" height="6"/>
+                  <text x="64" y="34" font-size="13" font-weight="700" text-anchor="middle">Battery low</text>
+                  <text x="64" y="50" font-size="8" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">charge me</text>
+                  <text x="64" y="62" font-size="7" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace">3.27 V</text>
+                </g>
+              </svg>
+              <figcaption><b>Battery low.</b> Shown for 10&nbsp;s before the board goes to sleep.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <h3 style="margin:40px 0 10px">Status LED</h3>
+        <table class="settings">
+          <tr><th><span class="swatch" style="background:#E5484D"></span>Red blink</th><td>Battery low &mdash; plug in USB</td></tr>
+          <tr><th><span class="swatch" style="background:#3B82F6"></span>Blue blink</th><td>Not on Wi&#8209;Fi yet, or the setup hotspot is open</td></tr>
+          <tr><th><span class="swatch" style="background:#F59E0B"></span>Amber</th><td>On Wi&#8209;Fi, waiting for Home Assistant</td></tr>
+          <tr><th><span class="swatch" style="background:transparent;border:1px solid var(--line)"></span>Off</th><td>All good</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Battery ──────────────────────────────────────────────────────── -->
+    <section id="battery" class="section">
+      <div class="wrap">
+        <p class="kicker">Battery</p>
+        <h2>Runs on a LiPo, and knows when to stop</h2>
+        <p class="section-intro">On battery, the board watches its own supply and shuts down cleanly before the battery runs flat. While USB is plugged in, none of this applies.</p>
+        <div class="notes">
+          <div class="note">
+            <h4>Nearly empty</h4>
+            <p>Below 3.45&nbsp;V the battery icon blinks with <strong>LOW</strong>, the status LED blinks red, and <em>Battery low</em> turns on in Home Assistant.</p>
+          </div>
+          <div class="note">
+            <h4>Empty</h4>
+            <p>Below 3.30&nbsp;V the OLED shows <strong>Battery low &mdash; charge me</strong> for 10&nbsp;seconds. Then Wi&#8209;Fi, the LED and the screen switch off and the board sleeps.</p>
+          </div>
+          <div class="note">
+            <h4>Back on</h4>
+            <p>Plug in USB&#8209;C: the board wakes, starts normally and charges. Pressing <strong>RESET</strong> on a still-empty battery just shows the message again.</p>
+          </div>
+        </div>
+        <p class="table-note">The decision uses a 30&#8209;second median, so a short dip during a Wi&#8209;Fi burst can&rsquo;t trigger it. The same thresholds are used by the weather clock firmware. Turning the <em>Low-battery shutdown</em> switch off disables the warning and the shutdown &mdash; not recommended on a battery.</p>
+        <!-- TODO after Rev B DVT: add the measured sleep current and how long a 600 / 1000 mAh battery lasts asleep -->
+      </div>
+    </section>
+
+    <!-- ── Customize ────────────────────────────────────────────────────── -->
+    <section id="customize" class="section">
+      <div class="wrap">
+        <p class="kicker">Customize</p>
+        <h2>Make it yours</h2>
+        <p class="section-intro">After adopting the board in ESPHome Builder, change any of these by adding a <code>substitutions:</code> block to your copy of the configuration, then install.</p>
+        <table class="settings">
+          <tr><th>temp_unit</th><td>"F" or "C" &mdash; OLED only; match your Home Assistant unit setting</td></tr>
+          <tr><th>outdoor_weather_entity</th><td>weather.forecast_home &mdash; the weather entity for the outdoor temperature</td></tr>
+          <tr><th>friendly_name</th><td>Crescent City &mdash; the device name in Home Assistant</td></tr>
+          <tr><th>vbat_warn / vbat_cutoff</th><td>3.45 / 3.30 &mdash; battery thresholds in volts (advanced)</td></tr>
+        </table>
+<pre><code>substitutions:
+  temp_unit: "C"
+  outdoor_weather_entity: weather.home</code></pre>
+        <p class="hint">Free header pins for your own sensors and outputs: GPIO&nbsp;1, 5, 6, 7, 13, 15, 16, 21, 35, 36, 37 and 39 &mdash; see the <a href="../docs/pinout.pdf">pinout</a>. The Qwiic port takes more I&sup2;C sensors on the same bus.</p>
+      </div>
+    </section>
+
+    <!-- ── Help ─────────────────────────────────────────────────────────── -->
+    <section id="help" class="section">
+      <div class="wrap">
+        <p class="kicker">Help</p>
+        <h2>Common questions</h2>
+        <div class="faq">
+          <details>
+            <summary>The Install button doesn&rsquo;t find the board</summary>
+            <p>Use a data-capable USB&#8209;C cable and Chrome or Edge on a computer. If the port still doesn&rsquo;t appear, hold the <strong>BOOT</strong> button while plugging the board in, release it, and click Install again.</p>
+          </details>
+          <details>
+            <summary>The clock shows --:--</summary>
+            <p>The board takes the time and time zone from Home Assistant. It appears once the device is added in Home Assistant (status page: <em>HA connected</em>).</p>
+          </details>
+          <details>
+            <summary>Outdoor temperature shows --</summary>
+            <p>The board reads the temperature of <code>weather.forecast_home</code>, the weather entity Home Assistant creates for your home. If yours has a different name, set <code>outdoor_weather_entity</code> (see <a href="#customize">Customize</a>).</p>
+          </details>
+          <details>
+            <summary>Indoor temperature is unavailable</summary>
+            <p>Plug a Qwiic SHT4x sensor into the side connector and restart the board &mdash; ESPHome looks for the sensor at power-up.</p>
+          </details>
+          <details>
+            <summary>How do I get the weather clock back?</summary>
+            <p>Upload the weather clock sketch from the Arduino IDE, as in the <a href="../#start">getting-started guide</a>. Its source is in the <a href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">firmware folder</a>.</p>
+          </details>
+          <details>
+            <summary>Does it need Home Assistant?</summary>
+            <p>For the clock and the outdoor temperature, yes. Everything else &mdash; sensors, battery, the setup hotspot &mdash; works on the board itself, and ESPHome devices can also be used without Home Assistant.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>&copy; 2026 HW DESIGNS LLC</span>
+      <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
+    </div>
+  </footer>
+  <script src="../../assets/site.js" defer></script>
+  <!-- Cloudflare Web Analytics (cookieless; see https://hwdesigns.us/privacy/) --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "139cc9ab586844b68c1e6253bc8a0aa7"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

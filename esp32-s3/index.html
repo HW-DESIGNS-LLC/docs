@@ -308,7 +308,7 @@ void loop() {
     <section id="examples" class="section">
       <div class="wrap">
         <p class="kicker">Example projects</p>
-        <h2>Three ways to start building</h2>
+        <h2>Four ways to start building</h2>
         <div class="grid-ex">
           <div class="card">
             <h3>Weather Clock</h3>
@@ -325,6 +325,11 @@ void loop() {
             <p>Read a Qwiic temperature &amp; humidity sensor, show it on the OLED, then deep&#8209;sleep between readings &mdash; the board&rsquo;s low sleep current is the key to running for days on a small LiPo.</p>
             <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware/BatteryLogger" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Home Assistant with ESPHome</h3>
+          <p>Make the board a Home Assistant device in a couple of minutes: install ESPHome straight from your browser, and indoor temperature and humidity, battery, USB power, the BOOT button and the RGB LED show up as entities while the OLED keeps showing the clock.</p>
+          <a class="btn-sm" href="esphome/">Set it up&nbsp;&rarr;</a>
         </div>
       </div>
     </section>
@@ -354,7 +359,7 @@ void loop() {
             </details>
             <details>
               <summary>Can I use something other than Arduino?</summary>
-              <p>Yes. It&rsquo;s a standard ESP32&#8209;S3 (8&nbsp;MB flash, no PSRAM), so ESP&#8209;IDF, MicroPython and CircuitPython should work with their generic ESP32&#8209;S3 builds &mdash; we haven&rsquo;t tested them yet. We test with Arduino and ESPHome; use the <a href="docs/pinout.pdf">pinout</a> for the display, LED and button pins.</p>
+              <p>Yes. It&rsquo;s a standard ESP32&#8209;S3 (8&nbsp;MB flash, no PSRAM), so ESP&#8209;IDF, MicroPython and CircuitPython should work with their generic ESP32&#8209;S3 builds &mdash; we haven&rsquo;t tested them yet. We test with Arduino and <a href="esphome/">ESPHome</a>; use the <a href="docs/pinout.pdf">pinout</a> for the display, LED and button pins.</p>
             </details>
           </div>
         </div>
