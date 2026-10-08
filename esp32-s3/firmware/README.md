@@ -7,7 +7,7 @@ page's "View source" buttons point here. All code here is MIT licensed (see
 | Folder | What it is | Status |
 |---|---|---|
 | [`WeatherClock/`](WeatherClock/) | The firmware the board ships with: Wi-Fi weather, clock, indoor temperature/humidity and battery gauge on the OLED, with low-battery protection | available |
-| [`esphome/`](esphome/) | ESPHome configuration for Home Assistant | available (testing) |
+| [`esphome/`](esphome/) | ESPHome configuration for Home Assistant | available |
 | [`QwiicSensor/`](QwiicSensor/) | Example: live readings and a 2-minute chart from a Qwiic SHT4x temperature/humidity sensor | available |
 | [`BatteryLogger/`](BatteryLogger/) | Example: battery-powered logger that sleeps between readings and keeps 24 h of data; BOOT shows the screen | available |
 
