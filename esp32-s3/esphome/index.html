@@ -192,7 +192,7 @@ wifi:
             <tr><td>Indoor temperature, Indoor humidity</td><td>From a Qwiic SHT4x sensor on the side connector, every 30&nbsp;s. Plug the sensor in before powering up.</td></tr>
             <tr><td>Battery voltage</td><td>Voltage at the battery connector, a 30&#8209;second median reported every 30&nbsp;s. With no battery connected it shows the charger output, about 4.1&nbsp;V.</td></tr>
             <tr><td>Battery level</td><td>Charge in % from the battery voltage. Reads high while USB is plugged in and charging.</td></tr>
-            <tr><td>Battery low</td><td>Turns on when the battery needs charging &mdash; a ready-made trigger for a phone notification.</td></tr>
+            <tr><td>Battery low</td><td>Turns on when the battery needs charging (below 3.45 V). You can use it in your own Home Assistant automations.</td></tr>
             <tr><td>USB power</td><td>On while the board is powered from USB&#8209;C.</td></tr>
             <tr><td>BOOT button</td><td>On while the button is pressed. Each press also switches the OLED between the clock and status pages.</td></tr>
             <tr><td>RGB LED</td><td>A colour light you can control. Turn the <em>Status LED</em> switch off first so the board doesn&rsquo;t use it for status.</td></tr>
