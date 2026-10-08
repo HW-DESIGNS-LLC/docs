@@ -5,6 +5,7 @@ point to these EXACT filenames - keep the names if you ever replace a file:
   user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev B, board V2.0)
   pinout.pdf        - printable pin reference diagram (PIN-01 Rev B, board V2.0)
   3D.step           - 3D model for enclosure/mechanical design (V2.0)
+  bom.csv           - bill of materials (V2.0): parts and manufacturer part numbers
 
 All four are uploaded. The pinout is also rendered as ../assets/pinout.png for
 the "Know your board" section of the board page - if pinout.pdf is ever

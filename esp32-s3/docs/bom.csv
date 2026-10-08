@@ -1,0 +1,41 @@
+﻿Item,Qty,Designators,Description,Value,Package,Manufacturer,Manufacturer part number
+1,5,"C1, C9, C13, C14, C15",Capacitor,100 nF,0402,YAGEO,CC0402KRX7R7BB104
+2,2,"C2, C12",Capacitor,10 µF,0603,YAGEO,CC0603MRX5R7BB106
+3,1,C3,Capacitor,47 µF,1206,Chinocera,HGC1206R5476M160NSPJ
+4,5,"C4, C5, C11, C16, C17",Capacitor,1 µF,0402,YAGEO,CC0402KRX5R7BB105
+5,1,C6,Capacitor,100 nF,0402,YAGEO,CC0402KRX5R9BB104
+6,1,C7,Capacitor,10 µF,0805,Samsung Electro-Mechanics,CL21A106KOQNNNE
+7,2,"C8, C10",Capacitor,4.7 µF,0402,Fenghua (FH),0402X475K160NT
+8,2,"C18, C19",Capacitor,1 µF,0402,YAGEO,CC0402KRX5R5BB105
+9,1,C20,Capacitor,4.7 µF,0603,YAGEO,CC0603KRX5R7BB475
+10,1,C21,Capacitor,2.2 µF,0603,YAGEO,CC0603KRX5R7BB225
+11,1,D1,USB ESD protection,,SOT-23-6,TECH PUBLIC,USBLC6-2SC6
+12,2,"D2, D3","Schottky diode, 40 V 3 A",,SMA,Hangyu,SS34
+13,1,F1,"Resettable fuse, 0.5 A",,1206,Littelfuse,1206L050YR
+14,1,FPC1,Display connector (flip-lock),,"30-pin 0.5 mm FPC, SMD",XUNPU,FPC-05FB-30PH20
+15,1,J1,USB-C receptacle,,"USB-C, SMD",Korea Hroparts Elec (HRO),TYPE-C-31-M-12
+16,1,J2,"Battery connector, JST PH",,"2-pin 2.0 mm, through-hole, side entry",JST,S2B-PH-K-S(LF)(SN)
+17,1,J3,"Qwiic / STEMMA QT connector, JST SH",,"4-pin 1.0 mm, SMD",JST,BM04B-SRSS-TB(LF)(SN)
+18,2,"J4, J5","Pin header, 12-pin",,"1x12, 2.54 mm, through-hole",XFCN,PZ254V-11-12P
+19,1,LED1,"CHG LED, yellow",,0603,YONGYUTAI,YLED0603Y
+20,1,LED2,"SYS ON LED, green",,0603,XINGLIGHT,XL-1608UGC-04
+21,1,Q1,P-channel MOSFET (power path),,SOT-23,FOSAN,AO3407
+22,1,Q2,Dual N-channel MOSFET (battery protection),,SOT-23-6,Fuxinsemi,FS8205A
+23,1,Q3,P-channel MOSFET (reverse battery protection),,SOT-23,FOSAN,AO3415
+24,1,R1,Resistor,100 Ω,0402,YAGEO,RT0402BRD07100RL
+25,1,R2,Resistor,1 kΩ,0402,YAGEO,RT0402BRD071KL
+26,2,"R3, R4",Resistor,5.1 kΩ,0402,YAGEO,RC0402FR-075K1L
+27,1,R5,Resistor,3.3 kΩ,0402,YAGEO,RC0402FR-073K3L
+28,1,R6,Resistor,470 Ω,0402,YAGEO,RC0402FR-07470RL
+29,3,"R7, R12, R34",Resistor,10 kΩ,0402,YAGEO,RT0402BRD0710KL
+30,5,"R8, R10, R11, R15, R16",Resistor,100 kΩ,0402,YAGEO,AC0402FR-07100KL
+31,2,"R9, R13",Resistor,4.7 kΩ,0402,YAGEO,AC0402FR-7W4K7L
+32,1,R14,Resistor,390 kΩ,0402,YAGEO,RC0402JR-07390KL
+33,2,"SW1, SW4","Tactile switch (BOOT, EN)",,"4.2 x 3.2 mm, SMD",Alps Alpine,SKRPACE010
+34,1,U1,Li-ion protection IC,,SOT-23-6,YONGYUTAI,DW01A
+35,1,U2,"ESP32-S3 Wi-Fi / Bluetooth LE module, 8 MB flash",,"Module, SMD",Espressif,ESP32-S3-WROOM-1-N8
+36,1,U3,Addressable RGB LED,,"5050, SMD",OPSCO,SK6812-B
+37,1,U5,"Li-ion charger, 4.2 V",,SOT-23-5,Microchip,MCP73831T-2ACI/OT
+38,1,U6,"3.3 V LDO regulator, 600 mA",,SOT-25,Diodes Inc.,AP2112K-3.3TRG1
+39,1,(display),"OLED display panel, 0.96 in, 128 x 64, white, SSD1306, 30-pin 0.5 mm FPC",,,,
+40,1,(display),"Screen cover, white, 3D printed",,,HW DESIGNS,

@@ -20,9 +20,9 @@ the same license.
 
 ## Hardware design files: published for reference
 
-The schematic (`schematic.pdf`) and 3D model (`3D.step`) are published so you
-can understand the circuit, repair or modify your own board, and design
-enclosures and accessories. They are not licensed for manufacturing or selling
+The schematic (`schematic.pdf`), 3D model (`3D.step`) and bill of materials
+(`bom.csv`) are published so you can understand the circuit, repair or modify
+your own board, and design enclosures and accessories. They are not licensed for manufacturing or selling
 copies of the board. Copyright (c) 2026 HW DESIGNS LLC. All rights reserved.
 
 ## Names and logos
