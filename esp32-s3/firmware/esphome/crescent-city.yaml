@@ -5,14 +5,24 @@
 #
 #  What you get in Home Assistant
 #    Indoor temperature + humidity (SHT4x on the Qwiic port), battery voltage,
-#    battery level, USB power, battery-low alert, BOOT button, RGB LED (light),
-#    status LED switch, low-battery shutdown switch, Wi-Fi signal, IP address.
+#    battery level, charging state, USB power, battery-low alert, BOOT button,
+#    RGB LED (light), status LED switch, low-battery shutdown switch, battery
+#    calibration offset, Wi-Fi signal, IP address.
 #  On the OLED
 #    Clock (time from Home Assistant), indoor and outdoor temperature, battery
 #    gauge. Press BOOT to switch to the status page (Wi-Fi, IP, battery).
-#  Battery
-#    Same low-battery behaviour as the weather-clock firmware: a "LOW" warning,
-#    then "Battery low / charge me" and deep sleep until USB is plugged in.
+#  Battery (same behaviour as the Weather Clock firmware 2.1.5)
+#    - On battery: level = charge left before the low-battery shutdown, from a
+#      table measured on a V2.0 board. 0 bars only in the last 5 %.
+#    - On USB: the battery reading is the charger output, so the icon shows the
+#      charging phase instead: bars run while charging, 3 bars + 4th blinking
+#      while the charger tops off, 4 bars when it stops ("Charging" entity).
+#    - "LOW" warning at 3.45 V, then "Battery low / charge me" and deep sleep
+#      at 3.30 V until USB is plugged in. A 10-minute timer check backs up the
+#      USB wake. After a shutdown, the board on battery needs 3.50 V to keep
+#      running, so a short USB connection sends it back to sleep.
+#  Wi-Fi stays connected on battery (Home Assistant needs it), so battery life
+#  is shorter than the Weather Clock's: about 14-15 h per 1000 mAh.
 #
 #  Use it as is (web installer or "Adopt" in ESPHome Builder), or as a package:
 #    packages:
@@ -51,12 +61,32 @@ esphome:
   comment: "Crescent City ESP32-S3 OLED board"
   project:
     name: hwdesigns.crescent-city
-    version: "1.0.0"
+    version: "1.1.0"
   on_boot:
     # Very first: release the pin holds set before a low-battery deep sleep.
+    #   On a timer wake (USB check) the holds stay on until USB is confirmed.
     - priority: 1100
       then:
         - lambda: |-
+            if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER) return;
+            gpio_hold_dis(GPIO_NUM_48);
+            gpio_hold_dis(GPIO_NUM_10);
+            gpio_hold_dis(GPIO_NUM_14);
+            gpio_deep_sleep_hold_dis();
+    # Timer wake from the low-battery sleep: check USB on the ADC before the
+    # display and Wi-Fi start; without USB go straight back to sleep.
+    - priority: 590
+      then:
+        - lambda: |-
+            if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_TIMER) return;
+            if (id(usb_adc).sample() * 2.0f <= 4.0f) {
+              gpio_hold_en(GPIO_NUM_48);
+              gpio_hold_en(GPIO_NUM_10);
+              gpio_hold_en(GPIO_NUM_14);
+              gpio_deep_sleep_hold_en();
+              id(deep_sleep_ctl).begin_sleep(true);
+            }
+            ESP_LOGI("battery", "Woke from low-battery sleep: USB found on timer check");
             gpio_hold_dis(GPIO_NUM_48);
             gpio_hold_dis(GPIO_NUM_10);
             gpio_hold_dis(GPIO_NUM_14);
@@ -72,9 +102,9 @@ esphome:
             if (id(usb_adc).sample() * 2.0f > 4.0f) return;
             float v = 0;
             for (int i = 0; i < 10; i++) { v += id(battery_adc).sample(); delay(20); }
-            v = v / 10.0f * 2.0f + ${vbat_cal_offset};
+            v = v / 10.0f * 2.0f + id(vbat_offset).state;
             ESP_LOGI("battery", "Boot check: %.3f V (resume above %.2f V)", v, ${vbat_resume});
-            if (v >= ${vbat_resume}) return;
+            if (v >= ${vbat_resume}) { id(lb_after_cut) = false; return; }
             // Still empty: same shutdown as at runtime, done here before Wi-Fi.
             id(lowbatt_v) = v;
             id(show_lowbatt) = true;
@@ -124,8 +154,10 @@ dashboard_import:
 
 deep_sleep:
   id: deep_sleep_ctl
-  # No timer: the board sleeps only on a low battery and wakes when USB is
-  # plugged in (GPIO2 goes high) or RESET is pressed.
+  # The board sleeps only on a low battery (no run_duration). It wakes when USB
+  # is plugged in (GPIO2 goes high) or RESET is pressed, and every 10 min for a
+  # quick USB check in case GPIO2 does not reach its logic-high level.
+  sleep_duration: 10min
   esp32_ext1_wakeup:
     pins:
       - number: GPIO2
@@ -154,6 +186,19 @@ globals:
   - id: cut_now
     type: bool
     initial_value: "false"
+  - id: lb_after_cut          # set at a low-battery shutdown; then 3.50 V is needed to keep running
+    type: bool
+    restore_value: true
+    initial_value: "false"
+  - id: chg_state             # on USB: 0 not on USB, 1 charging, 2 topping off, 3 full
+    type: int
+    initial_value: "0"
+  - id: chg_sum               # battery readings summed over the current minute (on USB)
+    type: float
+    initial_value: "0"
+  - id: chg_cnt
+    type: int
+    initial_value: "0"
 
 time:
   - platform: homeassistant
@@ -181,8 +226,10 @@ sensor:
     update_interval: 3s
     internal: true
     filters:
-      - multiply: 2.0
-      - offset: ${vbat_cal_offset}
+      - lambda: "return x * 2.0f + id(vbat_offset).state;"
+    on_value:
+      - lambda: |-
+          if (id(usb_power).state) { id(chg_sum) += x; id(chg_cnt)++; }
 
   # 30 s median, updated every 3 s - drives the warning and the cutoff
   - platform: copy
@@ -203,6 +250,16 @@ sensor:
               return;
             }
             if (id(vbat_n) < 10) { id(vbat_n)++; return; }   // first decision after 30 s on battery
+            if (id(lb_after_cut)) {
+              if (x >= ${vbat_resume}) {
+                id(lb_after_cut) = false;                       // recharged enough: normal rules again
+              } else {
+                ESP_LOGW("battery", "On battery at %.3f V after a low-battery shutdown (resume above %.2f V)", x, ${vbat_resume});
+                id(lowbatt_v) = x;
+                id(cut_now) = true;
+                return;
+              }
+            }
             if (!id(low_batt_warn) && x < ${vbat_warn}) {
               id(low_batt_warn) = true;
               ESP_LOGW("battery", "Battery low: %.3f V", x);
@@ -243,11 +300,21 @@ sensor:
     unit_of_measurement: "%"
     accuracy_decimals: 0
     filters:
+      # On battery: charge left before the low-battery shutdown (3.30 V = 0 %),
+      # table measured on a V2.0 board (18650 cell, ~41 mA load). On USB the
+      # reading is the charger output: report 100 % when the charger has
+      # stopped, otherwise keep the last value.
       - lambda: |-
-          static const float P[][2] = {{4.20f,100},{4.13f,90},{4.06f,80},{3.98f,70},{3.92f,60},
-            {3.87f,50},{3.82f,40},{3.79f,30},{3.75f,20},{3.70f,10},{3.60f,5},{3.40f,0}};
+          if (id(usb_power).state) {
+            if (id(chg_state) == 3) return 100.0f;
+            return {};
+          }
+          static const float P[][2] = {{4.10f,100},{4.02f,95},{4.00f,90},{3.98f,80},{3.96f,70},
+            {3.92f,60},{3.86f,50},{3.82f,40},{3.80f,30},{3.75f,20},{3.71f,15},{3.68f,10},
+            {3.61f,5},{3.47f,2},{3.30f,0}};
+          const int n = sizeof(P) / sizeof(P[0]);
           if (x >= P[0][0]) return 100.0f;
-          for (int i = 0; i < 11; i++) {
+          for (int i = 0; i < n - 1; i++) {
             if (x <= P[i][0] && x >= P[i + 1][0])
               return P[i + 1][1] + (x - P[i + 1][0]) * (P[i][1] - P[i + 1][1]) / (P[i][0] - P[i + 1][0]);
           }
@@ -328,11 +395,35 @@ binary_sensor:
       - component.update: oled
 
 text_sensor:
+  - platform: template
+    id: charge_text
+    name: "Charging"
+    icon: mdi:battery-charging
+    update_interval: never
+
   - platform: wifi_info
     ip_address:
       id: ip_addr
       name: "IP address"
       entity_category: diagnostic
+
+number:
+  # Per-board battery-reading correction, added to the ADC reading. To set it,
+  # measure the battery connector (+ to board GND) with a meter while on battery
+  # and adjust until "Battery voltage" matches.
+  - platform: template
+    id: vbat_offset
+    name: "Battery offset"
+    icon: mdi:tune-vertical
+    entity_category: config
+    unit_of_measurement: V
+    min_value: 0.0
+    max_value: 0.2
+    step: 0.001
+    mode: box
+    optimistic: true
+    restore_value: true
+    initial_value: ${vbat_cal_offset}
 
 switch:
   - platform: template
@@ -398,10 +489,53 @@ light:
             - state: false
               duration: 1850ms
 
+# Charging state on USB, from 1-minute averages of the battery reading
+# (same rule as the Weather Clock 2.1.5): "topping off" when the average is at
+# or above 4.15 V and changed less than 4 mV over 10 min; "full" when it falls
+# 10 mV below the slowly-tracked top-off level for 3 minutes in a row (the
+# charger stopped); fallback "full" after 10 h; back to charging below 4.00 V.
 # Status colours (when the "Status LED" switch is on):
 #   red blink = battery low, blue blink = no Wi-Fi (or setup hotspot open),
 #   amber = Wi-Fi up but Home Assistant not connected, off = all good.
 interval:
+  - interval: 60s
+    then:
+      - lambda: |-
+          static float hist[11];
+          static int n = 0, below = 0;
+          static float plateau = 0;
+          static uint32_t t_state = 0;
+          static const char *const NAMES[] = {"Not charging", "Charging", "Topping off", "Full"};
+          int st = id(chg_state);
+          if (!id(usb_power).state) {
+            st = 0; n = 0;
+          } else {
+            if (st == 0) { st = 1; t_state = millis(); n = 0; }
+            if (id(chg_cnt) > 0) {
+              float avg = id(chg_sum) / id(chg_cnt);
+              if (n < 11) hist[n++] = avg; else { for (int i = 0; i < 10; i++) hist[i] = hist[i + 1]; hist[10] = avg; }
+              uint32_t now = millis();
+              if (st == 1) {
+                if (n == 11 && avg >= 4.15f && fabsf(hist[10] - hist[0]) <= 0.004f) {
+                  plateau = avg; below = 0; st = 2; t_state = now;
+                }
+              } else if (st == 2) {
+                float dif = avg - plateau;
+                if (dif > -0.005f) plateau += (dif > 0 ? 0.03f : 0.10f) * dif;
+                below = (avg <= plateau - 0.010f) ? below + 1 : 0;
+                if (below >= 3 || now - t_state >= 600UL * 60000UL) { st = 3; t_state = now; }
+              } else if (st == 3) {
+                if (avg < 4.00f) { st = 1; t_state = now; n = 0; }
+              }
+              if (st != id(chg_state)) ESP_LOGI("charge", "%s (1-min average %.3f V)", NAMES[st], avg);
+            }
+          }
+          id(chg_sum) = 0; id(chg_cnt) = 0;
+          if (st != id(chg_state) || !id(charge_text).has_state()) {
+            id(chg_state) = st;
+            id(charge_text).publish_state(NAMES[st]);
+          }
+
   - interval: 1s
     then:
       - lambda: |-
@@ -443,6 +577,9 @@ script:
           args: ["id(lowbatt_v)"]
       - globals.set:
           id: show_lowbatt
+          value: "true"
+      - globals.set:
+          id: lb_after_cut
           value: "true"
       - light.turn_off:
           id: status_rgb
@@ -505,7 +642,18 @@ display:
       const bool usb = id(usb_power).state;
       const bool warn = id(low_batt_warn) && !usb;
       float pct = id(battery_level).has_state() ? id(battery_level).state : 0;
-      int bars = pct >= 74 ? 4 : pct >= 49 ? 3 : pct >= 29 ? 2 : pct >= 14 ? 1 : 0;
+      // On battery: 0-4 bars with hysteresis (0 bars only in the last 5 %).
+      static int lv = -1;
+      static const int up[] = {8, 29, 49, 74}, down[] = {5, 25, 45, 70};
+      if (lv < 0) { lv = 0; while (lv < 4 && pct > down[lv]) lv++; }
+      while (lv < 4 && pct >= up[lv]) lv++;
+      while (lv > 0 && pct < down[lv - 1]) lv--;
+      int bars = lv;
+      // On USB: charging phase instead of a level.
+      if (usb) {
+        const int st = id(chg_state);
+        bars = st == 3 ? 4 : st == 2 ? 3 + (int)((millis() / 500) % 2) : (int)((millis() / 600) % 5);
+      }
       const int bx = 106, by = 2;
       if (!warn || (millis() / 1000) % 2 == 0) {
         it.rectangle(bx, by, 20, 10);
@@ -556,5 +704,6 @@ display:
           it.printf(0, 49, id(font_small), TextAlign::BASELINE_LEFT, "Batt %.2f V %.0f%%", id(battery_voltage).state, pct);
         else
           it.print(0, 49, id(font_small), TextAlign::BASELINE_LEFT, "Batt reading...");
-        it.print(0, 60, id(font_small), TextAlign::BASELINE_LEFT, usb ? "USB power" : "On battery");
+        if (usb) it.printf(0, 60, id(font_small), TextAlign::BASELINE_LEFT, "USB: %s", id(charge_text).state.c_str());
+        else     it.print(0, 60, id(font_small), TextAlign::BASELINE_LEFT, "On battery");
       }

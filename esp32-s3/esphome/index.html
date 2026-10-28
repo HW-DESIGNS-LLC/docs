@@ -191,13 +191,15 @@ wifi:
           <tbody>
             <tr><td>Indoor temperature, Indoor humidity</td><td>From a Qwiic SHT4x sensor on the side connector, every 30&nbsp;s. Plug the sensor in before powering up.</td></tr>
             <tr><td>Battery voltage</td><td>Voltage at the battery connector, a 30&#8209;second median reported every 30&nbsp;s. With no battery connected it shows the charger output, about 4.1&nbsp;V.</td></tr>
-            <tr><td>Battery level</td><td>Charge in % from the battery voltage. Reads high while USB is plugged in and charging.</td></tr>
+            <tr><td>Battery level</td><td>Charge left before the low-battery shutdown, in %, from a table measured on a V2.0 board. While USB is plugged in it keeps its last value, and reads 100&nbsp;% once charging has finished.</td></tr>
+            <tr><td>Charging</td><td><em>Not charging</em>, <em>Charging</em>, <em>Topping off</em> or <em>Full</em> while USB is plugged in, worked out from the battery reading.</td></tr>
             <tr><td>Battery low</td><td>Turns on when the battery needs charging (below 3.45 V). You can use it in your own Home Assistant automations.</td></tr>
             <tr><td>USB power</td><td>On while the board is powered from USB&#8209;C.</td></tr>
             <tr><td>BOOT button</td><td>On while the button is pressed. Each press also switches the OLED between the clock and status pages.</td></tr>
             <tr><td>RGB LED</td><td>A colour light you can control. Turn the <em>Status LED</em> switch off first so the board doesn&rsquo;t use it for status.</td></tr>
             <tr><td>Status LED (switch)</td><td>Lets the RGB LED show connection and battery status (below).</td></tr>
             <tr><td>Low-battery shutdown (switch)</td><td>On by default. See <a href="#battery">Battery</a>.</td></tr>
+            <tr><td>Battery offset (setting)</td><td>Correction added to the battery reading, 0.070&nbsp;V by default. To fine-tune a board, measure the battery connector with a meter while on battery and adjust until <em>Battery voltage</em> matches.</td></tr>
             <tr><td>Wi&#8209;Fi signal, IP address, Uptime</td><td>Diagnostics.</td></tr>
             <tr><td>Restart, Factory reset</td><td>Buttons. Factory reset is hidden by default; it clears saved Wi&#8209;Fi and settings.</td></tr>
           </tbody>
@@ -280,15 +282,15 @@ wifi:
           </div>
           <div class="note">
             <h4>Empty</h4>
-            <p>Below 3.30&nbsp;V the OLED shows <strong>Battery low &mdash; charge me</strong> for 10&nbsp;seconds. Then Wi&#8209;Fi, the LED and the screen switch off and the board sleeps.</p>
+            <p>Below 3.30&nbsp;V the OLED shows <strong>Battery low &mdash; charge me</strong> for 10&nbsp;seconds. Then Wi&#8209;Fi, the LED and the screen switch off and the board sleeps at about 0.8&nbsp;mA, waking for a moment every 10 minutes to check for USB.</p>
           </div>
           <div class="note">
             <h4>Back on</h4>
-            <p>Plug in USB&#8209;C: the board wakes, starts normally and charges. Pressing <strong>RESET</strong> on a still-empty battery just shows the message again.</p>
+            <p>Plug in USB&#8209;C: the board wakes, starts normally and charges. After a shutdown it keeps running on battery only once the battery is back above 3.50&nbsp;V, so a short plug-in, or <strong>RESET</strong> on a still-empty battery, just shows the message again.</p>
           </div>
         </div>
         <p class="table-note">The decision uses a 30&#8209;second median, so a short dip during a Wi&#8209;Fi burst can&rsquo;t trigger it. The same thresholds are used by the weather clock firmware. Turning the <em>Low-battery shutdown</em> switch off disables the warning and the shutdown &mdash; not recommended on a battery.</p>
-        <!-- TODO after Rev B DVT: add the measured sleep current and how long a 600 / 1000 mAh battery lasts asleep -->
+        <p class="table-note">While USB is plugged in, the battery icon shows the charging phase: bars run while charging, three bars with the fourth blinking while the charger tops off, four bars when it stops. Home Assistant needs the board to stay connected, so ESPHome keeps Wi&#8209;Fi on: expect roughly 14 hours per 1000&nbsp;mAh, against about 24 for the Weather Clock, which switches the radio off between weather updates.</p>
       </div>
     </section>
 
