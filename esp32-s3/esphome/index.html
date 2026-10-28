@@ -192,7 +192,7 @@ wifi:
             <tr><td>Indoor temperature, Indoor humidity</td><td>From a Qwiic SHT4x sensor on the side connector, every 30&nbsp;s. Plug the sensor in before powering up.</td></tr>
             <tr><td>Battery voltage</td><td>Voltage at the battery connector, a 30&#8209;second median reported every 30&nbsp;s. With no battery connected it shows the charger output, about 4.1&nbsp;V.</td></tr>
             <tr><td>Battery level</td><td>Charge left before the low-battery shutdown, in %, from a table measured on a V2.0 board. While USB is plugged in it keeps its last value, and reads 100&nbsp;% once charging has finished.</td></tr>
-            <tr><td>Charging</td><td><em>Not charging</em>, <em>Charging</em>, <em>Topping off</em> or <em>Full</em> while USB is plugged in, worked out from the battery reading.</td></tr>
+            <tr><td>Charging</td><td><em>On battery</em>, or with USB plugged in <em>Charging</em>, <em>Topping off</em> or <em>Full</em>, worked out from the battery reading. <em>Not charging</em> means the charger has been idle for 20&nbsp;minutes: the battery was already full, or no battery is fitted.</td></tr>
             <tr><td>Battery low</td><td>Turns on when the battery needs charging (below 3.45 V). You can use it in your own Home Assistant automations.</td></tr>
             <tr><td>USB power</td><td>On while the board is powered from USB&#8209;C.</td></tr>
             <tr><td>BOOT button</td><td>On while the button is pressed. Each press also switches the OLED between the clock and status pages.</td></tr>
@@ -290,7 +290,7 @@ wifi:
           </div>
         </div>
         <p class="table-note">The decision uses a 30&#8209;second median, so a short dip during a Wi&#8209;Fi burst can&rsquo;t trigger it. The same thresholds are used by the weather clock firmware. Turning the <em>Low-battery shutdown</em> switch off disables the warning and the shutdown &mdash; not recommended on a battery.</p>
-        <p class="table-note">While USB is plugged in, the battery icon shows the charging phase: bars run while charging, three bars with the fourth blinking while the charger tops off, four bars when it stops. Home Assistant needs the board to stay connected, so ESPHome keeps Wi&#8209;Fi on: expect roughly 14 hours per 1000&nbsp;mAh, against about 24 for the Weather Clock, which switches the radio off between weather updates.</p>
+        <p class="table-note">While USB is plugged in, the battery icon shows the charging phase: bars run while charging, three bars with the fourth blinking while the charger tops off, four bars when it stops, or after 20&nbsp;minutes if the charger stays idle (battery already full, or none fitted). Home Assistant needs the board to stay connected, so ESPHome keeps Wi&#8209;Fi on: expect roughly 14 hours per 1000&nbsp;mAh, against about 24 for the Weather Clock, which switches the radio off between weather updates.</p>
       </div>
     </section>
 

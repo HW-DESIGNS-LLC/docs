@@ -11,12 +11,15 @@
 #  On the OLED
 #    Clock (time from Home Assistant), indoor and outdoor temperature, battery
 #    gauge. Press BOOT to switch to the status page (Wi-Fi, IP, battery).
-#  Battery (same behaviour as the Weather Clock firmware 2.1.5)
+#  Battery (same behaviour as the Weather Clock firmware 2.1.6)
 #    - On battery: level = charge left before the low-battery shutdown, from a
 #      table measured on a V2.0 board. 0 bars only in the last 5 %.
 #    - On USB: the battery reading is the charger output, so the icon shows the
 #      charging phase instead: bars run while charging, 3 bars + 4th blinking
 #      while the charger tops off, 4 bars when it stops ("Charging" entity).
+#      With the battery already full, or no battery fitted, the charger stays
+#      idle: after 20 min the icon shows 4 bars and "Charging" says
+#      "Not charging" (the CHG LED is off in both cases).
 #    - "LOW" warning at 3.45 V, then "Battery low / charge me" and deep sleep
 #      at 3.30 V until USB is plugged in. A 10-minute timer check backs up the
 #      USB wake. After a shutdown, the board on battery needs 3.50 V to keep
@@ -61,7 +64,7 @@ esphome:
   comment: "Crescent City ESP32-S3 OLED board"
   project:
     name: hwdesigns.crescent-city
-    version: "1.1.0"
+    version: "1.1.1"
   on_boot:
     # Very first: release the pin holds set before a low-battery deep sleep.
     #   On a timer wake (USB check) the holds stay on until USB is confirmed.
@@ -190,7 +193,7 @@ globals:
     type: bool
     restore_value: true
     initial_value: "false"
-  - id: chg_state             # on USB: 0 not on USB, 1 charging, 2 topping off, 3 full
+  - id: chg_state             # 0 on battery, 1 charging, 2 topping off, 3 full, 4 charger idle (full or no battery)
     type: int
     initial_value: "0"
   - id: chg_sum               # battery readings summed over the current minute (on USB)
@@ -490,10 +493,13 @@ light:
               duration: 1850ms
 
 # Charging state on USB, from 1-minute averages of the battery reading
-# (same rule as the Weather Clock 2.1.5): "topping off" when the average is at
+# (same rule as the Weather Clock 2.1.6): "topping off" when the average is at
 # or above 4.15 V and changed less than 4 mV over 10 min; "full" when it falls
 # 10 mV below the slowly-tracked top-off level for 3 minutes in a row (the
 # charger stopped); fallback "full" after 10 h; back to charging below 4.00 V.
+# "Not charging" (charger idle: battery already full, or no battery) when the
+# average stays between 4.00 and 4.15 V and within 6 mV for 20 min; while
+# charging it always moves more than that. Back to charging if it moves 15 mV.
 # Status colours (when the "Status LED" switch is on):
 #   red blink = battery low, blue blink = no Wi-Fi (or setup hotspot open),
 #   amber = Wi-Fi up but Home Assistant not connected, off = all good.
@@ -501,11 +507,11 @@ interval:
   - interval: 60s
     then:
       - lambda: |-
-          static float hist[11];
+          static float hist[21];
           static int n = 0, below = 0;
           static float plateau = 0;
           static uint32_t t_state = 0;
-          static const char *const NAMES[] = {"Not charging", "Charging", "Topping off", "Full"};
+          static const char *const NAMES[] = {"On battery", "Charging", "Topping off", "Full", "Not charging"};
           int st = id(chg_state);
           if (!id(usb_power).state) {
             st = 0; n = 0;
@@ -513,11 +519,15 @@ interval:
             if (st == 0) { st = 1; t_state = millis(); n = 0; }
             if (id(chg_cnt) > 0) {
               float avg = id(chg_sum) / id(chg_cnt);
-              if (n < 11) hist[n++] = avg; else { for (int i = 0; i < 10; i++) hist[i] = hist[i + 1]; hist[10] = avg; }
+              if (n < 21) hist[n++] = avg; else { for (int i = 0; i < 20; i++) hist[i] = hist[i + 1]; hist[20] = avg; }
               uint32_t now = millis();
               if (st == 1) {
-                if (n == 11 && avg >= 4.15f && fabsf(hist[10] - hist[0]) <= 0.004f) {
+                if (n >= 11 && avg >= 4.15f && fabsf(hist[n - 1] - hist[n - 11]) <= 0.004f) {
                   plateau = avg; below = 0; st = 2; t_state = now;
+                } else if (n == 21 && avg >= 4.00f && avg < 4.15f) {
+                  float lo = hist[0], hi = hist[0];
+                  for (int i = 1; i < 21; i++) { lo = fminf(lo, hist[i]); hi = fmaxf(hi, hist[i]); }
+                  if (hi - lo <= 0.006f) { plateau = avg; st = 4; t_state = now; }
                 }
               } else if (st == 2) {
                 float dif = avg - plateau;
@@ -526,6 +536,8 @@ interval:
                 if (below >= 3 || now - t_state >= 600UL * 60000UL) { st = 3; t_state = now; }
               } else if (st == 3) {
                 if (avg < 4.00f) { st = 1; t_state = now; n = 0; }
+              } else if (st == 4) {
+                if (fabsf(avg - plateau) > 0.015f) { st = 1; t_state = now; n = 0; }
               }
               if (st != id(chg_state)) ESP_LOGI("charge", "%s (1-min average %.3f V)", NAMES[st], avg);
             }
@@ -652,7 +664,7 @@ display:
       // On USB: charging phase instead of a level.
       if (usb) {
         const int st = id(chg_state);
-        bars = st == 3 ? 4 : st == 2 ? 3 + (int)((millis() / 500) % 2) : (int)((millis() / 600) % 5);
+        bars = st >= 3 ? 4 : st == 2 ? 3 + (int)((millis() / 500) % 2) : (int)((millis() / 600) % 5);
       }
       const int bx = 106, by = 2;
       if (!warn || (millis() / 1000) % 2 == 0) {
