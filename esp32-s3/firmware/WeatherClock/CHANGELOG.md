@@ -1,5 +1,13 @@
 # Weather Clock changelog
 
+## 2.1.6 (2026-10-28)
+
+- **Charging icon:** on USB with the battery already full, or with no battery
+  fitted, the charger stays idle and the icon used to keep showing
+  "charging". It now shows 4 bars after 20 minutes ("idle" on the info page).
+  Checked against three full V2.0 charges: no change to when "topping off"
+  and "full" appear.
+
 ## 2.1.5 (2026-10-28)
 
 Tested on Crescent City V2.0 boards.

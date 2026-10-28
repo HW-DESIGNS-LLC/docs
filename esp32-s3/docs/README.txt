@@ -2,8 +2,8 @@ Customer-facing files for the Crescent City board page. The links on the board p
 point to these EXACT filenames - keep the names if you ever replace a file:
 
   schematic.pdf     - full board schematic, V2.0 (export from EasyEDA Pro)
-  user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev B, board V2.0)
-  pinout.pdf        - printable pin reference diagram (PIN-01 Rev B, board V2.0)
+  user-guide.pdf    - setup, features & troubleshooting guide (UG-01 Rev C, board V2.0)
+  pinout.pdf        - printable pin reference diagram (PIN-01 Rev C, board V2.0)
   3D.step           - 3D model for enclosure/mechanical design (V2.0)
   bom.csv           - bill of materials (V2.0): parts and manufacturer part numbers
 

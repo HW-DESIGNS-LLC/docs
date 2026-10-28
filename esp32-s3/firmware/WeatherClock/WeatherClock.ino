@@ -33,7 +33,10 @@
  *   - On USB (bolt shown): the battery voltage reads high while charging, so no
  *     level is shown from it. Bars run in a loop while charging; 3 bars with the
  *     4th blinking while the charger tops off at 4.2 V; 4 steady bars when the
- *     charger stops (the reading drops). Thresholds: CHARGE STATE block below.
+ *     charger stops (the reading drops), or when the reading stays still below
+ *     the top-off level for 20 min: the charger is idle because the battery is
+ *     already full or no battery is fitted (the CHG LED is off in both cases).
+ *     Thresholds: CHARGE STATE block below.
  *
  * LOW BATTERY (running on battery only; ignored while USB is plugged in)
  *   - Battery nearly empty: the battery icon blinks and "LOW" appears next to it.
@@ -82,7 +85,7 @@
  * [SWAP]) so a different I2C temp/RH part can be dropped in without touching
  * the rest of the sketch.
  *
- * Version 2.1.5 (2026-10-28) - see CHANGELOG.md
+ * Version 2.1.6 (2026-10-28) - see CHANGELOG.md
  * Copyright (c) 2026 HW DESIGNS LLC - https://docs.hwdesigns.us
  * SPDX-License-Identifier: MIT (see the LICENSE file in the repository)
  */
@@ -111,7 +114,7 @@
 #define TEST_BUILD 0
 #endif
 
-#define FW_VERSION    "2.1.5"
+#define FW_VERSION    "2.1.6"
 #define FW_DATE       "2026-10-28"
 
 // ==================== USER-FACING CONFIG ====================
@@ -183,6 +186,15 @@
 #define CHG_DROP_V      0.010f   // 1-min average this far below the top-off level...
 #define CHG_DROP_MIN    3        // ...for this many minutes in a row -> charger stopped -> full
 #define CHG_RECHARGE_V  4.00f    // shown full but 1-min average below this -> charging again
+// Charger idle (battery already full when USB was plugged in, or no battery):
+// the reading sits still below the top-off level. While charging, the 1-min
+// averages always spread over 18 mV or more in 20 min (three V2.0 charges);
+// an idle charger stays within about 3 mV.
+#define CHG_IDLE_MIN    20       // minutes of history used for "idle"
+#define CHG_IDLE_SPREAD 0.006f   // max - min of the 1-min averages over CHG_IDLE_MIN at or below this...
+#define CHG_IDLE_LO     4.00f    // ...with the average between this and CHG_CV_V -> idle
+#define CHG_IDLE_MOVE   0.015f   // idle, then the average moves this far -> charging again
+#define CHG_HIST        (CHG_IDLE_MIN > CHG_WIN_MIN ? CHG_IDLE_MIN + 1 : CHG_WIN_MIN + 1)
 
 // ---- User button ----
 #define PIN_BUTTON       0   // BOOT (SW4) -> U2.27
@@ -223,7 +235,7 @@ uint32_t infoUntil = 0;                    // info page shown until this time
 
 // Types used in function signatures are declared here, before the first
 // function, so the Arduino IDE's automatic prototypes compile.
-enum ChgState : uint8_t { CHG_OFF, CHG_CC, CHG_CV, CHG_FULL };
+enum ChgState : uint8_t { CHG_OFF, CHG_CC, CHG_CV, CHG_FULL, CHG_IDLE };
 enum GeoResult { GEO_OK, GEO_NOT_FOUND, GEO_NET_FAIL };
 
 struct Weather { float tempC=NAN, feelsC=NAN, hum=NAN, hiC=NAN, loC=NAN; int code=-1; bool ok=false; } wx;
@@ -377,13 +389,13 @@ struct Charge {
   ChgState st = CHG_OFF;
   uint32_t tState = 0, tMin = 0;
   float sum = 0; int cnt = 0;
-  float hist[CHG_WIN_MIN + 1]; int nHist = 0;     // 1-minute averages, oldest first
-  float avg = NAN, plateau = 0;
+  float hist[CHG_HIST]; int nHist = 0;           // 1-minute averages, oldest first
+  float avg = NAN, plateau = 0;                  // plateau: top-off level, or the idle level
   int below = 0;                                 // consecutive minutes below the drop level
 } chg;
 
 static const char* chgName(){
-  switch(chg.st){ case CHG_CC: return "cc"; case CHG_CV: return "cv"; case CHG_FULL: return "full"; default: return "off"; }
+  switch(chg.st){ case CHG_CC: return "cc"; case CHG_CV: return "cv"; case CHG_FULL: return "full"; case CHG_IDLE: return "idle"; default: return "off"; }
 }
 static void chgSet(ChgState s){
   if(chg.st == s) return;
@@ -401,13 +413,19 @@ static void chargeUpdate(){
   chg.sum += pw.vbat; chg.cnt++;
   if(now - chg.tMin < 60000UL) return;
   chg.avg = chg.sum / chg.cnt; chg.sum = 0; chg.cnt = 0; chg.tMin = now;
-  if(chg.nHist < CHG_WIN_MIN + 1) chg.hist[chg.nHist++] = chg.avg;
-  else { memmove(chg.hist, chg.hist + 1, CHG_WIN_MIN * sizeof(float)); chg.hist[CHG_WIN_MIN] = chg.avg; }
-  bool haveWin = chg.nHist == CHG_WIN_MIN + 1;
-  float change = haveWin ? fabsf(chg.hist[CHG_WIN_MIN] - chg.hist[0]) : 1.0f;
+  if(chg.nHist < CHG_HIST) chg.hist[chg.nHist++] = chg.avg;
+  else { memmove(chg.hist, chg.hist + 1, (CHG_HIST - 1) * sizeof(float)); chg.hist[CHG_HIST - 1] = chg.avg; }
+  const int last = chg.nHist - 1;
+  bool haveWin = chg.nHist >= CHG_WIN_MIN + 1;
+  float change = haveWin ? fabsf(chg.hist[last] - chg.hist[last - CHG_WIN_MIN]) : 1.0f;
   switch(chg.st){
     case CHG_CC:
       if(haveWin && chg.avg >= CHG_CV_V && change <= CHG_FLAT_V){ chg.plateau = chg.avg; chg.below = 0; chgSet(CHG_CV); }
+      else if(chg.nHist >= CHG_IDLE_MIN + 1 && chg.avg >= CHG_IDLE_LO && chg.avg < CHG_CV_V){
+        float lo = chg.hist[last], hi = lo;
+        for(int i = last - CHG_IDLE_MIN; i < last; i++){ lo = fminf(lo, chg.hist[i]); hi = fmaxf(hi, chg.hist[i]); }
+        if(hi - lo <= CHG_IDLE_SPREAD){ chg.plateau = chg.avg; chgSet(CHG_IDLE); }
+      }
       break;
     case CHG_CV:
       // Top-off level follows the reading slowly, so a short bump cannot raise it.
@@ -421,13 +439,17 @@ static void chargeUpdate(){
     case CHG_FULL:
       if(chg.avg < CHG_RECHARGE_V) chgSet(CHG_CC);
       break;
+    case CHG_IDLE:                                        // reading moved: charger started (battery fitted)
+      if(fabsf(chg.avg - chg.plateau) > CHG_IDLE_MOVE){ chg.nHist = 0; chgSet(CHG_CC); }
+      break;
     default: break;
   }
 }
 static int usbBars(){
   switch(chg.st){
     case CHG_CV:   return 3 + (int)((millis()/500) % 2);   // 3 steady, 4th blinks
-    case CHG_FULL: return 4;
+    case CHG_FULL:
+    case CHG_IDLE: return 4;                               // charger stopped or idle
     default:       return (int)((millis()/600) % 5);       // charging: bars run in a loop
   }
 }
@@ -832,7 +854,7 @@ static void drawInfo(){
   else                            snprintf(l, sizeof(l), "WiFi not connected");
   u8g2.drawStr(0, y, l); y += 9;
   if(pw.usb) snprintf(l, sizeof(l), "Batt %.2f V USB %s", pw.vbat,
-                      chg.st==CHG_FULL ? "full" : chg.st==CHG_CV ? "top-off" : "charging");
+                      chg.st==CHG_FULL ? "full" : chg.st==CHG_IDLE ? "idle" : chg.st==CHG_CV ? "top-off" : "charging");
   else       snprintf(l, sizeof(l), "Batt %.2f V  %d%%", pw.vbat, pw.pct);
   u8g2.drawStr(0, y, l); y += 9;
   if(y <= 63) u8g2.drawStr(0, 63, "Hold BOOT 3 s: setup");

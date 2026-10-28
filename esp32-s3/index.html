@@ -29,14 +29,14 @@
        When you post new board photos, change ONE value below (IMG_VERSION),
        then upload the matching files to the assets/ folder. Nothing else moves.
 
-         IMG_VERSION = "V2"  ->  loads  assets/top_view_V2.jpg
-                                        assets/bottom_view_V2.jpg
+         IMG_VERSION = "V3"  ->  loads  assets/top_view_V3.jpg
+                                        assets/bottom_view_V3.jpg
 
-       Next time, save the new photos as  ..._V3.jpg,  set IMG_VERSION = "V3".
+       Next time, save the new photos as  ..._V4.jpg,  set IMG_VERSION = "V4".
        (Optional: pin one photo to a different version in IMG_OVERRIDES below.)
        ══════════════════════════════════════════════════════════════════════ -->
   <script>
-    window.IMG_VERSION = "V2";          // <-- the "V" you bump each time
+    window.IMG_VERSION = "V3";          // <-- the "V" you bump each time
     window.IMG_OVERRIDES = {            // optional per-photo pins; leave empty to use IMG_VERSION for all
       // bottom_view: "V3",             //   e.g. only the back photo changed
     };
@@ -156,17 +156,17 @@ void loop() {
       <div class="wrap">
         <p class="kicker">Board tour</p>
         <h2>Know your board</h2>
-        <p class="section-intro">Both sides, and what everything on them does. Renders show the bare board &mdash; the OLED display mounts on the front. Photos show the V1.0 prototype; V2.0 boards add pin labels on the front and use a smaller JST&#8209;PH battery connector.</p>
+        <p class="section-intro">Both sides, and what everything on them does. Photos show a V2.0 board, with the OLED display fitted on the front.</p>
 
         <div class="tour-grid">
           <div class="tour-col">
             <h3>Front</h3>
             <div class="render-frame">
               <!-- Photo version is controlled by IMG_VERSION at the top of this file. -->
-              <img data-img="top_view" alt="Front of the board: ESP32-S3 module with antenna at top, EN and BOOT buttons with RGB LED between them, display ribbon slot in the middle, USB-C at the bottom" loading="lazy">
+              <img data-img="top_view" alt="Front of the board: ESP32-S3 module with antenna at top, EN and BOOT buttons with RGB LED between them, OLED display in the middle, USB-C at the bottom" loading="lazy">
             </div>
             <ul class="feat">
-              <li>ESP32&#8209;S3 module up top &mdash; the green area is the Wi&#8209;Fi antenna; keep it clear of metal.</li>
+              <li>ESP32&#8209;S3 module up top &mdash; its antenna end sticks out past the board; keep it clear of metal.</li>
               <li><strong>EN</strong> (reset) and <strong>BOOT</strong> buttons, with the RGB status LED between them.</li>
               <li>USB&#8209;C for power, charging, and programming.</li>
               <li><strong>CHG</strong> and <strong>SYS&nbsp;ON</strong> indicator LEDs by the USB port.</li>
@@ -202,7 +202,7 @@ void loop() {
           </div>
           <div class="note">
             <h4>Best Wi&#8209;Fi range</h4>
-            <p>Let the antenna end hang over the edge of your breadboard or enclosure. Metal, batteries, and hands near the green area reduce range.</p>
+            <p>Let the antenna end hang over the edge of your breadboard or enclosure. Metal, batteries, and hands near the antenna end reduce range.</p>
           </div>
           <div class="note">
             <h4>Before you plug in a battery</h4>

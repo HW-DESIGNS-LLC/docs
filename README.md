@@ -54,7 +54,7 @@ folder, then bump that page's `IMG_VERSION` to `"V3"`.
 
 > **Also update the hub:** each board card in the root `index.html`
 > references the versioned filename directly (e.g.
-> `esp32-s3/assets/top_view_V2.jpg`) —
+> `esp32-s3/assets/top_view_V3.jpg`) —
 > point it at the new file when you bump a version.
 
 ## Adding a new board
