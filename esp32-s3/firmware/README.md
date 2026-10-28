@@ -21,12 +21,25 @@ First-time setup is done on the board itself, with no app or account needed:
 
 1. Join the Wi-Fi network **HW-WeatherClock** from a phone or laptop.
 2. A setup page opens (or browse to 192.168.4.1).
-3. Pick your Wi-Fi network, enter the password, your city and F or C.
+3. Pick your Wi-Fi network, enter the password, then your location: country,
+   state or province, and city (a ZIP or postal code also works), or
+   "latitude, longitude". Choose F or C.
+4. The board shows the place it found. If it finds nothing, the setup page
+   opens again so you can correct the entry.
 
-Hold **BOOT** for 3 seconds to clear the settings and run setup again.
+Short press **BOOT**: info page (location, firmware version, IP address,
+battery). Hold **BOOT** for 3 seconds to clear the settings and run setup again.
 
 Weather data comes from Open-Meteo (no API key). Time and daylight saving
-follow the city you enter.
+follow the location you enter.
+
+On battery the Weather Clock switches the Wi-Fi radio off between weather
+updates (every 10 minutes) and runs the processor at 80 MHz, so the board
+draws about 41 mA instead of about 70 mA. It is not reachable on your network
+between updates. When the battery runs low it shows "Battery low / charge me"
+and sleeps until USB is plugged in. On USB it stays connected.
+
+What changed in each version: [`WeatherClock/CHANGELOG.md`](WeatherClock/CHANGELOG.md).
 
 ### Build it yourself (Arduino IDE)
 

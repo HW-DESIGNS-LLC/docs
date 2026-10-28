@@ -16,6 +16,8 @@ Spec sheet and test data (linked from ../index.html and ../specs/):
   spec-sheet.pdf                       - printable spec sheet (printed from ../specs/)
   battery_full_discharge_revA_10s.csv  - full battery discharge, 10-second averages
   battery_full_charge_revA_10s.csv     - full charge from empty, 10-second averages
+  battery_full_discharge_revB_10s.csv  - V2.0 (Rev B) full discharge, Weather Clock 2.1, 10-second averages
+  battery_full_charge_revB_10s.csv     - V2.0 (Rev B) full charge from empty, 10-second averages
 
 DVT firmware (linked from ../index.html and ../dvt/):
 

@@ -104,7 +104,7 @@
             <span class="step-no" aria-hidden="true">2</span>
             <div>
               <h3>Put it on your Wi&#8209;Fi</h3>
-              <p>On first boot the board creates its own Wi&#8209;Fi network called <strong>HW&#8209;WeatherClock</strong>. Join it from your phone and a setup page opens (or go to <code>192.168.4.1</code>). Pick your home network, enter its password, and set your city and &deg;F or &deg;C. The board restarts and shows your local time and weather, with the RGB LED tinted by the temperature outside. To change Wi&#8209;Fi or city later, hold <strong>BOOT</strong> for 3 seconds.</p>
+              <p>On first boot the board creates its own Wi&#8209;Fi network called <strong>HW&#8209;WeatherClock</strong>. Join it from your phone and a setup page opens (or go to <code>192.168.4.1</code>). Pick your home network, enter its password, and fill in your location &mdash; country, state or province, and city (a ZIP or postal code works too) &mdash; and &deg;F or &deg;C. The board looks the place up, shows what it found, and then your local time and weather, with the RGB LED tinted by the temperature outside. If it can&rsquo;t find the place, the setup page opens again so you can correct it. A short press on <strong>BOOT</strong> shows an info page (location, firmware version, IP address, battery); to change Wi&#8209;Fi or location later, hold <strong>BOOT</strong> for 3 seconds.</p>
               <p class="hint">The board uses 2.4&nbsp;GHz Wi&#8209;Fi. If your router broadcasts separate 2.4&nbsp;GHz and 5&nbsp;GHz names, choose the 2.4&nbsp;GHz one.</p>
             </div>
           </li>
@@ -223,7 +223,7 @@ void loop() {
           <div class="spec"><div class="label">Wireless</div><div class="val">Wi&#8209;Fi 4 (2.4&nbsp;GHz) + Bluetooth 5&nbsp;LE</div></div>
           <div class="spec"><div class="label">Memory</div><div class="val">8&nbsp;MB flash &middot; 512&nbsp;KB SRAM</div></div>
           <div class="spec"><div class="label">Display</div><div class="val">0.96&Prime; 128&times;64 white OLED (SSD1306, SPI)</div></div>
-          <div class="spec"><div class="label">Power</div><div class="val">USB&#8209;C &middot; &asymp;300&nbsp;mA LiPo charging + protection &middot; &asymp;14&nbsp;h per 1000&nbsp;mAh with Wi&#8209;Fi on</div></div>
+          <div class="spec"><div class="label">Power</div><div class="val">USB&#8209;C &middot; &asymp;300&nbsp;mA LiPo charging + protection &middot; &asymp;24&nbsp;h per 1000&nbsp;mAh running the Weather Clock</div></div>
           <div class="spec"><div class="label">Expansion</div><div class="val">Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT (I&sup2;C) &middot; 2&times;12 header pins</div></div>
           <div class="spec"><div class="label">Status LED</div><div class="val">Addressable RGB (SK6812)</div></div>
           <div class="spec"><div class="label">Size</div><div class="val">70.1 &times; 25.4&nbsp;mm &middot; breadboard friendly</div></div>
@@ -276,7 +276,7 @@ void loop() {
             <tr>
               <td class="dl-name">Battery test data</td>
               <td class="dl-desc dl-desc-col">Full discharge and full charge of a real cell, 10-second averages (CSV)</td>
-              <td class="dl-file"><a href="docs/battery_full_discharge_revA_10s.csv">discharge.csv</a> &middot; <a href="docs/battery_full_charge_revA_10s.csv">charge.csv</a></td>
+              <td class="dl-file"><a href="docs/battery_full_discharge_revA_10s.csv">discharge.csv</a> &middot; <a href="docs/battery_full_charge_revA_10s.csv">charge.csv</a> &middot; <a href="docs/battery_full_discharge_revB_10s.csv">discharge&nbsp;V2.0.csv</a> &middot; <a href="docs/battery_full_charge_revB_10s.csv">charge&nbsp;V2.0.csv</a></td>
             </tr>
             <tr>
               <td class="dl-name">DVT report</td>
@@ -356,7 +356,7 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;300&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Running the Weather Clock with Wi&#8209;Fi always on, the board draws about 70&nbsp;mA &mdash; roughly 14&nbsp;hours per 1000&nbsp;mAh (<a href="dvt/#pwr-battery">measured on a full discharge</a>). When the battery runs low, the Weather Clock shows &ldquo;charge me&rdquo; and goes to sleep; plug in USB&#8209;C to wake it. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
+              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug &mdash; the socket is on the back of the board. It charges automatically from USB&#8209;C at &asymp;300&nbsp;mA, and on-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Running the Weather Clock, the board draws about 41&nbsp;mA &mdash; roughly 24&nbsp;hours per 1000&nbsp;mAh (<a href="dvt/#pwr-battery-v2">measured on a full discharge</a>); on battery it switches the Wi&#8209;Fi radio off between weather updates, so the board is not reachable on your network in between. When the battery runs low, the Weather Clock shows &ldquo;charge me&rdquo; and goes to sleep; plug in USB&#8209;C to wake it. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
             </details>
             <details>
               <summary>Which board revision is this page for?</summary>

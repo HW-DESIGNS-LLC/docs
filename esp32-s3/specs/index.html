@@ -102,7 +102,7 @@
       <div class="meta-row">
         <span class="chip"><b>Board</b> V2.0 &middot; EE2026003B</span>
         <span class="chip"><b>Status</b> Preliminary</span>
-        <span class="chip"><b>Updated</b> October 6, 2026</span>
+        <span class="chip"><b>Updated</b> October 27, 2026</span>
       </div>
       <div class="hero-actions">
         <a class="btn btn-light" href="javascript:window.print()">Print / save as PDF</a>
@@ -132,7 +132,7 @@
       <div class="wrap">
         <p class="kicker">Specifications</p>
         <h2>Specifications</h2>
-        <p class="legend"><span class="tag tag-m" style="margin-left:0">measured V1.0</span> bench measurement on the V1.0 prototypes (see the <a href="../dvt/">DVT report</a>). <span class="tag tag-t">V2.0 target</span> design value, confirmed during V2.0 testing (Nov&ndash;Dec 2026). All other values are from the design.</p>
+        <p class="legend"><span class="tag tag-m" style="margin-left:0">measured V2.0</span> <span class="tag tag-m">measured V1.0</span> bench measurement on the V2.0 or V1.0 boards (see the <a href="../dvt/">DVT report</a>). <span class="tag tag-t">V2.0 target</span> design value, still to be confirmed in V2.0 testing (October&ndash;December 2026). All other values are from the design.</p>
         <div class="spec-grid">
           <div class="spec-group">
             <h3>Processor &amp; wireless</h3>
@@ -173,13 +173,13 @@
               <tbody>
             <tr><th>Power input</th><td>5&nbsp;V from USB&#8209;C, or the 5V_IN header pin (input only, with a 0.5&nbsp;A resettable fuse and a blocking diode)</td></tr>
             <tr><th>Battery</th><td>Single-cell 3.7&nbsp;V Li&#8209;ion / LiPo, JST&#8209;PH 2.0&nbsp;mm connector, polarity marked. 600&nbsp;mAh or larger recommended.</td></tr>
-            <tr><th>Charging</th><td>&asymp;300&nbsp;mA constant current to 4.20&nbsp;V, then tapers and stops at &asymp;7.5% of the charge current <span class="tag tag-t">V2.0 target</span><br><span class="sub">V1.0: 201&nbsp;mA, 4.19&nbsp;V, stopped at 7.6% <span class="tag tag-m">measured V1.0</span></span></td></tr>
-            <tr><th>Charge time</th><td>To be measured on V2.0<br><span class="sub">V1.0 at 200&nbsp;mA: about 5&nbsp;h per 1000&nbsp;mAh (estimate for a directly connected cell)</span></td></tr>
-            <tr><th>Battery protection</th><td>Over-charge, over-discharge (cuts off at &asymp;2.4&nbsp;V), over-current / short circuit, reverse battery polarity</td></tr>
-            <tr><th>Power switching</th><td>Automatic: runs from USB when plugged in (battery isolated), switches to the battery when USB is removed</td></tr>
+            <tr><th>Charging</th><td>303&nbsp;mA constant current <span class="tag tag-m">measured V2.0</span><br>to 4.20&nbsp;V, then tapers and stops at &asymp;8% of the charge current (23&ndash;25&nbsp;mA) <span class="tag tag-m">measured V2.0</span><br><span class="sub">V1.0: 201&nbsp;mA, 4.19&nbsp;V, stopped at 7.6% <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Charge time</th><td>About 5.4&nbsp;h per 1000&nbsp;mAh from empty on the test bench <span class="tag tag-m">measured V2.0</span><br><span class="sub">1,888&nbsp;mAh in 10.3&nbsp;h. The bench wiring adds resistance, so a cell plugged straight into the board charges a little faster. V1.0 on the bench: about 6.7&nbsp;h per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Battery protection</th><td>Over-charge, over-discharge (cuts off at &asymp;2.4&nbsp;V; 2.43&nbsp;V <span class="tag tag-m">measured V2.0</span>), over-current / short circuit, reverse battery polarity</td></tr>
+            <tr><th>Power switching</th><td>Automatic: runs from USB when plugged in (battery isolated), switches to the battery when USB is removed <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>3.3&nbsp;V regulator</th><td>Low-dropout regulator, 600&nbsp;mA</td></tr>
             <tr><th>Monitoring</th><td>Battery voltage on GPIO4 and USB voltage on GPIO2, each through a &frac12; divider (ADC1)</td></tr>
-            <tr><th>Low-battery shutdown</th><td>The Weather Clock and ESPHome firmware shut down cleanly before the 3.3&nbsp;V rail sags, and wake when USB is plugged in <span class="tag tag-t">V2.0 target</span></td></tr>
+            <tr><th>Low-battery shutdown</th><td>The Weather Clock warns at 3.45&nbsp;V and shuts down cleanly at 3.30&nbsp;V, before the 3.3&nbsp;V rail sags, then sleeps until USB is plugged in <span class="tag tag-m">measured V2.0</span><br><span class="sub">ESPHome configuration: same thresholds <span class="tag tag-t">V2.0 target</span></span></td></tr>
               </tbody>
             </table>
           </div>
@@ -187,10 +187,10 @@
             <h3>Power consumption (typical, 3.8&nbsp;V battery)</h3>
             <table class="spec-tbl">
               <tbody>
-            <tr><th>Weather Clock, Wi&#8209;Fi on</th><td>&asymp;70&nbsp;mA &mdash; about 14&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></td></tr>
+            <tr><th>Weather Clock</th><td>&asymp;41&nbsp;mA &mdash; about 24&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V2.0</span><br><span class="sub">Firmware 2.1: the Wi&#8209;Fi radio is off between weather updates on battery. Earlier firmware with Wi&#8209;Fi always on: &asymp;70&nbsp;mA, about 14&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></span></td></tr>
             <tr><th>Wi&#8209;Fi transmit peaks</th><td>Up to &asymp;400&nbsp;mA for microseconds <span class="tag tag-m">measured V1.0</span></td></tr>
-            <tr><th>Deep sleep</th><td>&asymp;0.3&nbsp;mA <span class="tag tag-t">V2.0 target</span><br><span class="sub">V1.0: 0.88&nbsp;mA <span class="tag tag-m">measured V1.0</span>; V2.0 lowers the power-LED current</span></td></tr>
-            <tr><th>After protection cutoff</th><td>&asymp;1&nbsp;&micro;A <span class="tag tag-m">measured V1.0</span></td></tr>
+            <tr><th>Deep sleep</th><td>&asymp;0.8&nbsp;mA <span class="tag tag-m">measured V2.0</span><br><span class="sub">Most of it is the standby current of the always-on LEDs. V1.0: 0.88&nbsp;mA <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>After protection cutoff</th><td>&asymp;1.2&nbsp;&micro;A <span class="tag tag-m">measured V2.0</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -292,7 +292,7 @@
           <li><a href="../docs/bom.csv">Bill of materials</a> (CSV)</li>
           <li><a href="../docs/spec-sheet.pdf">This spec sheet as a PDF</a></li>
           <li><a href="../dvt/">DVT report</a> with the battery discharge and charge results</li>
-          <li>Battery test data (CSV, 10-second averages): <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a></li>
+          <li>Battery test data (CSV, 10-second averages): V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>; V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a></li>
           <li><a href="https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf">ESP32&#8209;S3&#8209;WROOM&#8209;1 module datasheet</a> (Espressif)</li>
         </ul>
         <p class="disclaimer">Preliminary specifications for Crescent City V2.0. Values may change before production. Questions: <a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></p>
@@ -302,7 +302,7 @@
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <span>&copy; 2026 HW DESIGNS LLC &middot; Spec sheet, updated October 6, 2026</span>
+      <span>&copy; 2026 HW DESIGNS LLC &middot; Spec sheet, updated October 27, 2026</span>
       <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
     </div>
   </footer>

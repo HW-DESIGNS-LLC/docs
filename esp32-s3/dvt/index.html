@@ -296,19 +296,19 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <p class="kicker">Findings</p>
         <h2>What we found, and what changed for V2.0</h2>
         <div class="iss">
-  <div class="iss-head"><h3>Battery life: about 14 hours per 1000&nbsp;mAh</h3><span class="pill pill-pass">Confirmed</span></div>
+  <div class="iss-head"><h3>Battery life: about 14 hours per 1000&nbsp;mAh, 24 with firmware 2.1</h3><span class="pill pill-pass">Confirmed</span></div>
   <p class="iss-tag">Battery run &middot; October 2026</p>
-  <p>With the Weather Clock running and Wi&#8209;Fi always on, the board averages about 70&nbsp;mA. A full discharge of a real cell confirmed the estimate (<a href="#pwr-battery">see below</a>). For multi-day battery life, use deep sleep (0.88&nbsp;mA) between updates.</p>
+  <p>With the Weather Clock running and Wi&#8209;Fi always on, the board averages about 70&nbsp;mA. A full discharge of a real cell confirmed the estimate (<a href="#pwr-battery">see below</a>). Weather Clock 2.1 switches the radio off between weather updates on battery: about 41&nbsp;mA, or 24 hours per 1000&nbsp;mAh, on a V2.0 board (<a href="#pwr-battery-v2">see below</a>). For multi-day battery life, use deep sleep between updates.</p>
 </div>
         <div class="iss">
-  <div class="iss-head"><h3>When the battery runs out, the board keeps rebooting</h3><span class="pill pill-open">Fix in V2.0 firmware</span></div>
+  <div class="iss-head"><h3>When the battery runs out, the board keeps rebooting</h3><span class="pill pill-pass">Fixed in firmware 2.1</span></div>
   <p class="iss-tag">Battery run &middot; October 2026</p>
-  <p>For its last 2.5 hours on battery the board was on but not working: it rebooted over and over, then hung, until the battery protection cut off at 2.42&nbsp;V. The V2.0 firmware adds a low-battery shutdown: it shows a low-battery screen and sleeps until the board is charged. No hardware change is needed.</p>
+  <p>For its last 2.5 hours on battery the board was on but not working: it rebooted over and over, then hung, until the battery protection cut off at 2.42&nbsp;V. The Weather Clock now has a low-battery shutdown: it shows a low-battery screen and sleeps until the board is charged. No hardware change was needed. On a V2.0 board it shut down cleanly with no reboots (<a href="#pwr-battery-v2">see below</a>).</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>Charging works as designed</h3><span class="pill pill-pass">Pass</span></div>
   <p class="iss-tag">CHG &middot; 8 of 8 pass</p>
-  <p>Charge current 201&nbsp;mA (design value 196&nbsp;mA), full-charge voltage 4.20&nbsp;V, and a clean stop at 15&nbsp;mA with no restart. A full charge from empty is about 5 hours per 1000&nbsp;mAh. V2.0 raises the charge current to about 300&nbsp;mA.</p>
+  <p>Charge current 201&nbsp;mA (design value 196&nbsp;mA), full-charge voltage 4.20&nbsp;V, and a clean stop at 15&nbsp;mA with no restart. A full charge from empty is about 5 hours per 1000&nbsp;mAh. V2.0 charges at 303&nbsp;mA (<a href="#pwr-charging-v2">measured</a>).</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>USB did not connect on the first prototypes</h3><span class="pill pill-pass">Fixed</span></div>
@@ -348,15 +348,30 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
           </ul>
         </div>
 
+        <div id="pwr-battery-v2">
+          <h3 style="margin-top:44px">A full battery discharge on V2.0</h3>
+          <p>A V2.0 board ran Weather Clock 2.1 on the same kind of cell (18650, 4.12&nbsp;V at the start) until the firmware shut it down, then slept until USB was plugged in. Current, cell voltage and the 3.3&nbsp;V rail were logged every second.</p>
+          <figure>
+            <a href="../assets/dvt_bat_full_discharge_v2.png" title="Open full-size chart"><img src="../assets/dvt_bat_full_discharge_v2.png" alt="Two-panel chart of a full battery discharge on a V2.0 board. Left: over 45.5 hours the cell voltage falls from 4.12 V to about 3.7 V, then drops to 3.36 V; the 3.3 V rail stays flat the whole time; battery current sits near 41 mA with short spikes at each weather update. Right: the last two hours, with the low-battery warning at 3.45 V, the shutdown at 3.30 V at the battery connector, and deep sleep at about 0.8 mA while the cell recovers." loading="lazy"></a>
+            <figcaption><b>Fig. 2 &mdash;</b> Left: the whole run. Right: the end of the run. The short spikes are the weather updates, when the radio connects for a few seconds.</figcaption>
+          </figure>
+          <ul class="feat">
+            <li><b>45.5 hours working at about 41&nbsp;mA</b>, about 24 hours per 1000&nbsp;mAh. With the radio off between updates there were no &asymp;110&nbsp;mA stretches, and all 271 weather updates connected.</li>
+            <li><b>No reboots, no &ldquo;on but not working&rdquo; time.</b> The 3.3&nbsp;V rail held steady to the end.</li>
+            <li><b>Clean shutdown.</b> &ldquo;LOW&rdquo; warning at 3.45&nbsp;V, then the &ldquo;Battery low&rdquo; screen and deep sleep at 3.30&nbsp;V at the battery connector (cell 3.36&nbsp;V under load). The battery gauge reads the charge left before this point, so it reaches empty when the board shuts down.</li>
+            <li><b>Deep sleep about 0.8&nbsp;mA</b>, waking every 10 minutes for a moment to check for USB. Plugging in USB&#8209;C woke the board every time (19 of 19 in our tests).</li>
+          </ul>
+        </div>
+
         <h3 style="margin-top:44px">Where the current goes</h3>
-        <p>Most of the 70&nbsp;mA is the Wi&#8209;Fi radio staying connected; the display, sensor and processor add little. When network traffic keeps the radio awake the current rises to about 110&nbsp;mA, and short transmit pulses reach 400&nbsp;mA for microseconds without disturbing the 3.3&nbsp;V rail. Deep sleep between updates (0.88&nbsp;mA) is the way to multi-day battery life.</p>
+        <p>Most of the 70&nbsp;mA is the Wi&#8209;Fi radio staying connected; the display, sensor and processor add little. When network traffic keeps the radio awake the current rises to about 110&nbsp;mA, and short transmit pulses reach 400&nbsp;mA for microseconds without disturbing the 3.3&nbsp;V rail. Weather Clock 2.1 avoids most of this on battery by switching the radio off between updates. Deep sleep between updates (about 0.8&nbsp;mA on V2.0) is the way to multi-day battery life.</p>
 
         <div id="pwr-charging">
           <h3 style="margin-top:44px">Charging</h3>
           <p>The same V1.0 board then charged the same cell from empty to full over USB&#8209;C, again logged every second.</p>
           <figure>
             <a href="../assets/dvt_chg_simple.png" title="Open full-size chart"><img src="../assets/dvt_chg_simple.png" alt="Two-panel chart of a full charge from empty. Top: cell voltage rises from 3.0 V to about 4.0 V during constant-current charging, then creeps up to 4.19 V just under the 4.20 V charger limit. Bottom: charge current holds at 201 mA for 4.8 hours, then tapers and stops at 15 mA after 13.0 hours." loading="lazy"></a>
-            <figcaption><b>Fig. 2 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 12.2 hours is the current meter switching range, not the board.</figcaption>
+            <figcaption><b>Fig. 3 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 12.2 hours is the current meter switching range, not the board.</figcaption>
           </figure>
           <ul class="feat">
             <li><b>Constant current: 201&nbsp;mA</b> against a 196&nbsp;mA design value.</li>
@@ -366,12 +381,26 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
           </ul>
         </div>
 
+        <div id="pwr-charging-v2">
+          <h3 style="margin-top:44px">Charging on V2.0</h3>
+          <p>A V2.0 board charged the same kind of cell from empty (2.89&nbsp;V at rest, after the protection cutoff) over USB&#8209;C, logged every second. V2.0 raises the charge current from about 200 to about 300&nbsp;mA.</p>
+          <figure>
+            <a href="../assets/dvt_chg_v2.png" title="Open full-size chart"><img src="../assets/dvt_chg_v2.png" alt="Two-panel chart of a full charge from empty on a V2.0 board. Top: cell voltage rises from 3.0 V to about 4.0 V during 2.6 hours of constant-current charging, then creeps up to about 4.16 V under the 4.20 V charger limit. Bottom: charge current holds at 303 mA, then tapers and drops to zero at 10.3 hours." loading="lazy"></a>
+            <figcaption><b>Fig. 4 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 2.7 hours and the end of charging near 47&nbsp;mA are the current meter switching range, not the board.</figcaption>
+          </figure>
+          <ul class="feat">
+            <li><b>Constant current: 303&nbsp;mA</b> on two V2.0 boards (302.5 and 303&nbsp;mA), for about 2.6 hours on this cell.</li>
+            <li><b>1,888&nbsp;mAh in 10.3 hours on the test bench</b>, about 5.4 hours per 1000&nbsp;mAh, against 6.7 hours on V1.0. The bench wiring adds resistance, so a cell plugged straight into the board charges a little faster.</li>
+            <li><b>End of charge.</b> On the bench the meter&rsquo;s range change near 47&nbsp;mA ends the charge slightly early, as it did on V1.0. Two later charges with the meter taken out of the battery lead stopped cleanly at 23&ndash;25&nbsp;mA, about 8% of the charge current, as designed.</li>
+          </ul>
+        </div>
+
         <h3 style="margin-top:44px">How we tested</h3>
         <ul class="feat">
           <li><b>Current:</b> a power profiler in the battery or USB supply line, 1 sample per second (100,000 per second for short traces).</li>
           <li><b>Voltage:</b> a data logger on the cell, the board&rsquo;s battery input and the 3.3&nbsp;V rail, 1 sample per second.</li>
           <li><b>Firmware:</b> the Weather Clock that ships on the board, plus a heartbeat output and a serial status line to mark exactly when it stopped working.</li>
-          <li><b>Data:</b> <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>, 10-second averages (CSV).</li>
+          <li><b>Data:</b> V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>; V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a>; 10-second averages (CSV).</li>
         </ul>
       </div>
     </section>
@@ -959,16 +988,16 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <h2>Firmware and data</h2>
         <ul class="feat">
           <li><a href="../docs/DVT_Firmware_Guide.docx">DVT firmware guide</a> and the <a href="../docs/DVT_Helper.ino">DVT helper sketch</a>.</li>
-          <li><a href="../docs/battery_full_discharge_revA_10s.csv">Full battery discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a> data (CSV, 10-second averages).</li>
+          <li>V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full battery discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>, and V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a> data (CSV, 10-second averages).</li>
         </ul>
-        <p class="disclaimer">Engineering report for the V1.0 (Rev A) prototypes. Values are bench measurements on prototype hardware; production specifications may change. Board photos, guides, and downloads live on the <a href="../">product page</a>.</p>
+        <p class="disclaimer">Engineering report for the V1.0 (Rev A) prototypes, with the first V2.0 (Rev B) battery results. Values are bench measurements on prototype hardware; production specifications may change. Board photos, guides, and downloads live on the <a href="../">product page</a>.</p>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <span>&copy; 2026 HW DESIGNS LLC &middot; DVT Report, updated October 5, 2026</span>
+      <span>&copy; 2026 HW DESIGNS LLC &middot; DVT Report, updated October 27, 2026</span>
       <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
     </div>
   </footer>
