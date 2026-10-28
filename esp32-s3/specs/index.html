@@ -48,8 +48,19 @@
     .pin-tbl .pn{font-family:var(--mono);color:var(--label);width:56px}
     .note{margin:16px 0 0;color:var(--label);font-size:14px;max-width:70ch}
     .disclaimer{margin:40px 0 0;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--label)}
+    /* Key numbers (six cards: three per row on desktop) and per-group notes */
+    .keynums{grid-template-columns:repeat(3,1fr)}
+    .keynums + .legend{margin:14px 0 0}
+    .spec-group details.more{margin:8px 0 0}
+    .spec-group details.more > summary{padding:12px 16px;font-size:14px}
+    .spec-group .more-body{padding:0 16px 14px;font-size:14px}
+    .spec-group .more-body p{margin:0 0 8px;font-size:14px}
+    .legend-more{max-width:760px}
+    .legend-more .legend{margin:0}
     @media (max-width:980px){.spec-grid{grid-template-columns:1fr}}
+    @media (max-width:900px){.keynums{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:720px){.hl{grid-template-columns:1fr} .spec-tbl th{width:36%} .spec-tbl th,.spec-tbl td{padding:10px 12px;font-size:14.5px}}
+    @media (max-width:560px){.keynums{grid-template-columns:1fr}}
     @media print{
       @page{size:letter;margin:11mm}
       .site-header,.site-footer,.hero-actions,.skip,.crumb,#downloads .feat{display:none!important}
@@ -71,6 +82,23 @@
       .section{padding:4px 0} .spec-group{margin:6px 0 0}
       .spec-tbl th,.spec-tbl td{padding:2px 6px;line-height:1.3}
       .pin-tbl th,.pin-tbl td{padding:1.5px 6px}
+      .keynums{grid-template-columns:repeat(6,1fr)!important;gap:5px;margin:6px 0 0}
+      .keynums .spec{padding:5px 7px;border-radius:4px;break-inside:avoid}
+      .keynums .label{font-size:7px;letter-spacing:.06em}
+      .keynums .val{font-size:8.5px;line-height:1.3;margin-top:2px}
+      .keynums .big{font-size:15px;margin:1px 0}
+      .keynums .sub{font-size:7.5px;line-height:1.3;margin-top:2px}
+      .keynums + .legend{margin:3px 0 0}
+      details.more,.spec-group details.more{border:none;background:none;border-radius:0;margin:2px 0 0}
+      details.more > summary,.spec-group details.more > summary{padding:0;font-size:8.5px;color:#111}
+      details.more > summary::after{display:none}
+      .more-body,.spec-group .more-body{padding:0;font-size:8.5px;line-height:1.35;color:#333}
+      .more-body p,.spec-group .more-body p{margin:0 0 1px;font-size:8.5px;color:#333}
+      .legend-more > summary{display:none}
+      /* Two flowing columns instead of paired grid rows, so groups pack tightly and the sheet stays at two pages */
+      .spec-grid{display:block;column-count:2;column-gap:14px} .spec-grid .spec-group{margin:0 0 6px}
+      .hl li{font-size:9.5px;line-height:1.35}
+      .note{padding:3px 8px;border-top-width:2px;border-radius:4px}
     }
   </style>
 </head>
@@ -85,7 +113,7 @@
         <span class="brand-docs">SPECS</span>
       </a>
       <nav class="site-nav" aria-label="Spec sheet sections">
-        <a href="#highlights">Highlights</a>
+        <a href="#highlights">At a glance</a>
         <a href="#specs">Specifications</a>
         <a href="#pinout">Pinout</a>
         <a href="#downloads">Downloads</a>
@@ -100,14 +128,14 @@
       <h1>Crescent City &mdash; V2.0</h1>
       <p class="lede">An ESP32&#8209;S3 Wi&#8209;Fi and Bluetooth LE development board with a built-in 0.96&Prime; OLED, USB&#8209;C, and protected single-cell battery charging. Breadboard-friendly, fully documented, and running out of the box.</p>
       <div class="meta-row">
-        <span class="chip"><b>Board</b> V2.0 &middot; EE2026003B</span>
+        <span class="chip"><b>Board</b> V2.0 &middot; EE202603B</span>
         <span class="chip"><b>Status</b> Preliminary</span>
-        <span class="chip"><b>Updated</b> October 27, 2026</span>
+        <span class="chip"><b>Updated</b> October 28, 2026</span>
       </div>
       <div class="hero-actions">
         <a class="btn btn-light" href="javascript:window.print()">Print / save as PDF</a>
         <a class="btn btn-ghost" href="../">Board docs</a>
-        <a class="btn btn-ghost" href="../dvt/">DVT report</a>
+        <a class="btn btn-ghost" href="../dvt/v2/">V2.0 test report</a>
       </div>
     </div>
   </section>
@@ -115,15 +143,23 @@
   <main>
     <section id="highlights" class="section">
       <div class="wrap">
-        <p class="kicker">Highlights</p>
+        <p class="kicker">At a glance</p>
         <h2>What you get</h2>
+        <div class="grid-specs keynums">
+          <div class="spec"><div class="label">Module</div><div class="val"><span class="big">ESP32&#8209;S3</span>240&nbsp;MHz dual&#8209;core, 8&nbsp;MB flash<span class="sub">WROOM&#8209;1&#8209;N8 &middot; Wi&#8209;Fi&nbsp;4 + Bluetooth&nbsp;5&nbsp;LE &middot; no PSRAM</span></div></div>
+          <div class="spec"><div class="label">Charging</div><div class="val"><span class="big">303&nbsp;mA</span>over USB&#8209;C, to 4.2&nbsp;V<span class="sub">&asymp;5.4&nbsp;h per 1000&nbsp;mAh on the test bench</span></div></div>
+          <div class="spec"><div class="label">Battery life</div><div class="val"><span class="big">&asymp;24&nbsp;h</span>per 1000&nbsp;mAh<span class="sub">Weather Clock 2.1 at &asymp;41&nbsp;mA, Wi&#8209;Fi off between updates</span></div></div>
+          <div class="spec"><div class="label">Deep sleep</div><div class="val"><span class="big">0.78&nbsp;mA</span>after a low-battery shutdown<span class="sub">Above the 0.2&ndash;0.4&nbsp;mA target; &asymp;1.2&nbsp;&micro;A once the battery protection cuts off</span></div></div>
+          <div class="spec"><div class="label">Low-battery shutdown</div><div class="val"><span class="big">3.30&nbsp;V</span>warning at 3.45&nbsp;V<span class="sub">Weather Clock 2.1; sleeps until USB is plugged in</span></div></div>
+          <div class="spec"><div class="label">Size</div><div class="val"><span class="big">70.1&nbsp;&times;&nbsp;25.4</span>mm &middot; 13&nbsp;mm high &middot; 14&nbsp;g<span class="sub">Fits a standard breadboard</span></div></div>
+        </div>
+        <p class="legend">Charging, battery-life, sleep and shutdown figures are bench measurements on V2.0 boards (<a href="../dvt/v2/">V2.0 test report</a>, in progress).</p>
         <ul class="hl">
-          <li>ESP32&#8209;S3, dual-core 240&nbsp;MHz, 8&nbsp;MB flash, Wi&#8209;Fi 4 and Bluetooth 5 LE</li>
           <li>0.96&Prime; 128&times;64 OLED built in &mdash; no wiring, working out of the box</li>
           <li>Complete battery power: USB&#8209;C charging, cell protection, automatic USB/battery switching and battery monitoring</li>
           <li>Qwiic / STEMMA&nbsp;QT connector plus 12 GPIO on breadboard-friendly headers</li>
           <li>Ships with an open-source Weather Clock; Arduino and ESPHome / Home Assistant ready</li>
-          <li>Published schematic, 3D model and a 122-test validation report</li>
+          <li>Published schematic, 3D model and test reports (V1.0: 120 of 122 tests passed; V2.0 in progress)</li>
         </ul>
       </div>
     </section>
@@ -132,7 +168,12 @@
       <div class="wrap">
         <p class="kicker">Specifications</p>
         <h2>Specifications</h2>
-        <p class="legend"><span class="tag tag-m" style="margin-left:0">measured V2.0</span> <span class="tag tag-m">measured V1.0</span> bench measurement on the V2.0 or V1.0 boards (see the <a href="../dvt/">DVT report</a>). <span class="tag tag-t">V2.0 target</span> design value, still to be confirmed in V2.0 testing (October&ndash;December 2026). All other values are from the design.</p>
+        <details class="more legend-more">
+          <summary>How to read the tags</summary>
+          <div class="more-body">
+            <p class="legend"><span class="tag tag-m" style="margin-left:0">measured V2.0</span> <span class="tag tag-m">measured V1.0</span> bench measurement on the V2.0 or V1.0 boards (see the <a href="../dvt/v2/">V2.0 test report</a> and the <a href="../dvt/">V1.0 test report</a>). <span class="tag tag-t">V2.0 target</span> design value, still to be confirmed in V2.0 testing (October&ndash;December 2026). All other values are from the design.</p>
+          </div>
+        </details>
         <div class="spec-grid">
           <div class="spec-group">
             <h3>Processor &amp; wireless</h3>
@@ -171,28 +212,48 @@
             <h3>Power &amp; battery</h3>
             <table class="spec-tbl">
               <tbody>
-            <tr><th>Power input</th><td>5&nbsp;V from USB&#8209;C, or the 5V_IN header pin (input only, with a 0.5&nbsp;A resettable fuse and a blocking diode)</td></tr>
+            <tr><th>Power input</th><td>5&nbsp;V from USB&#8209;C, or the 5V_IN header pin (input only, with a 0.5&nbsp;A resettable fuse and a blocking diode). A standard 500&nbsp;mA USB port is enough. <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>Battery</th><td>Single-cell 3.7&nbsp;V Li&#8209;ion / LiPo, JST&#8209;PH 2.0&nbsp;mm connector, polarity marked. 600&nbsp;mAh or larger recommended.</td></tr>
-            <tr><th>Charging</th><td>303&nbsp;mA constant current <span class="tag tag-m">measured V2.0</span><br>to 4.20&nbsp;V, then tapers and stops at &asymp;8% of the charge current (23&ndash;25&nbsp;mA) <span class="tag tag-m">measured V2.0</span><br><span class="sub">V1.0: 201&nbsp;mA, 4.19&nbsp;V, stopped at 7.6% <span class="tag tag-m">measured V1.0</span></span></td></tr>
-            <tr><th>Charge time</th><td>About 5.4&nbsp;h per 1000&nbsp;mAh from empty on the test bench <span class="tag tag-m">measured V2.0</span><br><span class="sub">1,888&nbsp;mAh in 10.3&nbsp;h. The bench wiring adds resistance, so a cell plugged straight into the board charges a little faster. V1.0 on the bench: about 6.7&nbsp;h per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Charging</th><td>303&nbsp;mA constant current <span class="tag tag-m">measured V2.0</span><br>to 4.2&nbsp;V (measured 4.17&nbsp;V at the cell), then tapers and stops at &asymp;8% of the charge current (23&ndash;25&nbsp;mA) <span class="tag tag-m">measured V2.0</span></td></tr>
+            <tr><th>Charge time</th><td>About 5.4&nbsp;h per 1000&nbsp;mAh from empty on the test bench <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>Battery protection</th><td>Over-charge, over-discharge (cuts off at &asymp;2.4&nbsp;V; 2.43&nbsp;V <span class="tag tag-m">measured V2.0</span>), over-current / short circuit, reverse battery polarity</td></tr>
             <tr><th>Power switching</th><td>Automatic: runs from USB when plugged in (battery isolated), switches to the battery when USB is removed <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>3.3&nbsp;V regulator</th><td>Low-dropout regulator, 600&nbsp;mA</td></tr>
             <tr><th>Monitoring</th><td>Battery voltage on GPIO4 and USB voltage on GPIO2, each through a &frac12; divider (ADC1)</td></tr>
-            <tr><th>Low-battery shutdown</th><td>The Weather Clock warns at 3.45&nbsp;V and shuts down cleanly at 3.30&nbsp;V, before the 3.3&nbsp;V rail sags, then sleeps until USB is plugged in <span class="tag tag-m">measured V2.0</span><br><span class="sub">ESPHome configuration: same thresholds <span class="tag tag-t">V2.0 target</span></span></td></tr>
+            <tr><th>Low-battery shutdown</th><td>The Weather Clock warns at 3.45&nbsp;V and shuts down at 3.30&nbsp;V, then sleeps until USB is plugged in <span class="tag tag-m">measured V2.0</span><br>ESPHome configuration: same thresholds <span class="tag tag-t">V2.0 target</span></td></tr>
               </tbody>
             </table>
+            <details class="more">
+              <summary>Notes and V1.0 comparison</summary>
+              <div class="more-body">
+                <p><strong>USB input:</strong> charging with Wi&#8209;Fi on, the board draws 363&nbsp;mA from USB. <span class="tag tag-m">measured V2.0</span></p>
+                <p><strong>Charger temperature:</strong> the charger chip runs at &asymp;55&nbsp;&deg;C while charging at 303&nbsp;mA (limit 85&nbsp;&deg;C). <span class="tag tag-m">measured V2.0</span></p>
+                <p><strong>Charge time:</strong> 1,888&nbsp;mAh in 10.3&nbsp;h. The bench wiring adds resistance, so a cell plugged straight into the board charges a little faster.</p>
+                <p><strong>Low-battery shutdown:</strong> the 3.30&nbsp;V shutdown comes before the 3.3&nbsp;V rail sags, so the board stops cleanly, with no reboots.</p>
+                <p><strong>V1.0:</strong> charged at 201&nbsp;mA and stopped at 7.6%; about 6.7&nbsp;h per 1000&nbsp;mAh on the bench. <span class="tag tag-m">measured V1.0</span></p>
+                <p>Full results: <a href="../dvt/v2/#charging">V2.0 charging</a> &middot; <a href="../dvt/v2/#battery">V2.0 battery life and low-battery shutdown</a></p>
+              </div>
+            </details>
           </div>
           <div class="spec-group">
-            <h3>Power consumption (typical, 3.8&nbsp;V battery)</h3>
+            <h3>Power consumption (typical, on battery)</h3>
             <table class="spec-tbl">
               <tbody>
-            <tr><th>Weather Clock</th><td>&asymp;41&nbsp;mA &mdash; about 24&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V2.0</span><br><span class="sub">Firmware 2.1: the Wi&#8209;Fi radio is off between weather updates on battery. Earlier firmware with Wi&#8209;Fi always on: &asymp;70&nbsp;mA, about 14&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Weather Clock 2.1</th><td>&asymp;41&nbsp;mA &mdash; about 24&nbsp;hours per 1000&nbsp;mAh <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>Wi&#8209;Fi transmit peaks</th><td>Up to &asymp;400&nbsp;mA for microseconds <span class="tag tag-m">measured V1.0</span></td></tr>
-            <tr><th>Deep sleep</th><td>&asymp;0.8&nbsp;mA <span class="tag tag-m">measured V2.0</span><br><span class="sub">Most of it is the standby current of the always-on LEDs. V1.0: 0.88&nbsp;mA <span class="tag tag-m">measured V1.0</span></span></td></tr>
+            <tr><th>Deep sleep</th><td>0.78&nbsp;mA after a low-battery shutdown, above the 0.2&ndash;0.4&nbsp;mA target <span class="tag tag-m">measured V2.0</span><br>Most of it is likely the RGB LED&rsquo;s standby current; we are confirming that.</td></tr>
             <tr><th>After protection cutoff</th><td>&asymp;1.2&nbsp;&micro;A <span class="tag tag-m">measured V2.0</span></td></tr>
               </tbody>
             </table>
+            <details class="more">
+              <summary>Notes and V1.0 comparison</summary>
+              <div class="more-body">
+                <p><strong>Weather Clock 2.1:</strong> on battery the Wi&#8209;Fi radio is off between weather updates, so the board is not reachable on your network in between. The &asymp;41&nbsp;mA is the average over a full discharge down to the 3.30&nbsp;V shutdown.</p>
+                <p><strong>Wi&#8209;Fi always on</strong> (firmware 1.0): &asymp;70&nbsp;mA, about 14&ndash;14.5&nbsp;hours per 1000&nbsp;mAh. <span class="tag tag-m">measured V1.0</span> <span class="tag tag-m">measured V2.0</span></p>
+                <p><strong>Flat battery left connected:</strong> it reaches the protection cutoff in about 3&ndash;6 days, then the board draws &asymp;1.2&nbsp;&micro;A.</p>
+                <p><strong>V1.0 deep sleep:</strong> 0.88&nbsp;mA. <span class="tag tag-m">measured V1.0</span></p>
+              </div>
+            </details>
           </div>
           <div class="spec-group">
             <h3>I/O &amp; expansion</h3>
@@ -235,9 +296,9 @@
             <h3>Software</h3>
             <table class="spec-tbl">
               <tbody>
-            <tr><th>Ships with</th><td>Weather Clock: local time and weather over Wi&#8209;Fi, with Wi&#8209;Fi setup from your phone. Open source (MIT license).</td></tr>
-            <tr><th>Arduino</th><td>&ldquo;esp32 by Espressif Systems&rdquo; board package, board &ldquo;ESP32S3 Dev Module&rdquo;</td></tr>
-            <tr><th>ESPHome / Home Assistant</th><td>Ready-made configuration: clock and status pages, battery level, Qwiic sensor, RGB LED, updates over Wi&#8209;Fi</td></tr>
+            <tr><th>Ships with</th><td>Weather Clock 2.1.6: local time and weather over Wi&#8209;Fi, with Wi&#8209;Fi setup from your phone. Open source (MIT license).</td></tr>
+            <tr><th>Arduino</th><td>&ldquo;esp32 by Espressif Systems&rdquo; board package 3.3.6 (not 3.3.7&ndash;3.3.10, which have a Bluetooth bug), board &ldquo;ESP32S3 Dev Module&rdquo;</td></tr>
+            <tr><th>ESPHome / Home Assistant</th><td>Ready-made configuration 1.1.1, installed from your browser: clock and status pages, battery level, RGB LED, updates over Wi&#8209;Fi. Temperature and humidity with a Qwiic SHT4x sensor (not included).</td></tr>
             <tr><th>Other</th><td>ESP&#8209;IDF, MicroPython and CircuitPython should work with their generic ESP32&#8209;S3 builds (not yet tested by us)</td></tr>
               </tbody>
             </table>
@@ -248,7 +309,7 @@
               <tbody>
             <tr><th>Operating temperature</th><td>&minus;40 to +85&nbsp;&deg;C (ESP32&#8209;S3 module rating). With a battery fitted, stay within the battery&rsquo;s own limits.</td></tr>
             <tr><th>Charging temperature</th><td>0 to 45&nbsp;&deg;C (battery limit; the charger has no temperature sensor)</td></tr>
-            <tr><th>Certification</th><td>FCC / ISED testing is planned before shipping. The ESP32&#8209;S3 module itself is pre-certified.</td></tr>
+            <tr><th>Certification</th><td>Not yet tested. FCC / ISED testing is planned before shipping.</td></tr>
               </tbody>
             </table>
           </div>
@@ -261,7 +322,7 @@
         <p class="kicker">Pinout</p>
         <h2>Header pins</h2>
         <table class="pin-tbl">
-          <thead><tr><th>Pin</th><th>J4 (bottom row)</th><th>J5 (top row)</th></tr></thead>
+          <thead><tr><th>Pin</th><th>J4 (left, antenna up)</th><th>J5 (right)</th></tr></thead>
           <tbody>
             <tr><td class="pn">1</td><td>GND</td><td>GND</td></tr>
             <tr><td class="pn">2</td><td>3V3</td><td>3V3</td></tr>
@@ -291,7 +352,7 @@
           <li><a href="../docs/3D.step">3D model</a> (STEP)</li>
           <li><a href="../docs/bom.csv">Bill of materials</a> (CSV)</li>
           <li><a href="../docs/spec-sheet.pdf">This spec sheet as a PDF</a></li>
-          <li><a href="../dvt/">DVT report</a> with the battery discharge and charge results</li>
+          <li><a href="../dvt/">V1.0 test report</a>: 120 of 122 tests passed &middot; <a href="../dvt/v2/">V2.0 test report</a>: in progress, with the battery discharge and charge results</li>
           <li>Battery test data (CSV, 10-second averages): V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>; V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a></li>
           <li><a href="https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf">ESP32&#8209;S3&#8209;WROOM&#8209;1 module datasheet</a> (Espressif)</li>
         </ul>
@@ -302,7 +363,7 @@
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <span>&copy; 2026 HW DESIGNS LLC &middot; Spec sheet, updated October 27, 2026</span>
+      <span>&copy; 2026 HW DESIGNS LLC &middot; Spec sheet, updated October 28, 2026</span>
       <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
     </div>
   </footer>

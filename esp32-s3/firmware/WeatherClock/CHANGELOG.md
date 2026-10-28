@@ -5,12 +5,12 @@
 - **Charging icon:** on USB with the battery already full, or with no battery
   fitted, the charger stays idle and the icon used to keep showing
   "charging". It now shows 4 bars after 20 minutes ("idle" on the info page).
-  Checked against three full V2.0 charges: no change to when "topping off"
-  and "full" appear.
+  Replayed on four recorded V2.0 charge logs (not yet checked live): no
+  change to when "topping off" and "full" appear.
 
 ## 2.1.5 (2026-10-28)
 
-Tested on Crescent City V2.0 boards.
+Tested on a Crescent City V2.0 board.
 
 - **Location setup:** country, state or province, and city (a ZIP or postal
   code also works), or "latitude, longitude". The board shows the place it
@@ -34,6 +34,6 @@ Tested on Crescent City V2.0 boards.
 - **Calibration:** optional per-board battery-reading offset, set over the
   Serial Monitor (`cal <volts>`, `cal reset`, `info`).
 
-## 2026-10-06
+## 1.0 (2026-10-06)
 
 - First public release with the board's Crescent City name.

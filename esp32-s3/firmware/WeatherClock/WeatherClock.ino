@@ -55,7 +55,7 @@
  *   80 MHz on battery. This cuts the average current (about 41 mA instead of
  *   about 70 mA on V2.0 boards) and stops network traffic from keeping the
  *   radio awake. On USB the board stays connected at 240 MHz. Set
- *   BATT_WIFI_MODE below: 0 = always connected (firmware 2.0 behaviour),
+ *   BATT_WIFI_MODE below: 0 = always connected (firmware 1.0 behaviour),
  *   1 = always connected with maximum modem sleep, 2 = radio off between
  *   updates (default).
  *
@@ -72,7 +72,7 @@
  *   Board:            "ESP32S3 Dev Module"
  *   USB CDC On Boot:  Enabled
  *   Flash Size:       8MB
- *   Partition Scheme: Default (or any scheme with >= 1.5 MB app space)
+ *   Partition Scheme: 8M with spiffs (3MB APP/1.5MB SPIFFS)
  *   Serial Monitor:   115200 baud
  *   Core:             esp32 by Espressif Systems 3.3.6 (not 3.3.7-3.3.10)
  *
@@ -188,7 +188,7 @@
 #define CHG_RECHARGE_V  4.00f    // shown full but 1-min average below this -> charging again
 // Charger idle (battery already full when USB was plugged in, or no battery):
 // the reading sits still below the top-off level. While charging, the 1-min
-// averages always spread over 18 mV or more in 20 min (three V2.0 charges);
+// averages always spread over 18 mV or more in 20 min (four V2.0 charges);
 // an idle charger stays within about 3 mV.
 #define CHG_IDLE_MIN    20       // minutes of history used for "idle"
 #define CHG_IDLE_SPREAD 0.006f   // max - min of the 1-min averages over CHG_IDLE_MIN at or below this...

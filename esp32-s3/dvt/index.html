@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <!--
-  HW Designs — DVT report (generated from the DVT tracker + DVT plan + PWR-02 capture)
-  Rebuilt July 21, 2026; simplified October 5, 2026. Styling: ../../assets/site.css. Page-specific styles below.
+  HW Designs — DVT report V1.0 (first prototypes). The current board has its own report in v2/.
+  Rebuilt July 21, 2026; simplified October 5, 2026; V2.0 results moved to v2/ on October 28, 2026. Styling: ../../assets/site.css. Page-specific styles below.
 -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DVT Report — Crescent City Rev A · HW Designs</title>
-  <meta name="description" content="Design-verification report for the HW Designs ESP32-S3 development board Rev A: 122 tests across 16 subsystems, battery life and charging measurements, and what changed for V2.0.">
-  <meta property="og:title" content="DVT Report — Crescent City Rev A">
+  <title>DVT Report — Crescent City V1.0 · HW Designs</title>
+  <meta name="description" content="Design-verification report for the first Crescent City prototypes (V1.0, Rev A): 122 tests across 16 subsystems, a full battery discharge and a full charge, and what changed for V2.0.">
+  <meta property="og:title" content="DVT Report — Crescent City V1.0">
   <meta property="og:url" content="https://docs.hwdesigns.us/esp32-s3/dvt/">
-  <meta property="og:description" content="How the ESP32-S3 dev board was tested: 122 bench tests, a full battery discharge and a full charge, with the data.">
+  <meta property="og:description" content="How the first Crescent City prototypes were tested: 122 bench tests (120 pass), a full battery discharge and a full charge, with the data.">
   <meta property="og:image" content="https://docs.hwdesigns.us/esp32-s3/assets/dvt_bat_full_discharge.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="light dark">
@@ -173,22 +173,26 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <a href="#power">Battery &amp; power</a>
         <a href="#results">All tests</a>
         <a href="#downloads">Downloads</a>
+        <a href="v2/">V2.0 report</a>
       </nav>
     </div>
   </header>
 
   <section class="hero">
     <div class="wrap">
-      <p class="crumb"><a href="../../">Docs</a> &rsaquo; <a href="../">Crescent City</a> &rsaquo; DVT Report</p>
+      <p class="crumb"><a href="../../">Docs</a> &rsaquo; <a href="../">Crescent City</a> &rsaquo; DVT Report V1.0</p>
       <p class="eyebrow"><span class="rgb-dot" aria-hidden="true"></span>Design Verification Testing</p>
-      <h1>DVT Report &mdash; Rev A</h1>
-      <p class="lede">How the first prototypes of Crescent City (V1.0, Rev&nbsp;A) were tested: 122 bench tests across 16 subsystems, plus long battery runs with the Weather Clock firmware that ships on the board.</p>
+      <h1>DVT Report &mdash; V1.0</h1>
+      <p class="lede">How the first prototypes of Crescent City (V1.0, Rev&nbsp;A) were tested: 122 bench tests across 16 subsystems, plus a full battery discharge and a full charge.</p>
       <div class="meta-row">
         <span class="chip"><b>Board</b> V1.0 (Rev A) &middot; ESP32-S3-WROOM-1-N8</span>
         <span class="chip"><b>Tests</b> 122</span>
         <span class="chip"><b>Pass</b> 120</span>
         <span class="chip"><b>Fail</b> 2</span>
-        <span class="chip"><b>Updated</b> October 5, 2026</span>
+        <span class="chip"><b>Updated</b> October 28, 2026</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:26px">
+        <a class="btn btn-light" href="v2/">Current board: V2.0 report &rarr;</a>
       </div>
     </div>
   </section>
@@ -198,12 +202,12 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
       <div class="wrap">
         <p class="kicker">Summary</p>
         <h2>120 of 122 tests pass</h2>
-        <p class="section-intro">Every planned test was run on the V1.0 prototypes. The two failures &mdash; a USB part and a tight breadboard fit &mdash; are explained under <a href="#findings">Findings</a>. The numbers most people ask about:</p>
-        <div class="grid-specs">
-          <div class="spec"><div class="label">Battery life</div><div class="val"><span class="big">14</span> h per 1000&nbsp;mAh<br><span style="font-size:13px;color:var(--label)">Weather Clock, Wi&#8209;Fi on, &asymp;70&nbsp;mA</span></div></div>
-          <div class="spec"><div class="label">Charging</div><div class="val"><span class="big">201</span> mA<br><span style="font-size:13px;color:var(--label)">V2.0: &asymp;300&nbsp;mA</span></div></div>
-          <div class="spec"><div class="label">Deep sleep</div><div class="val"><span class="big">0.88</span> mA<br><span style="font-size:13px;color:var(--label)">on battery</span></div></div>
-          <div class="spec"><div class="label">Battery cutoff</div><div class="val"><span class="big">2.42</span> V<br><span style="font-size:13px;color:var(--label)">then &asymp;1&nbsp;&micro;A</span></div></div>
+        <p class="section-intro">Every planned test was run on the V1.0 prototypes. The breadboard fit is fixed on V2.0, and the USB part works on the first V2.0 boards (see <a href="#findings">Findings</a>). The current board has its own <a href="v2/">V2.0 report</a>. The numbers most people ask about:</p>
+        <div class="grid-specs keynums">
+          <div class="spec"><div class="label">Battery life</div><div class="val"><span class="big">14&nbsp;h</span>per 1000&nbsp;mAh<span class="sub">Weather Clock 1.0, Wi&#8209;Fi always on, &asymp;70&nbsp;mA. With firmware 2.1 on V2.0: &asymp;24&nbsp;h.</span></div></div>
+          <div class="spec"><div class="label">Charging</div><div class="val"><span class="big">201&nbsp;mA</span>constant current<span class="sub">V2.0: 303&nbsp;mA</span></div></div>
+          <div class="spec"><div class="label">Deep sleep</div><div class="val"><span class="big">0.88&nbsp;mA</span>on battery<span class="sub">V2.0: 0.78&nbsp;mA</span></div></div>
+          <div class="spec"><div class="label">Battery cutoff</div><div class="val"><span class="big">2.42&nbsp;V</span>battery protection<span class="sub">then &asymp;1.2&nbsp;&micro;A</span></div></div>
         </div>
         <div class="sum-grid">
           <a class="sum-card sum-bad" href="#sub-vis">
@@ -298,27 +302,27 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <div class="iss">
   <div class="iss-head"><h3>Battery life: about 14 hours per 1000&nbsp;mAh, 24 with firmware 2.1</h3><span class="pill pill-pass">Confirmed</span></div>
   <p class="iss-tag">Battery run &middot; October 2026</p>
-  <p>With the Weather Clock running and Wi&#8209;Fi always on, the board averages about 70&nbsp;mA. A full discharge of a real cell confirmed the estimate (<a href="#pwr-battery">see below</a>). Weather Clock 2.1 switches the radio off between weather updates on battery: about 41&nbsp;mA, or 24 hours per 1000&nbsp;mAh, on a V2.0 board (<a href="#pwr-battery-v2">see below</a>). For multi-day battery life, use deep sleep between updates.</p>
+  <p>With Weather Clock 1.0 running and Wi&#8209;Fi always on, the board averages about 70&nbsp;mA: 25.4 hours of working time on a full cell (<a href="#pwr-battery">see below</a>). Weather Clock 2.1 turns the radio off between weather updates and slows the processor on battery: about 41&nbsp;mA, or 24 hours per 1000&nbsp;mAh, measured on a V2.0 board (<a href="v2/#battery">V2.0 report</a>).</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>When the battery runs out, the board keeps rebooting</h3><span class="pill pill-pass">Fixed in firmware 2.1</span></div>
   <p class="iss-tag">Battery run &middot; October 2026</p>
-  <p>For its last 2.5 hours on battery the board was on but not working: it rebooted over and over, then hung, until the battery protection cut off at 2.42&nbsp;V. The Weather Clock now has a low-battery shutdown: it shows a low-battery screen and sleeps until the board is charged. No hardware change was needed. On a V2.0 board it shut down cleanly with no reboots (<a href="#pwr-battery-v2">see below</a>).</p>
+  <p>For its last 2.5 hours on battery the board was on but not working: it rebooted over and over, then hung, until the battery protection cut off at 2.42&nbsp;V. Weather Clock 2.1 adds a low-battery shutdown: it warns at 3.45&nbsp;V, shows a low-battery screen at 3.30&nbsp;V and sleeps until USB is plugged in. No hardware change was needed. On a V2.0 board it shut down cleanly with no reboots (<a href="v2/#battery">V2.0 report</a>).</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>Charging works as designed</h3><span class="pill pill-pass">Pass</span></div>
   <p class="iss-tag">CHG &middot; 8 of 8 pass</p>
-  <p>Charge current 201&nbsp;mA (design value 196&nbsp;mA), full-charge voltage 4.20&nbsp;V, and a clean stop at 15&nbsp;mA with no restart. A full charge from empty is about 5 hours per 1000&nbsp;mAh. V2.0 charges at 303&nbsp;mA (<a href="#pwr-charging-v2">measured</a>).</p>
+  <p>Charge current 201&nbsp;mA (design value 196&nbsp;mA), the cell reaches 4.19&nbsp;V (4.20&nbsp;V charger setting), and charging stops cleanly at 15&nbsp;mA with no restart. A full charge from empty took 6.7 hours per 1000&nbsp;mAh on the test bench. V2.0 charges at 303&nbsp;mA (<a href="v2/#charging">V2.0 report</a>).</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>USB did not connect on the first prototypes</h3><span class="pill pill-pass">Fixed</span></div>
   <p class="iss-tag">MCU-001 &middot; fail</p>
-  <p>The USB protection part on the first prototype boards blocked the USB data lines. After rework, USB connects and flashes normally, and USB is checked on every board in the factory test.</p>
+  <p>The USB protection part on the first prototype boards blocked the USB data lines. After rework, USB connects and flashes normally. The first V2.0 boards connect normally, and USB is checked on every board in the factory test.</p>
 </div>
         <div class="iss">
-  <div class="iss-head"><h3>Tight fit in a breadboard</h3><span class="pill pill-open">Re-check on V2.0</span></div>
+  <div class="iss-head"><h3>Tight fit in a breadboard</h3><span class="pill pill-pass">Fixed on V2.0</span></div>
   <p class="iss-tag">VIS-011 &middot; fail</p>
-  <p>The header rows are on the standard 2.54&nbsp;mm grid; the pins tilted slightly when the headers were soldered, so the board takes extra force to press in. Breadboard fit is re-checked on the V2.0 boards.</p>
+  <p>The header rows are on the standard 2.54&nbsp;mm grid; the pins tilted slightly when the headers were soldered, so the first prototypes took extra force to press in. The V2.0 boards seat in a standard breadboard.</p>
 </div>
         <div class="iss">
   <div class="iss-head"><h3>Smaller changes for V2.0</h3><span class="pill pill-pass">Done</span></div>
@@ -333,75 +337,78 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <p class="kicker">Battery &amp; power</p>
         <h2>Battery life, low-battery behavior and charging</h2>
 
+        <p class="section-intro">A V1.0 board ran test builds of the Weather Clock (firmware 1.0, Wi&#8209;Fi always on) through one full discharge and one full charge, logged every second. The V2.0 runs with firmware 2.1 are in the <a href="v2/#battery">V2.0 report</a>.</p>
+        <div class="grid-specs keynums">
+          <div class="spec"><div class="label">Working time</div><div class="val"><span class="big">25.4&nbsp;h</span>at &asymp;70&nbsp;mA<span class="sub">about 14&nbsp;h per 1000&nbsp;mAh</span></div></div>
+          <div class="spec"><div class="label">On, not working</div><div class="val"><span class="big">2.5&nbsp;h</span>before the cutoff<span class="sub">reboot loops; fixed in firmware 2.1</span></div></div>
+          <div class="spec"><div class="label">Charge current</div><div class="val"><span class="big">201&nbsp;mA</span>constant current<span class="sub">stops at 15&nbsp;mA (7.6&nbsp;%)</span></div></div>
+          <div class="spec"><div class="label">Charge time</div><div class="val"><span class="big">6.7&nbsp;h</span>per 1000&nbsp;mAh<span class="sub">on the test bench</span></div></div>
+        </div>
+
         <div id="pwr-battery">
-          <h3>A full battery discharge</h3>
+          <h3 style="margin-top:44px">A full battery discharge</h3>
+          <p>25.4 hours working at about 70&nbsp;mA, then 2.5 hours on but not working before the battery protection cut off at 2.42&nbsp;V.</p>
+          <details class="more">
+            <summary>Chart and details</summary>
+            <div class="more-body">
           <p>A V1.0 board ran the Weather Clock on a single Li&#8209;ion cell (18650, 4.06&nbsp;V at the start) until the battery protection switched it off. Current, cell voltage and the 3.3&nbsp;V rail were logged every second for 28 hours.</p>
           <figure>
             <a href="../assets/dvt_bat_full_discharge.png" title="Open full-size chart"><img src="../assets/dvt_bat_full_discharge.png" alt="Two-panel chart of a full battery discharge. Left: over 28 hours the cell voltage falls from 4.06 V to about 3.7 V by hour 23, then drops steeply; the 3.3 V rail holds flat until about hour 25; battery current sits near 68 mA with a few 110 to 120 mA bumps. Right: the last four hours, shaded into phases (working, rail sags, reboot loop, hardware reset loop, hung), ending at the protection cutoff at 2.42 V, where the current drops to zero." loading="lazy"></a>
-            <figcaption><b>Fig. 1 &mdash;</b> Left: the whole run. Right: the last four hours. The short &asymp;110&nbsp;mA bumps are stretches when network traffic keeps the Wi&#8209;Fi radio awake.</figcaption>
+            <figcaption><b>Fig. 1 &mdash;</b> Left: the whole run. Right: the last four hours. The &asymp;110&nbsp;mA episodes (20&ndash;25 minutes, about every 8 hours) are stretches when network traffic keeps the Wi&#8209;Fi radio awake.</figcaption>
           </figure>
           <ul class="feat">
-            <li><b>25.4 hours working</b> at about 70&nbsp;mA. The 3.3&nbsp;V rail held steady the whole time.</li>
+            <li><b>25.4 hours working</b> at about 70&nbsp;mA. The 3.3&nbsp;V rail held steady until the last half hour.</li>
             <li><b>Then 2.5 hours on but not working.</b> As the cell ran low, the 3.3&nbsp;V rail sagged and the board rebooted hundreds of times, then kept resetting before the firmware could start, and finally hung at about 8&nbsp;mA.</li>
-            <li><b>Protection cutoff at 2.42&nbsp;V.</b> The battery protection disconnected the cell; the board then draws about 1&nbsp;&micro;A.</li>
-            <li><b>The fix is firmware.</b> The board already measures its battery voltage, so the V2.0 firmware shuts down cleanly before the rail starts to sag. That gives up about 30 minutes of runtime.</li>
+            <li><b>Protection cutoff at 2.42&nbsp;V.</b> The battery protection disconnected the cell; the board then draws about 1.2&nbsp;&micro;A.</li>
+            <li><b>The fix is firmware.</b> The board already measures its battery voltage, so Weather Clock 2.1 shuts down cleanly before the rail starts to sag. That gives up about 30 minutes of runtime.</li>
           </ul>
+            </div>
+          </details>
         </div>
 
         <div id="pwr-battery-v2">
-          <h3 style="margin-top:44px">A full battery discharge on V2.0</h3>
-          <p>A V2.0 board ran Weather Clock 2.1 on the same kind of cell (18650, 4.12&nbsp;V at the start) until the firmware shut it down, then slept until USB was plugged in. Current, cell voltage and the 3.3&nbsp;V rail were logged every second.</p>
-          <figure>
-            <a href="../assets/dvt_bat_full_discharge_v2.png" title="Open full-size chart"><img src="../assets/dvt_bat_full_discharge_v2.png" alt="Two-panel chart of a full battery discharge on a V2.0 board. Left: over 45.5 hours the cell voltage falls from 4.12 V to about 3.7 V, then drops to 3.36 V; the 3.3 V rail stays flat the whole time; battery current sits near 41 mA with short spikes at each weather update. Right: the last two hours, with the low-battery warning at 3.45 V, the shutdown at 3.30 V at the battery connector, and deep sleep at about 0.8 mA while the cell recovers." loading="lazy"></a>
-            <figcaption><b>Fig. 2 &mdash;</b> Left: the whole run. Right: the end of the run. The short spikes are the weather updates, when the radio connects for a few seconds.</figcaption>
-          </figure>
-          <ul class="feat">
-            <li><b>45.5 hours working at about 41&nbsp;mA</b>, about 24 hours per 1000&nbsp;mAh. With the radio off between updates there were no &asymp;110&nbsp;mA stretches, and all 271 weather updates connected.</li>
-            <li><b>No reboots, no &ldquo;on but not working&rdquo; time.</b> The 3.3&nbsp;V rail held steady to the end.</li>
-            <li><b>Clean shutdown.</b> &ldquo;LOW&rdquo; warning at 3.45&nbsp;V, then the &ldquo;Battery low&rdquo; screen and deep sleep at 3.30&nbsp;V at the battery connector (cell 3.36&nbsp;V under load). The battery gauge reads the charge left before this point, so it reaches empty when the board shuts down.</li>
-            <li><b>Deep sleep about 0.8&nbsp;mA</b>, waking every 10 minutes for a moment to check for USB. Plugging in USB&#8209;C woke the board every time (19 of 19 in our tests).</li>
-          </ul>
+          <p class="footnote">V2.0 with Weather Clock 2.1: 45.5 hours at about 41&nbsp;mA (about 24 hours per 1000&nbsp;mAh), then a clean shutdown at 3.30&nbsp;V &mdash; <a href="v2/#battery">see the V2.0 report</a>.</p>
         </div>
 
         <h3 style="margin-top:44px">Where the current goes</h3>
-        <p>Most of the 70&nbsp;mA is the Wi&#8209;Fi radio staying connected; the display, sensor and processor add little. When network traffic keeps the radio awake the current rises to about 110&nbsp;mA, and short transmit pulses reach 400&nbsp;mA for microseconds without disturbing the 3.3&nbsp;V rail. Weather Clock 2.1 avoids most of this on battery by switching the radio off between updates. Deep sleep between updates (about 0.8&nbsp;mA on V2.0) is the way to multi-day battery life.</p>
+        <p>About 70&nbsp;mA with Wi&#8209;Fi always connected. When network traffic keeps the radio awake the current rises to about 110&nbsp;mA, and short transmit pulses reach 400&nbsp;mA for microseconds without disturbing the 3.3&nbsp;V rail. Weather Clock 2.1 turns the radio off between weather updates and slows the processor on battery, which brings the average down to about 41&nbsp;mA on V2.0.</p>
 
         <div id="pwr-charging">
           <h3 style="margin-top:44px">Charging</h3>
+          <p>201&nbsp;mA constant current, then a taper to a clean stop at 15&nbsp;mA: 1,938&nbsp;mAh in 13.0 hours on the test bench, or 6.7 hours per 1000&nbsp;mAh.</p>
+          <details class="more">
+            <summary>Chart and details</summary>
+            <div class="more-body">
           <p>The same V1.0 board then charged the same cell from empty to full over USB&#8209;C, again logged every second.</p>
           <figure>
             <a href="../assets/dvt_chg_simple.png" title="Open full-size chart"><img src="../assets/dvt_chg_simple.png" alt="Two-panel chart of a full charge from empty. Top: cell voltage rises from 3.0 V to about 4.0 V during constant-current charging, then creeps up to 4.19 V just under the 4.20 V charger limit. Bottom: charge current holds at 201 mA for 4.8 hours, then tapers and stops at 15 mA after 13.0 hours." loading="lazy"></a>
-            <figcaption><b>Fig. 3 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 12.2 hours is the current meter switching range, not the board.</figcaption>
+            <figcaption><b>Fig. 2 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 12.2 hours is the current meter switching range, not the board; charging carried on to the normal stop at 15&nbsp;mA.</figcaption>
           </figure>
           <ul class="feat">
             <li><b>Constant current: 201&nbsp;mA</b> against a 196&nbsp;mA design value.</li>
-            <li><b>Full-charge voltage: 4.20&nbsp;V.</b> The charger holds it while the current tapers.</li>
+            <li><b>Full charge: 4.19&nbsp;V at the cell</b> (4.20&nbsp;V charger setting). The charger holds it while the current tapers.</li>
             <li><b>Charging stops at 15&nbsp;mA</b> (7.6% of the charge current), as designed, and did not restart overnight.</li>
-            <li><b>1,938&nbsp;mAh in 13.0 hours on the test bench.</b> The bench wiring added about 1&nbsp;&Omega;, which starts the taper early. With the cell plugged straight into the board we estimate about 10 hours for this cell, roughly 5 hours per 1000&nbsp;mAh.</li>
+            <li><b>1,938&nbsp;mAh in 13.0 hours on the test bench.</b> The bench wiring added about 1&nbsp;&Omega;, which starts the taper early, so a cell plugged straight into the board charges somewhat faster.</li>
           </ul>
+            </div>
+          </details>
         </div>
 
         <div id="pwr-charging-v2">
-          <h3 style="margin-top:44px">Charging on V2.0</h3>
-          <p>A V2.0 board charged the same kind of cell from empty (2.89&nbsp;V at rest, after the protection cutoff) over USB&#8209;C, logged every second. V2.0 raises the charge current from about 200 to about 300&nbsp;mA.</p>
-          <figure>
-            <a href="../assets/dvt_chg_v2.png" title="Open full-size chart"><img src="../assets/dvt_chg_v2.png" alt="Two-panel chart of a full charge from empty on a V2.0 board. Top: cell voltage rises from 3.0 V to about 4.0 V during 2.6 hours of constant-current charging, then creeps up to about 4.16 V under the 4.20 V charger limit. Bottom: charge current holds at 303 mA, then tapers and drops to zero at 10.3 hours." loading="lazy"></a>
-            <figcaption><b>Fig. 4 &mdash;</b> Top: cell voltage. Bottom: charge current. The small step at 2.7 hours and the end of charging near 47&nbsp;mA are the current meter switching range, not the board.</figcaption>
-          </figure>
-          <ul class="feat">
-            <li><b>Constant current: 303&nbsp;mA</b> on two V2.0 boards (302.5 and 303&nbsp;mA), for about 2.6 hours on this cell.</li>
-            <li><b>1,888&nbsp;mAh in 10.3 hours on the test bench</b>, about 5.4 hours per 1000&nbsp;mAh, against 6.7 hours on V1.0. The bench wiring adds resistance, so a cell plugged straight into the board charges a little faster.</li>
-            <li><b>End of charge.</b> On the bench the meter&rsquo;s range change near 47&nbsp;mA ends the charge slightly early, as it did on V1.0. Two later charges with the meter taken out of the battery lead stopped cleanly at 23&ndash;25&nbsp;mA, about 8% of the charge current, as designed.</li>
-          </ul>
+          <p class="footnote">V2.0 charges at 303&nbsp;mA: 1,888&nbsp;mAh in 10.3 hours on the test bench, or 5.4 hours per 1000&nbsp;mAh &mdash; <a href="v2/#charging">see the V2.0 report</a>.</p>
         </div>
 
-        <h3 style="margin-top:44px">How we tested</h3>
+        <details class="more" style="margin-top:34px">
+          <summary>How we tested</summary>
+          <div class="more-body">
         <ul class="feat">
           <li><b>Current:</b> a power profiler in the battery or USB supply line, 1 sample per second (100,000 per second for short traces).</li>
           <li><b>Voltage:</b> a data logger on the cell, the board&rsquo;s battery input and the 3.3&nbsp;V rail, 1 sample per second.</li>
-          <li><b>Firmware:</b> the Weather Clock that ships on the board, plus a heartbeat output and a serial status line to mark exactly when it stopped working.</li>
-          <li><b>Data:</b> V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>; V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a>; 10-second averages (CSV).</li>
+          <li><b>Firmware:</b> a test build of Weather Clock 1.0 with a heartbeat output and a serial status line, to mark exactly when it stopped working.</li>
+          <li><b>Data:</b> V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>, 10-second averages (CSV). The V2.0 data is in the <a href="v2/#downloads">V2.0 report</a>.</li>
         </ul>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -457,7 +464,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">VIS-011</span><span class="t-desc">Plug the board in breadboard, check the fit</span><span class="t-act">Fail</span><span class="pill pill-fail">Fail</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Fail</p><p><b>Measured:</b> Fail</p><p><b>Notes:</b> The header spacing is a little off, which makes it hard to push the board in the breadboard.</p><p class="t-ref">Tracker VIS-011 &middot; Plan &sect;VIS-11</p></div>
+  <div class="t-body"><p><b>Expected:</b> Seats in a breadboard without extra force</p><p><b>Measured:</b> Fail</p><p><b>Notes:</b> The header pins tilted slightly when they were soldered, which makes the board hard to push into a breadboard. Fixed on V2.0.</p><p class="t-ref">Tracker VIS-011 &middot; Plan &sect;VIS-11</p></div>
 </details></div>
 </details><details class="subsys" id="sub-pre">
   <summary class="subsys-head">
@@ -466,7 +473,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   </summary>
   <div class="t-table"><details class="t-row">
   <summary><span class="t-id">PRE-001</span><span class="t-desc">V_USB → GND resistance (probe D3.2)</span><span class="t-act">5.8k Ω</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> ≈ 9–10 kΩ, not &lt; 1 kΩ</p><p class="t-spec">limits 1000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 5.8k Ω</p><p class="t-ref">Tracker PRE-001 &middot; Plan &sect;PRE-01</p></div>
+  <div class="t-body"><p><b>Expected:</b> Not a short (above 1 kΩ)</p><p class="t-spec">limits 1000 &ndash; +&infin; Ω</p><p><b>Measured:</b> 5.8k Ω</p><p class="t-ref">Tracker PRE-001 &middot; Plan &sect;PRE-01</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">PRE-002</span><span class="t-desc">V_SYS → GND (probe D2.1)</span><span class="t-act">224k Ω</span><span class="pill pill-pass">Pass</span></summary>
@@ -563,11 +570,11 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-012</span><span class="t-desc">USB power path: Input current idle</span><span class="t-act">20 mA</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> 30–90 mA</p><p class="t-spec">limits 15 &ndash; 90 mA</p><p><b>Measured:</b> 20 mA</p><p class="t-ref">Tracker PWR-012 &middot; Plan &sect;PWR-03</p></div>
+  <div class="t-body"><p><b>Expected:</b> 15–90 mA</p><p class="t-spec">limits 15 &ndash; 90 mA</p><p><b>Measured:</b> 20 mA</p><p class="t-ref">Tracker PWR-012 &middot; Plan &sect;PWR-03</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-013</span><span class="t-desc">USB power path: VUSB_SENSE (U2.38)</span><span class="t-act">2.58 V</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> V_USB ÷ 2 ± 3 %</p><p class="t-spec">target 2.5 &middot; limits 2.42 &ndash; 2.58 V</p><p><b>Measured:</b> 2.58 V</p><p><b>Notes:</b> Limits assume V_USB = 5.00 V; recompute ±3 % band if V_USB differs</p><p class="t-ref">Tracker PWR-013 &middot; Plan &sect;PWR-03</p></div>
+  <div class="t-body"><p><b>Expected:</b> V_USB ÷ 2 ± 3 %</p><p class="t-spec">target 2.5 &middot; limits 2.42 &ndash; 2.58 V</p><p><b>Measured:</b> 2.58 V</p><p><b>Notes:</b> Limits assume V_USB = 5.00 V.</p><p class="t-ref">Tracker PWR-013 &middot; Plan &sect;PWR-03</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-014</span><span class="t-desc">USB-C orientation: A-to-C cable plug 1</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
@@ -607,11 +614,11 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-023</span><span class="t-desc">Min battery: Lowest supply voltage w/ no brownout</span><span class="t-act">2.8 V</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> ≤ 3.3 V</p><p class="t-spec">limits &minus;&infin; &ndash; 3.3 V</p><p><b>Measured:</b> 2.8 V</p><p class="t-ref">Tracker PWR-023 &middot; Plan &sect;PWR-07</p></div>
+  <div class="t-body"><p><b>Expected:</b> ≤ 3.3 V</p><p class="t-spec">limits &minus;&infin; &ndash; 3.3 V</p><p><b>Measured:</b> 2.8 V</p><p><b>Notes:</b> Bench supply with a light load. On a real cell with Wi&#8209;Fi running, the board browned out from about 3.0&nbsp;V (see the battery run above).</p><p class="t-ref">Tracker PWR-023 &middot; Plan &sect;PWR-07</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-024</span><span class="t-desc">Min battery: Voltage where board browns out</span><span class="t-act">2.45 V</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> 2.45 V</p><p class="t-ref">Tracker PWR-024 &middot; Plan &sect;PWR-07</p></div>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> 2.45 V</p><p><b>Notes:</b> Bench supply with a light load. On a real cell with Wi&#8209;Fi running, the board browned out from about 3.0&nbsp;V (see the battery run above).</p><p class="t-ref">Tracker PWR-024 &middot; Plan &sect;PWR-07</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">PWR-025</span><span class="t-desc">Sleep current: @ 3.8 V</span><span class="t-act">0.884 mA</span><span class="pill pill-pass">Pass</span></summary>
@@ -632,7 +639,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   </summary>
   <div class="t-table"><details class="t-row">
   <summary><span class="t-id">CHG-001</span><span class="t-desc">Fast-charge current into battery</span><span class="t-act">198 mA</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> 170–250 mA</p><p class="t-spec">target 196 &middot; limits 170 &ndash; 240 mA</p><p><b>Measured:</b> 198 mA</p><p class="t-ref">Tracker CHG-001 &middot; Plan &sect;CHG-01</p></div>
+  <div class="t-body"><p><b>Expected:</b> 170–240 mA</p><p class="t-spec">target 196 &middot; limits 170 &ndash; 240 mA</p><p><b>Measured:</b> 198 mA</p><p class="t-ref">Tracker CHG-001 &middot; Plan &sect;CHG-01</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">CHG-002</span><span class="t-desc">PROG pin (U5.5) voltage during fast charge</span><span class="t-act">0.998 V</span><span class="pill pill-pass">Pass</span></summary>
@@ -714,7 +721,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">MCU-005</span><span class="t-desc">UART0 via header: 3.3 V adapter, GND→J4.1, adapter RX→J4.9 (TX), boot log received</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Boot log readable; record silk orientation in Notes</p><p class="t-ref">Tracker MCU-005 &middot; Plan &sect;MCU-06</p></div>
+  <div class="t-body"><p><b>Expected:</b> Boot log readable</p><p class="t-ref">Tracker MCU-005 &middot; Plan &sect;MCU-06</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">MCU-006</span><span class="t-desc">RESET (SW1) while running</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
@@ -731,11 +738,11 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   </summary>
   <div class="t-table"><details class="t-row">
   <summary><span class="t-id">GPIO-001</span><span class="t-desc">Walking output (helper 1): LOWEST V_high across all 12 header pins</span><span class="t-act">3.276 V</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Every pin ≥ 3.1 V driven HIGH</p><p class="t-spec">limits 3.1 &ndash; +&infin; V</p><p><b>Measured:</b> 3.276 V</p><p><b>Notes:</b> Record worst pin in Notes</p><p class="t-ref">Tracker GPIO-001 &middot; Plan &sect;GPIO-01</p></div>
+  <div class="t-body"><p><b>Expected:</b> Every pin ≥ 3.1 V driven HIGH</p><p class="t-spec">limits 3.1 &ndash; +&infin; V</p><p><b>Measured:</b> 3.276 V</p><p class="t-ref">Tracker GPIO-001 &middot; Plan &sect;GPIO-01</p></div>
 </details>
 <details class="t-row">
-  <summary><span class="t-id">GPIO-002</span><span class="t-desc">Walking output: HIGHEST V_low across all 12 header pins</span><span class="t-act">2E-3 V</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Every pin ≤ 0.1 V driven LOW</p><p class="t-spec">limits &minus;&infin; &ndash; 0.1 V</p><p><b>Measured:</b> 2E-3 V</p><p><b>Notes:</b> Record worst pin in Notes</p><p class="t-ref">Tracker GPIO-002 &middot; Plan &sect;GPIO-01</p></div>
+  <summary><span class="t-id">GPIO-002</span><span class="t-desc">Walking output: HIGHEST V_low across all 12 header pins</span><span class="t-act">0.002 V</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Every pin ≤ 0.1 V driven LOW</p><p class="t-spec">limits &minus;&infin; &ndash; 0.1 V</p><p><b>Measured:</b> 0.002 V</p><p class="t-ref">Tracker GPIO-002 &middot; Plan &sect;GPIO-01</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">GPIO-003</span><span class="t-desc">Input test (helper 2): pins reading 1 idle / 0 grounded</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
@@ -797,7 +804,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   </summary>
   <div class="t-table"><details class="t-row">
   <summary><span class="t-id">OLED-001</span><span class="t-desc">3V3 current delta on panel attach, before init</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> +0–3 mA (pump off)</p><p class="t-spec">limits 0 &ndash; 3 mA</p><p><b>Notes:</b> Jump of tens of mA = miswired panel — stop</p><p class="t-ref">Tracker OLED-001 &middot; Plan &sect;OLED-01</p></div>
+  <div class="t-body"><p><b>Expected:</b> +0–3 mA (pump off)</p><p class="t-spec">limits 0 &ndash; 3 mA</p><p class="t-ref">Tracker OLED-001 &middot; Plan &sect;OLED-01</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">OLED-002</span><span class="t-desc">U8g2 init (CS=10, DC=9, RST=14, SCLK=12, MOSI=11) + text</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
@@ -901,8 +908,8 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   <div class="t-body"><p><b>Expected:</b> Sees all APs the reference board sees</p><p class="t-ref">Tracker RFW-001 &middot; Plan &sect;RF-W-01</p></div>
 </details>
 <details class="t-row">
-  <summary><span class="t-id">RFW-002</span><span class="t-desc">DUT average RSSI @ 3 m, worst of 4 orientations (helper 8)</span><span class="t-act">-36.8 dBm</span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> -36.8 dBm</p><p><b>Notes:</b> Four orientations: 36.8, 44.2, 33, 31 dBm</p><p class="t-ref">Tracker RFW-002 &middot; Plan &sect;RF-W-02</p></div>
+  <summary><span class="t-id">RFW-002</span><span class="t-desc">DUT RSSI @ 3 m in 4 orientations (helper 8)</span><span class="t-act">&minus;31 to &minus;44 dBm</span><span class="pill pill-pass">Pass</span></summary>
+  <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> &minus;36.8, &minus;44.2, &minus;33 and &minus;31 dBm in the four orientations</p><p class="t-ref">Tracker RFW-002 &middot; Plan &sect;RF-W-02</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">RFW-003</span><span class="t-desc">Δ RSSI = |DUT − reference|, worst of 4 orientations</span><span class="t-act">1 dB</span><span class="pill pill-pass">Pass</span></summary>
@@ -922,7 +929,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">RFW-007</span><span class="t-desc">Full demo: NTP + Open-Meteo over WiFi on S3</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> Weather + time render; note HTTPS result in Notes</p><p class="t-ref">Tracker RFW-007 &middot; Plan &sect;RF-W-07</p></div>
+  <div class="t-body"><p><b>Expected:</b> Weather + time render</p><p class="t-ref">Tracker RFW-007 &middot; Plan &sect;RF-W-07</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">RFW-008</span><span class="t-desc">On battery @ 3.5 V: 5 min continuous TX (helper 9)</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
@@ -934,7 +941,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
     <div class="subsys-chips"><span class="pill pill-pass">1 pass</span></div>
   </summary>
   <div class="t-table"><details class="t-row">
-  <summary><span class="t-id">RFB-001</span><span class="t-desc">BLE advertise (helper b), nRF Connect @ 1 m — DUT RSSI</span><span class="t-act">-43 dBm</span><span class="pill pill-pass">Pass</span></summary>
+  <summary><span class="t-id">RFB-001</span><span class="t-desc">BLE advertise (helper b), phone BLE scanner @ 1 m — DUT RSSI</span><span class="t-act">-43 dBm</span><span class="pill pill-pass">Pass</span></summary>
   <div class="t-body"><p><b>Expected:</b> Record</p><p><b>Measured:</b> -43 dBm</p><p class="t-ref">Tracker RFB-001 &middot; Plan &sect;RF-B-01</p></div>
 </details></div>
 </details><details class="subsys" id="sub-sys">
@@ -952,7 +959,7 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
 </details>
 <details class="t-row">
   <summary><span class="t-id">SYS-003</span><span class="t-desc">24 h soak: free heap stable</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
-  <div class="t-body"><p><b>Expected:</b> No leak trend; record start/end heap in Notes</p><p class="t-ref">Tracker SYS-003 &middot; Plan &sect;SYS-02</p></div>
+  <div class="t-body"><p><b>Expected:</b> No leak trend</p><p class="t-ref">Tracker SYS-003 &middot; Plan &sect;SYS-02</p></div>
 </details>
 <details class="t-row">
   <summary><span class="t-id">SYS-004</span><span class="t-desc">Power cycle ×20 (USB, 5 s off): successful boots</span><span class="t-act">20 boots</span><span class="pill pill-pass">Pass</span></summary>
@@ -971,11 +978,11 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
   <div class="t-body"><p><b>Expected:</b> &lt; 45 °C</p><p class="t-spec">limits &minus;&infin; &ndash; 45 °C</p><p><b>Measured:</b> 38 °C</p><p class="t-ref">Tracker SYS-007 &middot; Plan &sect;SYS-06</p></div>
 </details>
 <details class="t-row">
-  <summary><span class="t-id">SYS-008</span><span class="t-desc">Thermal survey hottest surface (U2 / U5 / U6) — record part in Notes</span><span class="t-act">38 °C</span><span class="pill pill-pass">Pass</span></summary>
+  <summary><span class="t-id">SYS-008</span><span class="t-desc">Thermal survey hottest surface (U2 / U5 / U6)</span><span class="t-act">38 °C</span><span class="pill pill-pass">Pass</span></summary>
   <div class="t-body"><p><b>Expected:</b> ≤ 85 °C</p><p class="t-spec">limits &minus;&infin; &ndash; 85 °C</p><p><b>Measured:</b> 38 °C</p><p class="t-ref">Tracker SYS-008 &middot; Plan &sect;SYS-07</p></div>
 </details>
 <details class="t-row">
-  <summary><span class="t-id">SYS-009</span><span class="t-desc">Firmware S3 pin block matches plan Appendix B</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
+  <summary><span class="t-id">SYS-009</span><span class="t-desc">Firmware pin map matches the board</span><span class="t-act"></span><span class="pill pill-pass">Pass</span></summary>
   <div class="t-body"><p><b>Expected:</b> Match</p><p class="t-ref">Tracker SYS-009 &middot; Plan &sect;SYS-08</p></div>
 </details></div>
 </details>
@@ -987,17 +994,17 @@ p code,li code,td code{background:#EDEDEF;border-radius:5px;padding:2px 6px;font
         <p class="kicker">Downloads</p>
         <h2>Firmware and data</h2>
         <ul class="feat">
-          <li><a href="../docs/DVT_Firmware_Guide.docx">DVT firmware guide</a> and the <a href="../docs/DVT_Helper.ino">DVT helper sketch</a>.</li>
-          <li>V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full battery discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a>, and V2.0 <a href="../docs/battery_full_discharge_revB_10s.csv">full discharge</a> and <a href="../docs/battery_full_charge_revB_10s.csv">full charge</a> data (CSV, 10-second averages).</li>
+          <li><a href="../docs/DVT_Firmware_Guide.docx">DVT firmware guide</a> (V1.0 test IDs) and the <a href="../docs/DVT_Helper.ino">DVT helper sketch</a>.</li>
+          <li>V1.0 <a href="../docs/battery_full_discharge_revA_10s.csv">full battery discharge</a> and <a href="../docs/battery_full_charge_revA_10s.csv">full charge</a> data (CSV, 10-second averages). V2.0 data is in the <a href="v2/#downloads">V2.0 report</a>.</li>
         </ul>
-        <p class="disclaimer">Engineering report for the V1.0 (Rev A) prototypes, with the first V2.0 (Rev B) battery results. Values are bench measurements on prototype hardware; production specifications may change. Board photos, guides, and downloads live on the <a href="../">product page</a>.</p>
+        <p class="disclaimer">Engineering report for the V1.0 (Rev A) prototypes. The current board is covered by the <a href="v2/">V2.0 report</a>. Values are bench measurements on prototype hardware; production specifications may change. Board photos, guides, and downloads live on the <a href="../">product page</a>.</p>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <span>&copy; 2026 HW DESIGNS LLC &middot; DVT Report, updated October 27, 2026</span>
+      <span>&copy; 2026 HW DESIGNS LLC &middot; DVT Report V1.0, updated October 28, 2026</span>
       <span class="footer-links"><a href="https://hwdesigns.us">hwdesigns.us</a><a href="https://hwdesigns.us/terms/">Terms</a><a href="https://hwdesigns.us/privacy/">Privacy</a><a href="mailto:support@hwdesigns.us">support@hwdesigns.us</a></span>
     </div>
   </footer>

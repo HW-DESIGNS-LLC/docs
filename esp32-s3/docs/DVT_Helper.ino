@@ -7,8 +7,8 @@
  * deep sleep, timekeeping, and board info. Useful for board bring-up,
  * debugging a suspect unit, or as the starting point for a factory test jig.
  *
- * Each menu mode is tagged with the matching test ID from the board's DVT
- * plan (e.g. GPIO-01, RF-W-02) so results map straight back to the record.
+ * Menu modes carry the test IDs of the board's V1.0 test plan (e.g. GPIO-01,
+ * RF-W-02).
  *
  * Arduino IDE settings (Tools menu):
  *   Board:            ESP32S3 Dev Module
@@ -28,8 +28,7 @@
  * WiFi tests are unaffected on any 3.x core.
  *
  * Copyright (c) 2026 HW Designs LLC — https://docs.hwdesigns.us
- * Published as an open example. Add your preferred license (e.g. MIT) in the
- * repository before distributing.
+ * SPDX-License-Identifier: MIT
  *********************************************************************/
 
 #include <Arduino.h>
@@ -47,7 +46,7 @@
 #define FW_NAME "DVT-Helper"
 #define FW_VER  "1.0"
 
-/* ------------- verified pin map, fab rev 2026-06-28 ------------- */
+/* ------------- pin map verified on V1.0 and V2.0 ------------- */
 #define PIN_I2C_SDA     8    // Qwiic J3.3, 4.7k pull-up (R9)
 #define PIN_I2C_SCL     18   // Qwiic J3.4, 4.7k pull-up (R13)
 #define PIN_OLED_DC     9    // FPC1.15
@@ -508,8 +507,8 @@ void modeSleep() {
 }
 
 // [b] BLE advertise for an RSSI check (RF-B-01)
-// Advertises a named beacon so the board shows up in a BLE scanner app such as
-// Nordic nRF Connect; read its RSSI there at a fixed distance (e.g. 1 m).
+// Advertises a named beacon so the board shows up in a BLE scanner app on
+// your phone; read its RSSI there at a fixed distance (e.g. 1 m).
 void modeBLE() {
   if (bleOn) { Serial.println("BLE already advertising (reboot to stop)."); return; }
   String name = "DVT-S3-" + macSuffix();
@@ -520,7 +519,7 @@ void modeBLE() {
   adv->start();
   bleOn = true;
   Serial.printf("\nBLE advertising as \"%s\".\n", name.c_str());
-  Serial.println("Open Nordic nRF Connect (or any BLE scanner), find that name, and");
+  Serial.println("Open a BLE scanner app on your phone, find that name, and");
   Serial.println("log its RSSI at 1 m for RF-B-01. Reboot the board to stop advertising.");
 }
 

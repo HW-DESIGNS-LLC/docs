@@ -182,6 +182,22 @@ p code,li code,td code{background:var(--code-inline);border-radius:5px;padding:2
 .spec .label{font-family:var(--head);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink)}
 .spec .val{margin-top:8px;font-weight:700;font-size:15px;line-height:1.5}
 
+/* ── Key numbers: the summary strip at the top of a page ───────────────
+   <div class="grid-specs keynums"><div class="spec"><div class="label">Battery life</div>
+   <div class="val"><span class="big">24 h</span>per 1000 mAh<span class="sub">Weather Clock 2.1</span></div></div>… */
+.keynums{margin:28px 0 0}
+.spec .big{display:block;font-family:var(--head);font-weight:800;font-size:clamp(26px,3.2vw,34px);line-height:1.1;letter-spacing:-.01em;color:var(--ink);margin:2px 0 4px;white-space:nowrap}
+.spec .sub{display:block;font-size:13px;font-weight:400;line-height:1.45;color:var(--label);margin-top:4px}
+
+/* ── "More detail" — expandable sections for the weeds ─────────────────
+   <details class="more"><summary>Setup details</summary><div class="more-body">…</div></details> */
+details.more{margin:16px 0 0}
+details.more > summary{font-family:var(--head);font-size:15px;color:var(--cobalt-ink)}
+.more-body{padding:0 20px 18px;color:var(--soft);font-size:15px}
+.more-body > :first-child{margin-top:0}
+.more-body > :last-child{margin-bottom:0}
+.more-body p{padding:0;margin:0 0 10px}
+
 /* ── Downloads table ───────────────────────────────────────────────── */
 .dl-table{width:100%;border-collapse:collapse;margin:32px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .dl-table thead th{font-family:var(--head);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--label);text-align:left;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card)}
@@ -298,6 +314,13 @@ html body .site-footer{margin-top:0;border-top:4px solid var(--gold)}
   .grid-specs{grid-template-columns:1fr}
   .step{grid-template-columns:1fr;gap:10px}
   .dl-desc-col{display:none}
+}
+/* Phones: keep the page nav to one row under the logo; it scrolls sideways if it is long */
+@media (max-width:640px){
+  .header-inner{flex-wrap:wrap;row-gap:6px;padding:10px 16px}
+  .site-nav{flex-wrap:nowrap;width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .site-nav::-webkit-scrollbar{display:none}
+  .site-nav a{white-space:nowrap;padding:6px 10px;font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}

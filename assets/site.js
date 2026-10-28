@@ -38,3 +38,18 @@
     });
   });
 })();
+
+/* Printing: open every collapsed section first, so a printed page (or
+   "save as PDF") always carries the full detail, then restore it. */
+(function () {
+  var opened = [];
+  window.addEventListener('beforeprint', function () {
+    opened = Array.prototype.filter.call(document.querySelectorAll('details:not([open])'), function (d) {
+      d.setAttribute('open', ''); return true;
+    });
+  });
+  window.addEventListener('afterprint', function () {
+    opened.forEach(function (d) { d.removeAttribute('open'); });
+    opened = [];
+  });
+})();
