@@ -2,4 +2,4 @@
 # firmware/esp32-s3/esphome/crescent-city.yaml
 # This file points there so boards installed from the docs page can still be adopted.
 packages:
-  crescent-city: github://HW-DESIGNS-LLC/docs/firmware/esp32-s3/esphome/crescent-city.yaml@claude/firmware-folder
+  crescent-city: github://HW-DESIGNS-LLC/docs/firmware/esp32-s3/esphome/crescent-city.yaml@main
