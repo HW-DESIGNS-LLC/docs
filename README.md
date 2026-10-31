@@ -20,18 +20,18 @@ forever no matter how many products are added.
 | `assets/fonts/`               | —                                     | Nunito and Nunito Sans font files — stored here so pages never contact Google |
 | `esp32-s3/index.html`         | `docs.hwdesigns.us/esp32-s3/`         | Crescent City board page (QR target)       |
 | `esp32-s3/specs/index.html`   | `docs.hwdesigns.us/esp32-s3/specs/`   | V2.0 spec sheet (printable; `docs/spec-sheet.pdf` is printed from it) |
-| `esp32-s3/esphome/`           | `docs.hwdesigns.us/esp32-s3/esphome/` | ESPHome / Home Assistant page and the browser-installer firmware |
+| `esp32-s3/esphome/`           | `docs.hwdesigns.us/esp32-s3/esphome/` | ESPHome / Home Assistant page (its browser-installer files are in `firmware/esp32-s3/esphome/web-installer/`) |
 | `esp32-s3/dvt/index.html`     | `docs.hwdesigns.us/esp32-s3/dvt/`     | V1.0 test report (results, power deep-dive, issues, test plan) |
 | `esp32-s3/dvt/v2/index.html`  | `docs.hwdesigns.us/esp32-s3/dvt/v2/`  | V2.0 test report (in progress: battery life, charging, low-battery shutdown) |
 | `esp32-s3/power-profile.html` | *(redirects to `…/esp32-s3/dvt/`)*    | Legacy link — keep so old bookmarks still work |
 | `esp32-s3/assets/`            | —                                     | That board's images + DVT chart PNGs      |
-| `esp32-s3/docs/`              | —                                     | That board's downloads: PDFs, 3D model, BOM, battery test data (CSV), DVT firmware guide and helper sketch |
-| `esp32-s3/firmware/`          | —                                     | Public home of the board's example sketches and the ESPHome configuration (the board page's "View source" buttons point here) |
+| `esp32-s3/docs/`              | —                                     | That board's downloads: PDFs, 3D model, BOM, battery test data (CSV), DVT firmware guide |
+| `firmware/`                   | —                                     | All firmware and code, one folder per board (`firmware/esp32-s3/`: example sketches, DVT helper sketch, ESPHome configuration and its browser-installer files). The board page's "View source" buttons point here |
 | `sitemap.xml`, `robots.txt`   | —                                     | Search-engine sitemap and crawler rules   |
 | `LICENSE.md`                  | —                                     | Licenses: MIT for firmware and code, CC BY-SA 4.0 for the documentation |
 | `CNAME`                       | —                                     | Custom-domain file GitHub manages — leave it alone |
 
-Each future board repeats the `esp32-s3/` pattern under its own folder.
+Each future board repeats the `esp32-s3/` pattern under its own folder, with its code in `firmware/<board>/`.
 
 ## How to edit anything
 
@@ -117,7 +117,7 @@ Done:
       connector type (JST-PH), display-ribbon note, and the board code on
       the back (all confirmed against the user guide UG-01 and pinout PIN-01)
 - [x] Point the "Demo firmware source" link and the three example "View source"
-      buttons at the public firmware home (`esp32-s3/firmware/` in this repo)
+      buttons at the public firmware home (`firmware/esp32-s3/` in this repo)
 - [x] After the RF tests wrap, refresh the V1.0 DVT report so the pending items
       close (done 2026-07-22 — report reconciled to DVT plan v1.2, 122 tests /
       0 pending)

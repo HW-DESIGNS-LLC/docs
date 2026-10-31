@@ -1,7 +1,7 @@
 # Crescent City (ESP32-S3 dev board): firmware
 
 Source code for the firmware on Crescent City. The board page's "View source"
-buttons point here. All code here is MIT licensed (see [LICENSE](LICENSE)).
+buttons point here. All code here is MIT licensed (see [LICENSE](../LICENSE)).
 
 ## What's here
 
@@ -112,7 +112,7 @@ and the **U8g2** and **Adafruit SHT4x** libraries. Neither uses Wi-Fi.
 
 For example code touching every subsystem (OLED, Qwiic I²C, RGB LED,
 battery/USB sensing, Wi-Fi, BLE and deep sleep), see the board's bring-up and
-self-test sketch [`../docs/DVT_Helper.ino`](../docs/DVT_Helper.ino).
+self-test sketch [`DVT_Helper/DVT_Helper.ino`](DVT_Helper/DVT_Helper.ino).
 
 ## ESPHome
 
@@ -126,7 +126,7 @@ browser.
 
 ```yaml
 packages:
-  hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/esp32-s3/firmware/esphome/crescent-city.yaml@main
+  hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/firmware/esp32-s3/esphome/crescent-city.yaml@main
 ```
 
 </details>

@@ -19,10 +19,11 @@ Spec sheet and test data (linked from ../index.html and ../specs/):
   battery_full_discharge_revB_10s.csv  - V2.0 (Rev B) full discharge, Weather Clock 2.1, 10-second averages
   battery_full_charge_revB_10s.csv     - V2.0 (Rev B) full charge from empty, 10-second averages
 
-DVT firmware (linked from ../index.html and ../dvt/):
+DVT firmware guide (linked from ../index.html and ../dvt/):
 
   DVT_Firmware_Guide.docx  - how to flash & run the DVT firmware pack (for the V1.0 test IDs)
-  DVT_Helper.ino           - the serial-menu DVT/bring-up firmware sketch
+
+All firmware and code (including the DVT helper sketch) is in /firmware/esp32-s3/.
 
 How to upload on GitHub: open this folder in the repository, click
 "Add file" -> "Upload files", drag the files in, then "Commit changes".

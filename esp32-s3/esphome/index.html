@@ -2,8 +2,8 @@
 <html lang="en">
 <!--
   ESPHome / Home Assistant page for the ESP32-S3 OLED board (Crescent City).
-  Web installer: firmware/manifest.json -> firmware/crescent-city-esphome.factory.bin,
-  built unchanged from esp32-s3/firmware/esphome/crescent-city.yaml (version = esphome: project: version).
+  Web installer: /firmware/esp32-s3/esphome/web-installer/ (manifest.json -> crescent-city-esphome.factory.bin),
+  built unchanged from firmware/esp32-s3/esphome/crescent-city.yaml (version = esphome: project: version).
   Styling comes from the shared ../../assets/site.css (incl. .keynums and details.more);
   page-only bits are in <style> below.
 -->
@@ -94,12 +94,12 @@
         <h1>Your board in Home Assistant</h1>
         <p class="lede">Install ESPHome from this page and Crescent City becomes a Home Assistant device: battery level, USB power, the BOOT button and the RGB LED show up as entities, plus indoor temperature and humidity with an optional Qwiic sensor (not included). The OLED keeps showing the time, the temperature and the battery.</p>
         <div class="cta-row">
-          <esp-web-install-button manifest="firmware/manifest.json">
+          <esp-web-install-button manifest="../../firmware/esp32-s3/esphome/web-installer/manifest.json">
             <button slot="activate" class="btn btn-light">Install ESPHome</button>
             <span slot="unsupported">Installing from this page needs Chrome or Edge on a computer. You can still set it up with ESPHome Builder &mdash; see <em>Using ESPHome Builder</em> below.</span>
             <span slot="not-allowed">Installing needs a secure (https) connection to this page.</span>
           </esp-web-install-button>
-          <a class="btn btn-ghost" href="https://github.com/HW-DESIGNS-LLC/docs/blob/main/esp32-s3/firmware/esphome/crescent-city.yaml" target="_blank" rel="noopener">View the YAML&nbsp;&#8599;</a>
+          <a class="btn btn-ghost" href="https://github.com/HW-DESIGNS-LLC/docs/blob/main/firmware/esp32-s3/esphome/crescent-city.yaml" target="_blank" rel="noopener">View the YAML&nbsp;&#8599;</a>
         </div>
         <p class="needs"><b>You need:</b> Chrome or Edge on a computer &middot; a data USB&#8209;C cable &middot; a 2.4&nbsp;GHz Wi&#8209;Fi network</p>
         <p class="quickfacts">Config 1.1.1 &middot; ESPHome 2026.10+ &middot; Home Assistant &middot; board V1.0 and V2.0</p>
@@ -173,7 +173,7 @@
   friendly_name: Crescent City
 
 packages:
-  hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/esp32-s3/firmware/esphome/crescent-city.yaml@main
+  hwdesigns.crescent-city: github://HW-DESIGNS-LLC/docs/firmware/esp32-s3/esphome/crescent-city.yaml@main
 
 esphome:
   name: ${name}
@@ -404,7 +404,7 @@ wifi:
           </details>
           <details>
             <summary>How do I get the weather clock back?</summary>
-            <p>Upload the weather clock sketch from the Arduino IDE, as in the <a href="../#start">getting-started guide</a>. Its source is in the <a href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">firmware folder</a>.</p>
+            <p>Upload the weather clock sketch from the Arduino IDE, as in the <a href="../#start">getting-started guide</a>. Its source is in the <a href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/firmware/esp32-s3" target="_blank" rel="noopener">firmware folder</a>.</p>
           </details>
           <details>
             <summary>Does it need Home Assistant?</summary>

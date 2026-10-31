@@ -6,9 +6,9 @@ HW DESIGNS LLC boards. Different parts are shared under different terms.
 ## Firmware and code: MIT License
 
 All firmware and source code in this repository is released under the
-[MIT License](esp32-s3/firmware/LICENSE). That includes everything in
-`esp32-s3/firmware/` (the Weather Clock sketch and the ESPHome configuration)
-and `esp32-s3/docs/DVT_Helper.ino`.
+[MIT License](firmware/LICENSE). That includes everything in
+`firmware/` (the example sketches, the DVT helper sketch and the ESPHome
+configuration).
 
 ## Documentation: CC BY-SA 4.0
 
