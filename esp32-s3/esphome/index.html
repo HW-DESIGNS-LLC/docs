@@ -308,11 +308,17 @@ wifi:
         <h2>Running on a battery</h2>
         <p class="section-intro">While USB is plugged in, none of this applies.</p>
 
-        <div class="caveat" role="note">
-          <h3>Not verified with ESPHome yet</h3>
-          <p><strong>Battery life:</strong> Home Assistant needs the board to stay connected, so ESPHome keeps Wi&#8209;Fi on and you should expect a shorter battery life than with the Weather Clock. Not measured for ESPHome yet; for comparison the Weather Clock with Wi&#8209;Fi always on draws &asymp;70&nbsp;mA, about 14&ndash;14.5 hours per 1000&nbsp;mAh.</p>
-          <p><strong>Low-battery shutdown:</strong> the ESPHome configuration uses the same thresholds and behaviour as the Weather Clock, but this has not been verified on hardware yet. The 0.78&nbsp;mA sleep current and the 19 of 19 USB wakes were measured with the Weather Clock.</p>
+        <div class="grid-specs keynums">
+          <div class="spec">
+            <div class="label">Battery life with ESPHome</div>
+            <div class="val"><span class="big">&asymp;14&nbsp;h</span>per 1000&nbsp;mAh<span class="sub">Measured on a V2.0 board: 26.5 hours on a 1.9&nbsp;Ah cell at about 70&nbsp;mA. Home Assistant needs the board to stay connected, so Wi&#8209;Fi stays on; the Weather Clock gets about 24&nbsp;h because it switches Wi&#8209;Fi off between updates.</span></div>
+          </div>
+          <div class="spec">
+            <div class="label">Low-battery shutdown</div>
+            <div class="val"><span class="big">Checked</span>on V2.0<span class="sub">The warning, the shutdown about 30 minutes later, the wake on USB and the return to sleep after a short plug-in all worked as described below (ESPHome 1.1.1).</span></div>
+          </div>
         </div>
+
 
         <p class="lead-in">How the configuration protects the battery (the same settings as the Weather Clock):</p>
         <div class="grid-specs keynums">

@@ -220,7 +220,7 @@
             <tr><th>Power switching</th><td>Automatic: runs from USB when plugged in (battery isolated), switches to the battery when USB is removed <span class="tag tag-m">measured V2.0</span></td></tr>
             <tr><th>3.3&nbsp;V regulator</th><td>Low-dropout regulator, 600&nbsp;mA</td></tr>
             <tr><th>Monitoring</th><td>Battery voltage on GPIO4 and USB voltage on GPIO2, each through a &frac12; divider (ADC1)</td></tr>
-            <tr><th>Low-battery shutdown</th><td>The Weather Clock warns at 3.45&nbsp;V and shuts down at 3.30&nbsp;V, then sleeps until USB is plugged in <span class="tag tag-m">measured V2.0</span><br>ESPHome configuration: same thresholds <span class="tag tag-t">V2.0 target</span></td></tr>
+            <tr><th>Low-battery shutdown</th><td>The Weather Clock warns at 3.45&nbsp;V and shuts down at 3.30&nbsp;V, then sleeps until USB is plugged in <span class="tag tag-m">measured V2.0</span><br>ESPHome configuration: same thresholds <span class="tag tag-m">measured V2.0</span></td></tr>
               </tbody>
             </table>
             <details class="more">
@@ -250,6 +250,7 @@
               <div class="more-body">
                 <p><strong>Weather Clock 2.1:</strong> on battery the Wi&#8209;Fi radio is off between weather updates, so the board is not reachable on your network in between. The &asymp;41&nbsp;mA is the average over a full discharge down to the 3.30&nbsp;V shutdown.</p>
                 <p><strong>Wi&#8209;Fi always on</strong> (firmware 1.0): &asymp;70&nbsp;mA, about 14&ndash;14.5&nbsp;hours per 1000&nbsp;mAh. <span class="tag tag-m">measured V1.0</span> <span class="tag tag-m">measured V2.0</span></p>
+                <p><strong>ESPHome 1.1.1</strong> (Wi&#8209;Fi always connected for Home Assistant): about 14&nbsp;hours per 1000&nbsp;mAh (26.5&nbsp;h on a 1.9&nbsp;Ah cell). <span class="tag tag-m">measured V2.0</span></p>
                 <p><strong>Flat battery left connected:</strong> it reaches the protection cutoff in about 3&ndash;6 days, then the board draws &asymp;1.2&nbsp;&micro;A.</p>
                 <p><strong>V1.0 deep sleep:</strong> 0.88&nbsp;mA. <span class="tag tag-m">measured V1.0</span></p>
               </div>

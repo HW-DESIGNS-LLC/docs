@@ -11,7 +11,7 @@
 #  On the OLED
 #    Clock (time from Home Assistant), indoor and outdoor temperature, battery
 #    gauge. Press BOOT to switch to the status page (Wi-Fi, IP, battery).
-#  Battery (same settings as the Weather Clock firmware 2.1.6; not yet verified on hardware)
+#  Battery (same settings as the Weather Clock firmware 2.1.6; checked on a V2.0 board)
 #    - On battery: level = charge left before the low-battery shutdown, from a
 #      table measured on a V2.0 board. 0 bars only in the last 5 %.
 #    - On USB: the battery reading is the charger output, so the icon shows the
@@ -25,8 +25,8 @@
 #      USB wake. After a shutdown, the board on battery needs 3.50 V to keep
 #      running, so a short USB connection sends it back to sleep.
 #  Wi-Fi stays connected on battery (Home Assistant needs it), so battery life
-#  is shorter than the Weather Clock's (not measured yet; the Weather Clock
-#  with Wi-Fi always on measured about 14-14.5 h per 1000 mAh).
+#  is shorter than the Weather Clock's: about 14 h per 1000 mAh (26.5 h on a
+#  1.9 Ah cell, V2.0 board), against about 24 h for the Weather Clock.
 #
 #  Use it as is (web installer or "Adopt" in ESPHome Builder), or as a package:
 #    packages:
