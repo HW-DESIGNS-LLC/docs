@@ -126,6 +126,9 @@ a{color:var(--cobalt);text-underline-offset:3px}
 .btn-ghost{border-color:rgba(207,203,194,.45);color:var(--bright)}
 .btn-ghost:hover{border-color:var(--bright)}
 .quickfacts{font-family:var(--mono);font-size:13px;color:var(--faint);margin:0}
+.launch-note{margin:14px 0 0;font-size:15px;color:var(--bright)}
+.launch-note a{color:var(--gold);font-weight:600;text-decoration:none}
+.launch-note a:hover{text-decoration:underline}
 
 /* Product shot: white card floating on black with a gold + copper glow.
    (Board renders have white backgrounds, so the frame stays light.)    */
