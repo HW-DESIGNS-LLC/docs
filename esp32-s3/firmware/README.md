@@ -3,6 +3,8 @@
 Source code for the firmware on Crescent City. The board page's "View source"
 buttons point here. All code here is MIT licensed (see [LICENSE](LICENSE)).
 
+**Coming soon to Crowd Supply:** [get notified when Crescent City launches](https://www.crowdsupply.com/hw-designs/crescent-city-dev-board). Build log: [Hackaday.io](https://hackaday.io/project/207276-crescent-city-dev-board).
+
 ## What's here
 
 | Folder | What it is |
