@@ -101,7 +101,7 @@
           <div class="spec"><div class="label">Display</div><div class="val"><span class="big">0.96&Prime;</span>OLED, built in<span class="sub">128&times;64 white, SSD1306 over SPI</span></div></div>
           <div class="spec"><div class="label">Battery life</div><div class="val"><span class="big">&asymp;24&nbsp;h</span>per 1000&nbsp;mAh<span class="sub">Weather Clock 2.1, Wi&#8209;Fi off between updates</span></div></div>
           <div class="spec"><div class="label">Charging</div><div class="val"><span class="big">&asymp;300&nbsp;mA</span>over USB&#8209;C<span class="sub">Protected 1&#8209;cell LiPo, JST&#8209;PH; a standard USB port is enough</span></div></div>
-          <div class="spec"><div class="label">Software</div><div class="val"><span class="big">ESPHome</span>and Arduino ready<span class="sub">Ships with Weather Clock 2.1.6; ESPHome 1.1.1 installs from your browser</span></div></div>
+          <div class="spec"><div class="label">Software</div><div class="val"><span class="big">ESPHome</span>and Arduino ready<span class="sub">Ships with Weather Clock 2.1.7; ESPHome 1.1.1 installs from your browser</span></div></div>
           <div class="spec"><div class="label">Size</div><div class="val"><span class="big">70.1&nbsp;&times;&nbsp;25.4</span>mm, breadboard friendly<span class="sub">13&nbsp;mm high with the display, 14&nbsp;g</span></div></div>
         </div>
         <p class="hint" style="margin:18px 0 0">Also on the board: Qwiic&nbsp;/&nbsp;STEMMA&nbsp;QT (I&sup2;C) connector, 2&times;12 header pins, addressable RGB LED, BOOT and EN buttons.</p>
@@ -315,7 +315,7 @@ void loop() {
             </tr>
             <tr>
               <td class="dl-name">Demo firmware source</td>
-              <td class="dl-desc dl-desc-col">Weather Clock 2.1.6, the sketch your board ships with</td>
+              <td class="dl-desc dl-desc-col">Weather Clock 2.1.7, the sketch your board ships with</td>
               <td class="dl-file"><a href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware" target="_blank" rel="noopener">GitHub&nbsp;&#8599;</a></td>
             </tr>
           </tbody>
@@ -370,7 +370,7 @@ void loop() {
         <div class="grid-ex">
           <div class="card">
             <h3>Weather Clock</h3>
-            <p>The firmware your board ships with (version 2.1.6). It fetches your local forecast over Wi&#8209;Fi and draws a clock and conditions on the OLED &mdash; a full tour of Wi&#8209;Fi, HTTP, JSON, and the display in one sketch.</p>
+            <p>The firmware your board ships with (version 2.1.7). It fetches your local forecast over Wi&#8209;Fi and draws a clock and conditions on the OLED &mdash; a full tour of Wi&#8209;Fi, HTTP, JSON, and the display in one sketch.</p>
             <a class="btn-sm" href="https://github.com/HW-DESIGNS-LLC/docs/tree/main/esp32-s3/firmware/WeatherClock" target="_blank" rel="noopener">View source&nbsp;&#8599;</a>
           </div>
           <div class="card">
@@ -411,7 +411,7 @@ void loop() {
             </details>
             <details>
               <summary>Which battery does it take?</summary>
-              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug (the socket is on the back). It charges from USB&#8209;C at &asymp;300&nbsp;mA and runs the Weather Clock for about 24&nbsp;hours per 1000&nbsp;mAh, at about 41&nbsp;mA (<a href="dvt/v2/#battery">measured on a full discharge</a>).</p>
+              <p>A single-cell 3.7&nbsp;V LiPo, 600&nbsp;mAh or larger, with a JST&#8209;PH 2.0&nbsp;mm plug (the socket is on the back). It charges from USB&#8209;C at &asymp;300&nbsp;mA and runs the Weather Clock for about 24&nbsp;hours per 1000&nbsp;mAh, at about 41&nbsp;mA (<a href="dvt/v2/#battery">measured on a full discharge</a>). The battery is optional: on USB&#8209;C alone the board runs normally and the screen shows a USB plug in place of the battery icon.</p>
               <p>On battery, the Weather Clock switches the Wi&#8209;Fi radio off between weather updates, so the board is not reachable on your network in between. When the battery runs low it shows &ldquo;charge me&rdquo; and goes to sleep; plug in USB&#8209;C to wake it. On-board protection guards against over-charge, over-discharge, over-current, and reverse polarity. Match the <strong>+</strong>&nbsp;/&nbsp;<strong>&minus;</strong> marks next to the connector &mdash; battery lead polarity varies between vendors.</p>
             </details>
             <details>

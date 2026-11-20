@@ -91,7 +91,7 @@
  * [SWAP]) so a different I2C temp/RH part can be dropped in without touching
  * the rest of the sketch.
  *
- * Version 2.1.6 (2026-10-28) - see CHANGELOG.md
+ * Version 2.1.7 (2026-11-20) - see CHANGELOG.md
  * Copyright (c) 2026 HW DESIGNS LLC - https://docs.hwdesigns.us
  * SPDX-License-Identifier: MIT (see the LICENSE file in the repository)
  */

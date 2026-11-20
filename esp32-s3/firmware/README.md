@@ -45,6 +45,14 @@ draws about 41 mA instead of about 70 mA. It is not reachable on your network
 between updates. "Battery low / charge me" on the screen means: plug in USB.
 The board sleeps until you do. On USB it stays connected.
 
+### On USB
+
+The battery icon shows the charge: bars running while charging, three bars
+with the fourth blinking while the charger tops off, four steady bars when
+full. With no battery fitted, the screen shows a USB plug instead of the
+battery icon. Right after USB is plugged in, the plug shows for about 15
+seconds while the board checks for a battery.
+
 What changed in each version: [`WeatherClock/CHANGELOG.md`](WeatherClock/CHANGELOG.md).
 
 ## Re-flash or build it yourself
