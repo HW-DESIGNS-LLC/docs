@@ -1,5 +1,20 @@
 # Weather Clock changelog
 
+## 2.1.7 (2026-11-20)
+
+- **USB without a battery:** the icon used to show "charging" with the bars
+  running. It now shows a static USB plug (no battery outline, no bars) and
+  the info page says "USB power, no battery". The charging icon only appears
+  once a battery is confirmed: right after USB is plugged in the plug icon
+  shows for about 15 s while the board checks for a cell. No battery is found
+  when the battery reading jumps around, swings within a short burst, is out
+  of a cell's range (below 2.50 V or above 4.30 V), or stays still below
+  4.00 V for 10 minutes. A battery fitted while on USB switches the icon
+  to charging after 5 steady readings (about 15-20 s).
+  Checked in a simulation of the charge logic, not yet on a board.
+- Serial `info` adds a battery-check line (unsteady readings, last step,
+  burst spread) for tuning.
+
 ## 2.1.6 (2026-10-28)
 
 - **Charging icon:** on USB with the battery already full, or with no battery

@@ -35,7 +35,13 @@
  *     4th blinking while the charger tops off at 4.2 V; 4 steady bars when the
  *     charger stops (the reading drops), or when the reading stays still below
  *     the top-off level for 20 min: the charger is idle because the battery is
- *     already full or no battery is fitted (the CHG LED is off in both cases).
+ *     already full (the CHG LED is off).
+ *   - On USB with no battery fitted: a static USB plug icon, no battery
+ *     outline and no bars. The charger output has nothing to hold it, so the
+ *     reading jumps around, sits out of a cell's range, or stays still at a
+ *     level a charging cell would have moved away from. Right after USB is
+ *     plugged in, the plug icon also shows for ~15 s until a cell is confirmed.
+ *     A battery fitted while on USB is picked up the same way: ~15-20 s.
  *     Thresholds: CHARGE STATE block below.
  *
  * LOW BATTERY (running on battery only; ignored while USB is plugged in)
@@ -114,8 +120,8 @@
 #define TEST_BUILD 0
 #endif
 
-#define FW_VERSION    "2.1.6"
-#define FW_DATE       "2026-10-28"
+#define FW_VERSION    "2.1.7"
+#define FW_DATE       "2026-11-20"
 
 // ==================== USER-FACING CONFIG ====================
 #define DEMO_MODE     false               // true = show sample data, WiFi off
@@ -195,6 +201,23 @@
 #define CHG_IDLE_LO     4.00f    // ...with the average between this and CHG_CV_V -> idle
 #define CHG_IDLE_MOVE   0.015f   // idle, then the average moves this far -> charging again
 #define CHG_HIST        (CHG_IDLE_MIN > CHG_WIN_MIN ? CHG_IDLE_MIN + 1 : CHG_WIN_MIN + 1)
+// No battery fitted (USB only). With a cell fitted the reading is held by the
+// cell: 3-s readings move ~1 mV. With no cell the charger output has nothing
+// to hold it. Every POWER_MS reading on USB is marked "unsteady" when it is
+// out of a cell's range, jumps from the previous reading, or swings within a
+// ~40 ms burst. A cell must give steady readings for CHG_CHECK_N in a row
+// before the charging icon shows; until then the static USB icon is shown.
+#define CHG_NB_LO_V     2.50f    // reading below this on USB: nothing there (a cell on charge reads more)
+#define CHG_NB_HI_V     4.30f    // reading above this: not a cell (charger regulates 4.20 V +/-0.75 %)
+#define CHG_NB_STEP_V   0.050f   // change from the previous 3-s reading larger than this
+#define CHG_NB_BURST_V  0.080f   // max - min over a ~40 ms burst (8 x 4-sample averages) larger than this
+#define CHG_NB_WIN      20       // readings looked at (20 x 3 s = 60 s)
+#define CHG_NB_BAD      6        // this many unsteady readings in the window -> no battery
+#define CHG_CHECK_N     5        // steady readings in a row (15 s) -> battery confirmed -> charging icon
+// A steady reading below CHG_IDLE_LO for CHG_NB_MIN minutes is also "no
+// battery": a cell that low on USB is being charged and its reading rises.
+#define CHG_NB_MIN      10
+#define CHG_NB_SPREAD   0.005f
 
 // ---- User button ----
 #define PIN_BUTTON       0   // BOOT (SW4) -> U2.27
@@ -235,7 +258,7 @@ uint32_t infoUntil = 0;                    // info page shown until this time
 
 // Types used in function signatures are declared here, before the first
 // function, so the Arduino IDE's automatic prototypes compile.
-enum ChgState : uint8_t { CHG_OFF, CHG_CC, CHG_CV, CHG_FULL, CHG_IDLE };
+enum ChgState : uint8_t { CHG_OFF, CHG_CHECK, CHG_CC, CHG_CV, CHG_FULL, CHG_IDLE, CHG_NOBATT };
 enum GeoResult { GEO_OK, GEO_NOT_FOUND, GEO_NET_FAIL };
 
 struct Weather { float tempC=NAN, feelsC=NAN, hum=NAN, hiC=NAN, loC=NAN; int code=-1; bool ok=false; } wx;
@@ -392,15 +415,77 @@ struct Charge {
   float hist[CHG_HIST]; int nHist = 0;           // 1-minute averages, oldest first
   float avg = NAN, plateau = 0;                  // plateau: top-off level, or the idle level
   int below = 0;                                 // consecutive minutes below the drop level
+  uint32_t flags = 0;                            // unsteady-reading bits, newest in bit 0
+  int nRead = 0;                                 // readings since USB was plugged in (or the last re-check)
+  float last = -1, step = 0, burst = 0;          // previous reading (-1 = none yet), last step, last burst spread
+  bool nbFast = false;                           // no battery found from unsteady readings (else from a still reading)
 } chg;
 
 static const char* chgName(){
-  switch(chg.st){ case CHG_CC: return "cc"; case CHG_CV: return "cv"; case CHG_FULL: return "full"; case CHG_IDLE: return "idle"; default: return "off"; }
+  switch(chg.st){ case CHG_CHECK: return "check"; case CHG_CC: return "cc"; case CHG_CV: return "cv"; case CHG_FULL: return "full";
+                  case CHG_IDLE: return "idle"; case CHG_NOBATT: return "nobatt"; default: return "off"; }
 }
 static void chgSet(ChgState s){
   if(chg.st == s) return;
   chg.st = s; chg.tState = millis();
   logmsg("[chg] state %s, 1-min avg %.3f V\n", chgName(), chg.avg);
+}
+// Spread of the battery reading over ~40 ms: 8 averages of 4 samples, 5 ms
+// apart. With a cell fitted this is ADC noise; with no cell the charger
+// output swings while it looks for one.
+static float vbatBurstSpread(){
+  float lo = 99, hi = 0;
+  for(int g = 0; g < 8; g++){
+    uint32_t acc = 0;
+    for(int i = 0; i < 4; i++){ acc += analogReadMilliVolts(PIN_VBAT_SENSE); delayMicroseconds(100); }
+    float v = acc / 4000.0f * VBAT_DIV;
+    lo = fminf(lo, v); hi = fmaxf(hi, v);
+    if(g < 7) delay(5);
+  }
+  return hi - lo;
+}
+static int countBits(uint32_t x, int n){ int c = 0; for(int i = 0; i < n; i++) c += (x >> i) & 1; return c; }
+static int nbBad(){ return countBits(chg.flags, CHG_NB_WIN); }
+// Restart the battery check (USB plugged in, or a cell seems to have been fitted).
+static void chgCheck(uint32_t now){
+  chg = Charge(); chg.st = CHG_CHECK; chg.tState = chg.tMin = now;
+}
+// One reading on USB: mark it steady or unsteady, then decide check / no battery.
+// Returns true when the state changed here (the 1-min logic then waits).
+static bool batteryPresenceUpdate(uint32_t now){
+  chg.burst = vbatBurstSpread();
+  bool first = chg.last < 0;
+  chg.step = first ? 0 : fabsf(pw.vbat - chg.last);
+  chg.last = pw.vbat;
+  bool bad = pw.vbat < CHG_NB_LO_V || pw.vbat > CHG_NB_HI_V
+          || chg.step > CHG_NB_STEP_V || chg.burst > CHG_NB_BURST_V;
+  if(first && !bad) return false;                    // first reading: no step yet
+  chg.flags = (chg.flags << 1) | (bad ? 1u : 0u);
+  if(chg.nRead < 1000) chg.nRead++;
+  int nb = nbBad();
+  if(bad) logmsg("[chg] unsteady reading %.3f V (step %.3f, burst %.3f), %d of last %d\n",
+                 pw.vbat, chg.step, chg.burst, nb, CHG_NB_WIN);
+  if(chg.st != CHG_NOBATT && nb >= CHG_NB_BAD){
+    chg.nbFast = true; chg.plateau = pw.vbat; chg.nRead = 0; chgSet(CHG_NOBATT);
+    return true;
+  }
+  if(chg.st == CHG_CHECK && chg.nRead >= CHG_CHECK_N && countBits(chg.flags, CHG_CHECK_N) == 0){
+    chgSet(CHG_CC); logmsg("[chg] battery found, charging\n");
+    return true;
+  }
+  if(chg.st == CHG_NOBATT){
+    // Battery fitted while on USB: the reading settles (it was swinging) or
+    // moves away from the still level it sat at, then stays steady for
+    // CHG_CHECK_N readings (15 s, same rule as at plug-in) -> charging.
+    bool moved = chg.nbFast || fabsf(pw.vbat - chg.plateau) > CHG_IDLE_MOVE;
+    if(moved && chg.nRead >= CHG_CHECK_N && countBits(chg.flags, CHG_CHECK_N) == 0){
+      float v = pw.vbat;
+      chgCheck(now); chgSet(CHG_CC);
+      logmsg("[chg] steady reading %.3f V: battery fitted, charging\n", v);
+      return true;
+    }
+  }
+  return false;
 }
 // Called after every readPower() (every POWER_MS).
 static void chargeUpdate(){
@@ -409,7 +494,8 @@ static void chargeUpdate(){
     if(chg.st != CHG_OFF){ chg = Charge(); logmsg("[chg] USB removed\n"); }
     return;
   }
-  if(chg.st == CHG_OFF){ chg = Charge(); chg.st = CHG_CC; chg.tState = chg.tMin = now; logmsg("[chg] USB present, charging\n"); }
+  if(chg.st == CHG_OFF){ chgCheck(now); logmsg("[chg] USB present, checking for a battery\n"); }
+  if(batteryPresenceUpdate(now)) return;
   chg.sum += pw.vbat; chg.cnt++;
   if(now - chg.tMin < 60000UL) return;
   chg.avg = chg.sum / chg.cnt; chg.sum = 0; chg.cnt = 0; chg.tMin = now;
@@ -425,6 +511,12 @@ static void chargeUpdate(){
         float lo = chg.hist[last], hi = lo;
         for(int i = last - CHG_IDLE_MIN; i < last; i++){ lo = fminf(lo, chg.hist[i]); hi = fmaxf(hi, chg.hist[i]); }
         if(hi - lo <= CHG_IDLE_SPREAD){ chg.plateau = chg.avg; chgSet(CHG_IDLE); }
+      }
+      else if(chg.nHist >= CHG_NB_MIN + 1 && chg.avg < CHG_IDLE_LO){
+        // Still reading below a full cell: a cell this low would be charging and rising.
+        float lo = chg.hist[last], hi = lo;
+        for(int i = last - CHG_NB_MIN; i < last; i++){ lo = fminf(lo, chg.hist[i]); hi = fmaxf(hi, chg.hist[i]); }
+        if(hi - lo <= CHG_NB_SPREAD){ chg.nbFast = false; chg.plateau = chg.avg; chgSet(CHG_NOBATT); }
       }
       break;
     case CHG_CV:
@@ -450,10 +542,14 @@ static int usbBars(){
     case CHG_CV:   return 3 + (int)((millis()/500) % 2);   // 3 steady, 4th blinks
     case CHG_FULL:
     case CHG_IDLE: return 4;                               // charger stopped or idle
+    case CHG_CHECK:
+    case CHG_NOBATT: return 0;                             // USB plug icon, no battery drawn
     default:       return (int)((millis()/600) % 5);       // charging: bars run in a loop
   }
 }
 static int shownBars(){ return pw.usb ? usbBars() : battBars(); }
+// On USB with no battery confirmed: show the plug icon instead of a battery.
+static bool usbOnlyIcon(){ return pw.usb && (chg.st == CHG_CHECK || chg.st == CHG_NOBATT || chg.st == CHG_OFF); }
 
 // ==================== LOW-BATTERY CUTOFF ====================
 // Without this, a board on battery keeps running until the supply sags so far
@@ -800,8 +896,17 @@ static int drawWrapped(int y, const char* s, int lines){
 }
 static const char* placeText(){ return place[0] ? place : (cfgCity[0] ? cfgCity : "(not set)"); }
 
+// Static USB plug, same 22x10 area as the battery: cable, plug body, 2 pins.
+static void drawUsbPlug(int x,int y){
+  u8g2.drawHLine(x, y+5, 6);                              // cable
+  u8g2.drawBox(x+6, y+1, 9, 9);                           // plug body
+  u8g2.drawBox(x+15, y+2, 5, 2);                          // pins
+  u8g2.drawBox(x+15, y+6, 5, 2);
+}
 // 20x10 battery outline, 4 fill bars. Bolt to the left = USB power present.
+// On USB with no battery: the static USB plug only.
 static void drawBattery(int x,int y){
+  if(usbOnlyIcon()){ drawUsbPlug(x, y); return; }
   const int w=20,h=10;
   bool warn = lowBattWarning();
   if(!warn || (millis()/500)%2==0){                       // low battery: outline blinks
@@ -853,7 +958,9 @@ static void drawInfo(){
   else if(BATT_WIFI_MODE==2 && !pw.usb) snprintf(l, sizeof(l), "WiFi off between updates");
   else                            snprintf(l, sizeof(l), "WiFi not connected");
   u8g2.drawStr(0, y, l); y += 9;
-  if(pw.usb) snprintf(l, sizeof(l), "Batt %.2f V USB %s", pw.vbat,
+  if(pw.usb && chg.st==CHG_NOBATT) snprintf(l, sizeof(l), "USB power, no battery");
+  else if(pw.usb && usbOnlyIcon()) snprintf(l, sizeof(l), "USB power, checking batt");
+  else if(pw.usb) snprintf(l, sizeof(l), "Batt %.2f V USB %s", pw.vbat,
                       chg.st==CHG_FULL ? "full" : chg.st==CHG_IDLE ? "idle" : chg.st==CHG_CV ? "top-off" : "charging");
   else       snprintf(l, sizeof(l), "Batt %.2f V  %d%%", pw.vbat, pw.pct);
   u8g2.drawStr(0, y, l); y += 9;
@@ -1051,6 +1158,8 @@ static void printInfo(){
                 placeText(), cfgCountry, cfgState, cfgCity, cfgLatLon, lat, lon, utcOffset);
   Serial.printf("[info] battery: raw %.3f V, offset %+.3f V, J2 %.3f V, usb %d, charge %s, bars %d\n",
                 pw.vraw, vbatCal, pw.vbat, (int)pw.usb, chgName(), shownBars());
+  if(pw.usb) Serial.printf("[info] battery check: %d unsteady of last %d readings (no battery at %d), last step %.3f V, burst %.3f V\n",
+                           nbBad(), CHG_NB_WIN, CHG_NB_BAD, chg.step, chg.burst);
 }
 static void handleSerial(){
   static char line[40]; static int n = 0;
